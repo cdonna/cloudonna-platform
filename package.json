@@ -1,0 +1,8 @@
+{
+  "name": "cloudonna-platform",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
