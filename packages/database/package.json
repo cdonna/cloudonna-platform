@@ -1,0 +1,18 @@
+{
+  "name": "@cloudonna/database",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ClouDonna platform data foundation: Supabase-backed repository layer over the Postgres schema in supabase/migrations. No business logic, no auth, no AI calls — see docs/platform/database-architecture.md.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
