@@ -11,30 +11,37 @@ const features = [
     description:
       "Compare enterprise software across capabilities, architecture, pricing, security and AI readiness.",
     icon: GitCompareArrows,
+    href: "#compare",
   },
   {
     title: "Donna AI",
     description:
       "Turn requirements into structured recommendations, architecture options and next-best actions.",
     icon: Bot,
+    href: "#donna",
   },
   {
     title: "Benchmarks",
     description:
       "Use market, cost, implementation and performance benchmarks to support investment decisions.",
     icon: BarChart3,
+    href: "#early-access",
   },
   {
     title: "Marketplace",
     description:
       "Discover trusted vendors, implementation partners and verified enterprise experts.",
     icon: Store,
+    href: "#marketplace",
   },
 ];
 
 export default function FeatureCards() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20">
+    <section
+      id="benchmarks"
+      className="mx-auto max-w-7xl scroll-mt-8 px-6 py-20"
+    >
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         {features.map((feature) => {
           const Icon = feature.icon;
@@ -56,12 +63,12 @@ export default function FeatureCards() {
                 {feature.description}
               </p>
 
-              <button
-                type="button"
-                className="mt-6 text-sm font-medium text-violet-700 transition group-hover:translate-x-1"
+              <a
+                href={feature.href}
+                className="mt-6 inline-flex text-sm font-medium text-violet-700 transition group-hover:translate-x-1"
               >
                 Explore {feature.title} →
-              </button>
+              </a>
             </article>
           );
         })}

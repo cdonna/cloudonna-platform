@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
+  BarChart3,
   Bot,
   Check,
   ChevronRight,
@@ -156,7 +157,7 @@ export default function DonnaLive() {
   return (
     <section
       id="donna"
-      className="relative overflow-hidden bg-white px-6 py-24"
+      className="relative scroll-mt-8 overflow-hidden bg-white px-6 py-24"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[-10rem] top-20 h-96 w-96 rounded-full bg-blue-200/40 blur-[130px]" />
@@ -208,7 +209,13 @@ export default function DonnaLive() {
                   className="mt-1 shrink-0 text-violet-600"
                 />
 
+                <label htmlFor="donna-question" className="sr-only">
+                  Describe your enterprise landscape and the decision you
+                  need to make
+                </label>
+
                 <textarea
+                  id="donna-question"
                   value={question}
                   onChange={(event) => setQuestion(event.target.value)}
                   onKeyDown={(event) => {
@@ -670,7 +677,7 @@ function ArchitectureView() {
 
           <div className="grid grid-cols-3 gap-4">
             <ArchitectureNode
-              icon={BarChartIcon}
+              icon={BarChart3}
               label="Analytics"
               subtitle="SAC and Power BI"
             />
@@ -804,20 +811,5 @@ function TcoView() {
         ))}
       </div>
     </div>
-  );
-}
-
-function BarChartIcon({
-  size,
-  className,
-}: {
-  size?: number;
-  className?: string;
-}) {
-  return (
-    <CircleDollarSign
-      size={size}
-      className={className}
-    />
   );
 }

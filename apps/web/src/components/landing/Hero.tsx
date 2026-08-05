@@ -1,9 +1,23 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
-import { ArrowRight, Check, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Menu, Play, Sparkles, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
+const navLinks = [
+  { label: "Products", href: "#products" },
+  { label: "Compare", href: "#compare" },
+  { label: "Donna AI", href: "#donna" },
+  { label: "Benchmarks", href: "#benchmarks" },
+  { label: "Marketplace", href: "#marketplace" },
+  { label: "Early Access", href: "#early-access" },
+];
+
 export default function Hero() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-white via-indigo-50/50 to-white">
       {/* Aurora background */}
@@ -15,60 +29,106 @@ export default function Hero() {
 
       <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-8">
         {/* Navigation */}
-        <nav className="flex items-center justify-between rounded-2xl border border-white/70 bg-white/70 px-5 py-3 shadow-sm backdrop-blur-xl">
-          <a href="#" className="flex items-center gap-3">
-            <Image
-              src="/cloudonna-favicon-512.png"
-              alt="ClouDonna"
-              width={50}
-              height={50}
-              className="h-11 w-11 object-contain"
-              priority
-            />
+        <nav className="rounded-2xl border border-white/70 bg-white/70 px-5 py-3 shadow-sm backdrop-blur-xl">
+          <div className="flex items-center justify-between">
+            <a href="#" className="flex items-center gap-3">
+              <Image
+                src="/cloudonna-favicon-512.png"
+                alt="ClouDonna"
+                width={50}
+                height={50}
+                className="h-11 w-11 object-contain"
+                priority
+              />
 
-            <div>
-              <div className="text-xl font-semibold tracking-tight text-slate-950">
-                Clou<span className="text-violet-600">Donna</span>
+              <div>
+                <div className="text-xl font-semibold tracking-tight text-slate-950">
+                  Clou<span className="text-violet-600">Donna</span>
+                </div>
+                <div className="text-[9px] uppercase tracking-[0.2em] text-slate-500">
+                  Enterprise Decision Intelligence
+                </div>
               </div>
-              <div className="text-[9px] uppercase tracking-[0.2em] text-slate-500">
-                Enterprise Decision Intelligence
+            </a>
+
+            <div className="hidden items-center gap-7 text-sm text-slate-600 lg:flex">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="transition hover:text-violet-700"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                className="hidden border-slate-200 bg-white text-slate-800 sm:inline-flex"
+                render={<a href="#early-access" />}
+              >
+                Login
+              </Button>
+
+              <Button
+                className="hidden bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg shadow-violet-200 sm:inline-flex"
+                render={<a href="#early-access" />}
+              >
+                Request Demo
+              </Button>
+
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label={menuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={menuOpen}
+                aria-controls="mobile-nav"
+                className="h-11 w-11 border-slate-200 bg-white text-slate-800 lg:hidden"
+                onClick={() => setMenuOpen((open) => !open)}
+              >
+                {menuOpen ? <X size={18} /> : <Menu size={18} />}
+              </Button>
+            </div>
+          </div>
+
+          {menuOpen && (
+            <div
+              id="mobile-nav"
+              className="mt-4 flex flex-col gap-1 border-t border-slate-200/80 pt-4 lg:hidden"
+            >
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-violet-50 hover:text-violet-700"
+                >
+                  {link.label}
+                </a>
+              ))}
+
+              <div className="mt-2 flex flex-col gap-2 px-1">
+                <Button
+                  variant="outline"
+                  className="border-slate-200 bg-white text-slate-800"
+                  render={<a href="#early-access" />}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Login
+                </Button>
+
+                <Button
+                  className="bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg shadow-violet-200"
+                  render={<a href="#early-access" />}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Request Demo
+                </Button>
               </div>
             </div>
-          </a>
-
-          <div className="hidden items-center gap-7 text-sm text-slate-600 lg:flex">
-            <a href="#products" className="transition hover:text-violet-700">
-              Products
-            </a>
-            <a href="#compare" className="transition hover:text-violet-700">
-              Compare
-            </a>
-            <a href="#donna" className="transition hover:text-violet-700">
-              Donna AI
-            </a>
-            <a href="#benchmarks" className="transition hover:text-violet-700">
-              Benchmarks
-            </a>
-            <a href="#marketplace" className="transition hover:text-violet-700">
-              Marketplace
-            </a>
-            <a href="#pricing" className="transition hover:text-violet-700">
-              Pricing
-            </a>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              className="hidden border-slate-200 bg-white text-slate-800 sm:inline-flex"
-            >
-              Login
-            </Button>
-
-            <Button className="bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg shadow-violet-200">
-              Request Demo
-            </Button>
-          </div>
+          )}
         </nav>
 
         {/* Hero */}
@@ -96,6 +156,7 @@ export default function Hero() {
               <Button
                 size="lg"
                 className="h-12 bg-gradient-to-r from-blue-600 to-violet-600 px-7 text-white shadow-xl shadow-indigo-200"
+                render={<a href="#early-access" />}
               >
                 Request Demo
                 <ArrowRight size={17} />
@@ -105,6 +166,7 @@ export default function Hero() {
                 size="lg"
                 variant="outline"
                 className="h-12 border-slate-200 bg-white/70 px-7 text-slate-900 shadow-sm"
+                render={<a href="#donna" />}
               >
                 <Play size={16} />
                 Watch Overview
