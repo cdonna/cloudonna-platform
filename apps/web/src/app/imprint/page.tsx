@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 export const metadata: Metadata = {
   title: "Imprint — ClouDonna",
   description: "Legal publisher information for ClouDonna.",
+  alternates: { canonical: "/imprint" },
 };
 
 export default function ImprintPage() {

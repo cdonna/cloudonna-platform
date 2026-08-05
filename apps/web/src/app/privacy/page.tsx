@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 export const metadata: Metadata = {
   title: "Privacy Policy — ClouDonna",
   description: "How ClouDonna handles data during the Public Alpha program.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

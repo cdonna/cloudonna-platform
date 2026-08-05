@@ -696,8 +696,13 @@ function RecommendationView({
     <div>
       <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
-            Donna recommendation
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
+              Donna recommendation
+            </span>
+            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+              Illustrative example
+            </span>
           </div>
 
           <h3 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">

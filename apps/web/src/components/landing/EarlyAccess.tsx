@@ -13,19 +13,44 @@ const roles = [
   "Other",
 ];
 
-const interests = [
-  "Donna AI",
-  "Donna Compare",
-  "Donna Marketplace",
-  "Donna Intelligence",
-  "Donna Workspace",
+export type Audience = "customer" | "vendor" | "partner" | "community";
+
+const audienceOptions: { value: Audience | ""; label: string }[] = [
+  { value: "customer", label: "Enterprise customer — evaluating technology" },
+  { value: "vendor", label: "Software vendor — want to be evaluated" },
+  { value: "partner", label: "Consultancy / implementation partner" },
+  { value: "community", label: "Community / research" },
 ];
 
-export default function EarlyAccess() {
+const audienceCopy: Record<Audience, { heading: string; body: string }> = {
+  customer: {
+    heading: "Request early access",
+    body: "ClouDonna is opening access to Donna AI's guided assessment in waves. This is a preview of the request flow — in this alpha build, submissions are not transmitted or stored anywhere.",
+  },
+  vendor: {
+    heading: "Apply as a vendor",
+    body: "There is no self-service vendor submission flow yet. Apply here to be notified when verified vendor profiles open up — this is a preview of the request flow and submissions are not transmitted or stored in this alpha build.",
+  },
+  partner: {
+    heading: "Apply as a partner",
+    body: "The partner directory and matching flow are not live yet. Apply here to be notified when partner profiles open up — this is a preview of the request flow and submissions are not transmitted or stored in this alpha build.",
+  },
+  community: {
+    heading: "Join the community waitlist",
+    body: "The community and research program hasn't launched yet. Let us know you're interested — this is a preview of the request flow and submissions are not transmitted or stored in this alpha build.",
+  },
+};
+
+export default function EarlyAccess({
+  audience,
+}: {
+  audience?: Audience;
+}) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">(
     "idle",
   );
   const formId = useId();
+  const copy = audience ? audienceCopy[audience] : audienceCopy.customer;
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,14 +83,10 @@ export default function EarlyAccess() {
           </div>
 
           <h2 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-5xl">
-            Request early access
+            {copy.heading}
           </h2>
 
-          <p className="mt-5 text-lg leading-8 text-slate-600">
-            ClouDonna is opening access in waves. This is a preview of the
-            request flow — in this alpha build, submissions are not
-            transmitted or stored anywhere.
-          </p>
+          <p className="mt-5 text-lg leading-8 text-slate-600">{copy.body}</p>
         </div>
 
         <div
@@ -151,24 +172,25 @@ export default function EarlyAccess() {
 
               <div className="flex flex-col gap-1.5 sm:col-span-2">
                 <label
-                  htmlFor={`${formId}-interest`}
+                  htmlFor={`${formId}-audience`}
                   className="text-sm font-medium text-slate-800"
                 >
-                  Primary interest <span className="text-violet-600">*</span>
+                  I&apos;m interested as a{" "}
+                  <span className="text-violet-600">*</span>
                 </label>
                 <select
-                  id={`${formId}-interest`}
-                  name="interest"
+                  id={`${formId}-audience`}
+                  name="audience"
                   required
-                  defaultValue=""
+                  defaultValue={audience ?? ""}
                   className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus-visible:border-violet-400 focus-visible:ring-3 focus-visible:ring-violet-500/20"
                 >
                   <option value="" disabled>
-                    Select a ClouDonna product
+                    Select what best describes you
                   </option>
-                  {interests.map((interest) => (
-                    <option key={interest} value={interest}>
-                      {interest}
+                  {audienceOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </select>

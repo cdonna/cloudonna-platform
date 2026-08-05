@@ -2,17 +2,16 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ArrowRight, Check, Menu, Play, Sparkles, X } from "lucide-react";
+import { ArrowRight, Check, Menu, Play, ShieldCheck, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
-  { label: "Products", href: "#products" },
-  { label: "Compare", href: "#compare" },
-  { label: "Donna AI", href: "#donna" },
-  { label: "Benchmarks", href: "#benchmarks" },
-  { label: "Marketplace", href: "#marketplace" },
-  { label: "Early Access", href: "#early-access" },
+  { label: "Discovery", href: "/discovery" },
+  { label: "Donna AI", href: "/donna-ai" },
+  { label: "Independence", href: "/independence" },
+  { label: "For Vendors", href: "/for-vendors" },
+  { label: "For Partners", href: "/for-partners" },
 ];
 
 export default function Hero() {
@@ -65,18 +64,10 @@ export default function Hero() {
 
             <div className="flex items-center gap-3">
               <Button
-                variant="outline"
-                className="hidden border-slate-200 bg-white text-slate-800 sm:inline-flex"
-                render={<a href="#early-access" />}
-              >
-                Login
-              </Button>
-
-              <Button
                 className="hidden bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg shadow-violet-200 sm:inline-flex"
-                render={<a href="#early-access" />}
+                render={<a href="/early-access" />}
               >
-                Request Demo
+                Request Early Access
               </Button>
 
               <Button
@@ -111,20 +102,11 @@ export default function Hero() {
 
               <div className="mt-2 flex flex-col gap-2 px-1">
                 <Button
-                  variant="outline"
-                  className="border-slate-200 bg-white text-slate-800"
-                  render={<a href="#early-access" />}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Login
-                </Button>
-
-                <Button
                   className="bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg shadow-violet-200"
-                  render={<a href="#early-access" />}
+                  render={<a href="/early-access" />}
                   onClick={() => setMenuOpen(false)}
                 >
-                  Request Demo
+                  Request Early Access
                 </Button>
               </div>
             </div>
@@ -135,30 +117,31 @@ export default function Hero() {
         <div className="grid items-center gap-16 pb-8 pt-20 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-indigo-700 shadow-sm">
-              <Sparkles size={14} />
-              Enterprise Decision Intelligence
+              <ShieldCheck size={14} />
+              Independent Enterprise Decision Intelligence
             </div>
 
             <h1 className="mt-7 max-w-3xl text-5xl font-semibold leading-[1.02] tracking-[-0.045em] text-slate-950 sm:text-6xl lg:text-7xl">
-              Make Enterprise Technology Decisions{" "}
+              Turn a Business Goal Into a{" "}
               <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-fuchsia-500 bg-clip-text text-transparent">
-                Transparent.
+                Defensible Decision.
               </span>
             </h1>
 
             <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600">
-              Compare enterprise software, receive AI-powered recommendations,
-              model total cost of ownership and make strategic technology
-              decisions with confidence.
+              ClouDonna guides you from a business objective to an
+              evidence-based technology recommendation — with full reasoning
+              behind every option, evaluated on a vendor-neutral, consistent
+              basis.
             </p>
 
             <div className="mt-9 flex flex-col gap-4 sm:flex-row">
               <Button
                 size="lg"
                 className="h-12 bg-gradient-to-r from-blue-600 to-violet-600 px-7 text-white shadow-xl shadow-indigo-200"
-                render={<a href="#early-access" />}
+                render={<a href="/donna-ai" />}
               >
-                Request Demo
+                Try Donna AI
                 <ArrowRight size={17} />
               </Button>
 
@@ -166,18 +149,18 @@ export default function Hero() {
                 size="lg"
                 variant="outline"
                 className="h-12 border-slate-200 bg-white/70 px-7 text-slate-900 shadow-sm"
-                render={<a href="#donna" />}
+                render={<a href="/discovery" />}
               >
                 <Play size={16} />
-                Watch Overview
+                See How It Works
               </Button>
             </div>
 
             <div className="mt-10 grid max-w-xl grid-cols-1 gap-4 text-sm sm:grid-cols-3">
               {[
-                "1,000+ Products",
-                "10,000+ Insights",
-                "AI-Powered",
+                "Vendor-neutral by design",
+                "Evidence-based scoring",
+                "Public Alpha",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-2 text-slate-600">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
@@ -189,7 +172,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Dashboard preview */}
+          {/* Dashboard preview — illustrative example, not a real recommendation */}
           <div className="relative">
             <div className="absolute inset-8 rounded-[2rem] bg-gradient-to-r from-blue-400/25 to-violet-500/30 blur-3xl" />
 
@@ -214,18 +197,18 @@ export default function Hero() {
                   </div>
                 </div>
 
-                <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-                  91% Match
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                  Illustrative example
                 </span>
               </div>
 
               <div className="grid gap-4 pt-5 md:grid-cols-2">
                 <div className="rounded-2xl border border-slate-200 bg-white p-5">
-                  <div className="text-xs text-slate-500">Best match</div>
+                  <div className="text-xs text-slate-500">Top-ranked option</div>
                   <div className="mt-4 flex items-center justify-between">
                     <div>
                       <div className="text-xl font-semibold text-slate-950">
-                        Snowflake
+                        Platform A
                       </div>
                       <div className="mt-1 text-xs text-slate-500">
                         Data Cloud Platform
@@ -240,7 +223,7 @@ export default function Hero() {
                       "Enterprise scalability",
                       "Cloud-native architecture",
                       "Strong ecosystem",
-                      "Competitive TCO",
+                      "Manageable cost profile",
                     ].map((benefit) => (
                       <div
                         key={benefit}
@@ -252,37 +235,47 @@ export default function Hero() {
                     ))}
                   </div>
 
-                  <Button className="mt-6 bg-gradient-to-r from-blue-600 to-violet-600 text-white">
-                    View Comparison
+                  <Button
+                    className="mt-6 bg-gradient-to-r from-blue-600 to-violet-600 text-white"
+                    render={<a href="/donna-ai" />}
+                  >
+                    See how this is scored
                   </Button>
                 </div>
 
                 <div className="space-y-4">
                   <div className="rounded-2xl border border-slate-200 bg-white p-5">
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-500">Solution scorecard</span>
+                      <span className="text-slate-500">Illustrative scorecard</span>
                       <span className="font-semibold text-violet-700">
-                        8.9 / 10
+                        Leading fit
                       </span>
                     </div>
 
                     <div className="mt-5 space-y-4">
                       {[
-                        ["Functionality", 91],
-                        ["Performance", 88],
-                        ["Security", 94],
-                        ["Cost efficiency", 79],
-                      ].map(([label, score]) => (
+                        ["Architecture fit", "Leading"],
+                        ["Governance fit", "Established"],
+                        ["Security fit", "Leading"],
+                        ["Cost fit", "Developing"],
+                      ].map(([label, band]) => (
                         <div key={label}>
                           <div className="mb-2 flex justify-between text-xs text-slate-500">
                             <span>{label}</span>
-                            <span>{score}%</span>
+                            <span>{band}</span>
                           </div>
 
                           <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                             <div
                               className="h-full rounded-full bg-gradient-to-r from-blue-500 to-violet-500"
-                              style={{ width: `${score}%` }}
+                              style={{
+                                width:
+                                  band === "Leading"
+                                    ? "92%"
+                                    : band === "Established"
+                                      ? "70%"
+                                      : "48%",
+                              }}
                             />
                           </div>
                         </div>
@@ -292,13 +285,11 @@ export default function Hero() {
 
                   <div className="rounded-2xl border border-slate-200 bg-white p-5">
                     <div className="text-sm font-medium text-slate-950">
-                      Three-year TCO
+                      Every score ships with evidence
                     </div>
-                    <div className="mt-3 text-3xl font-semibold text-slate-950">
-                      $2.1M
-                    </div>
-                    <div className="mt-1 text-sm text-emerald-600">
-                      18% below market median
+                    <div className="mt-2 text-sm leading-6 text-slate-600">
+                      No live pricing or market-share numbers — every result
+                      links back to the reasoning behind it.
                     </div>
                   </div>
                 </div>

@@ -1,17 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const productLinks = [
-  { label: "Donna AI", href: "/#donna" },
-  { label: "Donna Compare", href: "/#compare" },
-  { label: "Donna Marketplace", href: "/#marketplace" },
-  { label: "Donna Intelligence", href: "/#products" },
-  { label: "Donna Workspace", href: "/#products" },
+const exploreLinks = [
+  { label: "Discovery", href: "/discovery" },
+  { label: "Donna AI", href: "/donna-ai" },
+  { label: "Independence", href: "/independence" },
 ];
 
-const companyLinks = [
-  { label: "Request Early Access", href: "/#early-access" },
-  { label: "Benchmarks", href: "/#benchmarks" },
+const audienceLinks = [
+  { label: "For Vendors", href: "/for-vendors" },
+  { label: "For Partners", href: "/for-partners" },
+  { label: "Request Early Access", href: "/early-access" },
 ];
 
 const legalLinks = [
@@ -45,8 +44,8 @@ export default function Footer() {
             </p>
           </div>
 
-          <FooterColumn title="Products" links={productLinks} />
-          <FooterColumn title="Company" links={companyLinks} />
+          <FooterColumn title="Explore" links={exploreLinks} />
+          <FooterColumn title="Audiences" links={audienceLinks} />
           <FooterColumn title="Legal" links={legalLinks} />
         </div>
 

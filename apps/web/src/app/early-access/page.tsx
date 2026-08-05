@@ -2,16 +2,30 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { DonnaAIExperience } from "@/components/donna-ai/DonnaAIExperience";
+import EarlyAccess, { type Audience } from "@/components/landing/EarlyAccess";
 
 export const metadata: Metadata = {
-  title: "Donna AI — Enterprise Decision Assistant · ClouDonna",
+  title: "Request Early Access — ClouDonna",
   description:
-    "A guided, six-step assessment that produces an evidence-based enterprise technology recommendation. Public Alpha preview.",
-  alternates: { canonical: "/donna-ai" },
+    "Request early access to ClouDonna as an enterprise customer, software vendor, implementation partner, or community member.",
+  alternates: { canonical: "/early-access" },
 };
 
-export default function DonnaAIPage() {
+const validAudiences: Audience[] = ["customer", "vendor", "partner", "community"];
+
+function parseAudience(value: string | string[] | undefined): Audience | undefined {
+  const candidate = Array.isArray(value) ? value[0] : value;
+  return validAudiences.find((audience) => audience === candidate);
+}
+
+export default async function EarlyAccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const audience = parseAudience(params.type);
+
   return (
     <div>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
@@ -37,7 +51,7 @@ export default function DonnaAIPage() {
         </Link>
       </div>
 
-      <DonnaAIExperience />
+      <EarlyAccess audience={audience} />
     </div>
   );
 }
