@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRovingTabs } from "@/hooks/use-roving-tabs";
 import {
   ArrowRight,
   BarChart3,
@@ -38,6 +40,14 @@ const analysisSteps = [
   "Generating evidence-based recommendation",
 ];
 
+type ResultView = "recommendation" | "architecture" | "tco";
+
+const resultTabs: Array<{ value: ResultView; label: string }> = [
+  { value: "recommendation", label: "Recommendation" },
+  { value: "architecture", label: "Architecture" },
+  { value: "tco", label: "TCO analysis" },
+];
+
 type Recommendation = {
   product: string;
   score: number;
@@ -72,6 +82,51 @@ const demoRecommendation: Recommendation = {
   ],
 };
 
+function buildReportText(question: string, recommendation: Recommendation) {
+  const lines = [
+    "ClouDonna — Donna AI Recommendation (Public Alpha preview)",
+    "",
+    "Requirement",
+    `"${question}"`,
+    "",
+    `Recommendation: ${recommendation.product} — ${recommendation.score}% confidence`,
+    recommendation.summary,
+    "",
+    "Why this platform fits",
+    ...recommendation.reasons.map((reason) => `- ${reason}`),
+    "",
+    "Risks to validate",
+    ...recommendation.risks.map((risk) => `- ${risk}`),
+    "",
+    "Alternatives considered",
+    ...recommendation.alternatives.map(
+      (alternative) => `- ${alternative.name} — ${alternative.score}%`,
+    ),
+    "",
+    "This is illustrative demo output from the ClouDonna Public Alpha and not a certified recommendation.",
+  ];
+
+  return lines.join("\n");
+}
+
+function downloadReport(question: string, recommendation: Recommendation) {
+  const text = buildReportText(question, recommendation);
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const slug = recommendation.product
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `donna-ai-${slug || "recommendation"}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 export default function DonnaLive() {
   const [question, setQuestion] = useState("");
   const [submittedQuestion, setSubmittedQuestion] = useState("");
@@ -80,9 +135,12 @@ export default function DonnaLive() {
   >("idle");
   const [analysisStep, setAnalysisStep] = useState(0);
   const [typedSummary, setTypedSummary] = useState("");
-  const [activeView, setActiveView] = useState<
-    "recommendation" | "architecture" | "tco"
-  >("recommendation");
+  const [activeView, setActiveView] = useState<ResultView>("recommendation");
+  const [saved, setSaved] = useState(false);
+  const [comparisonOpen, setComparisonOpen] = useState(false);
+  const [exported, setExported] = useState(false);
+  const [liveMessage, setLiveMessage] = useState("");
+  const { registerTab, handleTabKeyDown } = useRovingTabs(resultTabs.length);
 
   const recommendation = useMemo(() => demoRecommendation, []);
 
@@ -132,6 +190,18 @@ export default function DonnaLive() {
     typedSummary,
   ]);
 
+  useEffect(() => {
+    if (!exported) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setExported(false);
+    }, 1800);
+
+    return () => window.clearTimeout(timer);
+  }, [exported]);
+
   function submitQuestion() {
     const cleanedQuestion = question.trim();
 
@@ -144,6 +214,10 @@ export default function DonnaLive() {
     setTypedSummary("");
     setActiveView("recommendation");
     setStatus("analysing");
+    setSaved(false);
+    setComparisonOpen(false);
+    setExported(false);
+    setLiveMessage("");
   }
 
   function resetDonna() {
@@ -152,6 +226,40 @@ export default function DonnaLive() {
     setStatus("idle");
     setAnalysisStep(0);
     setTypedSummary("");
+    setSaved(false);
+    setComparisonOpen(false);
+    setExported(false);
+    setLiveMessage("");
+  }
+
+  function selectTabByIndex(index: number) {
+    setActiveView(resultTabs[index].value);
+  }
+
+  function handleToggleSave() {
+    setSaved((current) => {
+      const next = !current;
+      setLiveMessage(
+        next ? "Decision saved for this session." : "Decision unsaved.",
+      );
+      return next;
+    });
+  }
+
+  function handleToggleComparison() {
+    setComparisonOpen((current) => {
+      const next = !current;
+      setLiveMessage(
+        next ? "Comparison view expanded." : "Comparison view collapsed.",
+      );
+      return next;
+    });
+  }
+
+  function handleExport() {
+    downloadReport(submittedQuestion, recommendation);
+    setExported(true);
+    setLiveMessage("Report downloaded.");
   }
 
   return (
@@ -180,6 +288,14 @@ export default function DonnaLive() {
             structures the decision, compares suitable platforms and creates
             an actionable recommendation.
           </p>
+
+          <Link
+            href="/donna-ai"
+            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-violet-700 transition hover:text-violet-800"
+          >
+            Try the full guided Donna AI assessment
+            <ArrowRight size={15} />
+          </Link>
         </div>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-[0.72fr_1.28fr]">
@@ -312,36 +428,46 @@ export default function DonnaLive() {
                 </div>
 
                 <div className="border-b border-slate-200 px-6 py-4 sm:px-8">
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      ["recommendation", "Recommendation"],
-                      ["architecture", "Architecture"],
-                      ["tco", "TCO analysis"],
-                    ].map(([value, label]) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() =>
-                          setActiveView(
-                            value as
-                              | "recommendation"
-                              | "architecture"
-                              | "tco",
-                          )
-                        }
-                        className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
-                          activeView === value
-                            ? "bg-slate-950 text-white shadow-md"
-                            : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    ))}
+                  <div
+                    role="tablist"
+                    aria-label="Donna AI result view"
+                    className="flex flex-wrap gap-2"
+                  >
+                    {resultTabs.map((tab, index) => {
+                      const selected = activeView === tab.value;
+
+                      return (
+                        <button
+                          key={tab.value}
+                          ref={registerTab(index)}
+                          type="button"
+                          role="tab"
+                          id={`donna-tab-${tab.value}`}
+                          aria-selected={selected}
+                          aria-controls={`donna-panel-${tab.value}`}
+                          tabIndex={selected ? 0 : -1}
+                          onClick={() => setActiveView(tab.value)}
+                          onKeyDown={(event) => handleTabKeyDown(event, index, selectTabByIndex)}
+                          className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+                            selected
+                              ? "bg-slate-950 text-white shadow-md"
+                              : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                          }`}
+                        >
+                          {tab.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
-                <div className="p-6 sm:p-8">
+                <div
+                  role="tabpanel"
+                  id={`donna-panel-${activeView}`}
+                  aria-labelledby={`donna-tab-${activeView}`}
+                  tabIndex={0}
+                  className="p-6 sm:p-8"
+                >
                   {activeView === "recommendation" && (
                     <RecommendationView
                       recommendation={recommendation}
@@ -359,38 +485,68 @@ export default function DonnaLive() {
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 border-t border-slate-200 px-6 py-5 sm:px-8">
-                  <Button
-                    variant="outline"
-                    className="border-slate-200 bg-white text-slate-800"
-                  >
-                    <Save size={16} />
-                    Save decision
-                  </Button>
+                <div className="border-t border-slate-200 px-6 py-5 sm:px-8">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button
+                      variant="outline"
+                      aria-pressed={saved}
+                      onClick={handleToggleSave}
+                      className={
+                        saved
+                          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                          : "border-slate-200 bg-white text-slate-800"
+                      }
+                    >
+                      {saved ? <Check size={16} /> : <Save size={16} />}
+                      {saved ? "Saved" : "Save decision"}
+                    </Button>
 
-                  <Button
-                    variant="outline"
-                    className="border-slate-200 bg-white text-slate-800"
-                  >
-                    <GitCompareArrows size={16} />
-                    Compare alternatives
-                  </Button>
+                    <Button
+                      variant="outline"
+                      aria-expanded={comparisonOpen}
+                      aria-controls="donna-comparison-panel"
+                      onClick={handleToggleComparison}
+                      className={
+                        comparisonOpen
+                          ? "border-violet-300 bg-violet-50 text-violet-700"
+                          : "border-slate-200 bg-white text-slate-800"
+                      }
+                    >
+                      <GitCompareArrows size={16} />
+                      {comparisonOpen ? "Hide comparison" : "Compare alternatives"}
+                    </Button>
 
-                  <Button
-                    variant="outline"
-                    className="border-slate-200 bg-white text-slate-800"
-                  >
-                    <Download size={16} />
-                    Export report
-                  </Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleExport}
+                      className={
+                        exported
+                          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                          : "border-slate-200 bg-white text-slate-800"
+                      }
+                    >
+                      {exported ? <Check size={16} /> : <Download size={16} />}
+                      {exported ? "Downloaded" : "Export report"}
+                    </Button>
 
-                  <button
-                    type="button"
-                    onClick={resetDonna}
-                    className="ml-auto text-sm font-medium text-violet-700"
-                  >
-                    Start new analysis
-                  </button>
+                    <button
+                      type="button"
+                      onClick={resetDonna}
+                      className="ml-auto text-sm font-medium text-violet-700"
+                    >
+                      Start new analysis
+                    </button>
+                  </div>
+
+                  {comparisonOpen && (
+                    <div id="donna-comparison-panel">
+                      <AlternativesComparison recommendation={recommendation} />
+                    </div>
+                  )}
+
+                  <div role="status" aria-live="polite" className="sr-only">
+                    {liveMessage}
+                  </div>
                 </div>
               </div>
             )}
@@ -629,6 +785,69 @@ function RecommendationView({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function AlternativesComparison({
+  recommendation,
+}: {
+  recommendation: Recommendation;
+}) {
+  const entries = [
+    {
+      name: recommendation.product,
+      score: recommendation.score,
+      primary: true,
+    },
+    ...recommendation.alternatives.map((alternative) => ({
+      ...alternative,
+      primary: false,
+    })),
+  ].sort((a, b) => b.score - a.score);
+
+  return (
+    <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+        Score comparison
+      </div>
+
+      <div className="mt-5 space-y-4">
+        {entries.map((entry) => (
+          <div key={entry.name}>
+            <div className="mb-2 flex items-center justify-between text-sm">
+              <span
+                className={
+                  entry.primary
+                    ? "font-semibold text-slate-950"
+                    : "text-slate-600"
+                }
+              >
+                {entry.name}
+                {entry.primary && (
+                  <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                    Recommended
+                  </span>
+                )}
+              </span>
+              <span className="font-semibold text-slate-950">
+                {entry.score}%
+              </span>
+            </div>
+
+            <div className="h-2.5 overflow-hidden rounded-full bg-slate-200">
+              <div
+                className={`h-full rounded-full ${
+                  entry.primary
+                    ? "bg-gradient-to-r from-blue-500 to-violet-500"
+                    : "bg-slate-400"
+                }`}
+                style={{ width: `${entry.score}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

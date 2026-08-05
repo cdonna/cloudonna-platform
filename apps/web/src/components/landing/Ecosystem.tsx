@@ -15,7 +15,7 @@ const products = [
     description:
       "Turns requirements, landscape and constraints into structured, evidence-based recommendations.",
     icon: Bot,
-    href: "#donna",
+    href: "/donna-ai",
     featured: true,
   },
   {

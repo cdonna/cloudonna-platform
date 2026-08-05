@@ -1,3 +1,95 @@
+# ClouDonna — Public Alpha 0.3
+
+**Date:** August 2026
+**Branch:** `worktree-public-alpha`
+**Scope:** `apps/web` — new `/donna-ai` route, `components/donna-ai/`, shared `hooks/`
+
+## Summary
+
+This release turns Donna AI from a scripted single-question demo into a real Enterprise
+Decision Assistant: a six-step guided consulting workflow (Company → Landscape → Goals →
+Constraints → Review → Analysis) at a dedicated `/donna-ai` route, backed by a deterministic,
+rule-based mock decision engine, producing a full executive dashboard. No LLM, no backend, no
+APIs, no database, no authentication — everything runs client-side against a curated platform
+catalog. See `docs/donna-ai-alpha.md` for the full user flow, scoring logic, component
+architecture, and design decisions.
+
+## New Features
+
+- **`/donna-ai` route** — a dedicated page hosting the full guided assessment, separate from the
+  homepage's lighter Donna AI teaser (which now links to it, as does the Ecosystem section's
+  Donna AI card).
+- **Six-step guided consulting workflow**:
+  - **Company** — Industry, Country, Employees, Revenue, IT Organization Size.
+  - **Landscape** — ERP, CRM, Analytics, Data Warehouse, Cloud, AI Platform.
+  - **Goals** — multi-select from 8 goals (Modernization, Business AI, Planning, Governance,
+    Data Products, Cost Reduction, Compliance, Innovation).
+  - **Constraints** — Budget, Timeline, Risk Appetite, Preferred Cloud, Preferred Vendor,
+    Internal Skills.
+  - **Review** — per-step recap with Edit links, plus a "Back to review" shortcut once every
+    step is complete.
+  - **Analysis** — an animated five-stage sequence, then automatic hand-off to results.
+  - A "Try a sample company" shortcut pre-fills every step for fast demoing.
+- **Deterministic decision engine** (`components/donna-ai/engine.ts`) — pure functions scoring a
+  4-platform catalog (SAP Business Data Cloud, Microsoft Fabric, Snowflake, Databricks) via
+  explainable trait-matching, producing Donna Score, Confidence Score, Executive Summary,
+  Recommendation, an explicit **Alternative Recommendation**, Risks, Opportunities, Assumptions,
+  Suggested Next Steps, and **Suggested Workshops**.
+- **Executive dashboard** — six-tab result panel (Overview, Alternatives, Risks & Opportunities,
+  Roadmap, Architecture, TCO analysis).
+
+## UX Improvements
+
+- Step transitions, tab switches, and the results reveal use `tw-animate-css` (already a project
+  dependency) for a polished, non-gratuitous motion layer.
+- Chip selections give immediate visual + press feedback; "Next" is disabled with an explicit
+  hint until every required field on the step is answered.
+- Fixed an edge case found during self-review: if a user's selections don't map to any scoring
+  trait (e.g., Oracle ERP + "Planning" goal + neutral constraints — all valid picks), the
+  Executive Summary and "Why this recommendation?" card show an honest low-signal message
+  instead of a malformed or fabricated-sounding sentence.
+
+## Accessibility Improvements
+
+- Full keyboard support: chips are real buttons, the six result tabs support Arrow/Home/End
+  roving-tabindex navigation, and focus moves to the new step's heading on every wizard step
+  change (forward, back, or edit-jump).
+- Progress indicator carries an `aria-live` region announcing step changes; the result panel's
+  Save/Export actions announce their outcome the same way.
+- Every wizard field is a `<fieldset>`/`<legend>`; every free-text note has a properly
+  associated `<label htmlFor>`.
+- All new interaction respects the existing `prefers-reduced-motion` override.
+
+## Technical Improvements
+
+- New `components/donna-ai/` module: `types.ts` (data model), `data.ts` (static catalog/content),
+  `engine.ts` (pure scoring/reducer logic, framework-independent), and presentational components
+  under `IntakeWizard/` and `ResultPanel/`.
+- Extracted a shared `useRovingTabs` hook (`apps/web/src/hooks/use-roving-tabs.ts`) found during
+  final quality review: the accessible-tabs keyboard navigation had been duplicated almost
+  identically between the homepage's Donna AI demo and the new dashboard. Both now share one
+  implementation.
+- Verified clean, from a cold `.next` state: `npx tsc --noEmit`, `npm run lint`, and
+  `npm run build` all pass with no errors or warnings.
+
+## Known Limitations
+
+- Architecture and TCO analysis tabs remain illustrative/generic — not yet generated per
+  recommended platform (tracked in `docs/donna-ai-alpha.md`).
+- The decision engine's platform catalog is small (4 platforms, 8 traits) and hand-curated; it
+  is explicitly a mock/demo engine, not a real analyst. Several valid inputs (Oracle, "Planning,"
+  "Compliance," no-preference constraints) currently contribute no scoring signal.
+- Company, Landscape, and Constraints require every field answered before advancing (not just
+  one) — a deliberate choice, documented in `docs/donna-ai-alpha.md` → Design decisions.
+- Export report and Save decision remain session-local — nothing is transmitted or stored.
+- Single-select chip fields use `aria-pressed` rather than full `radiogroup` ARIA semantics.
+
+## Next Sprint Preview
+
+- See `docs/donna-ai-alpha.md` → Future AI integration points.
+
+---
+
 # ClouDonna — Public Alpha 0.2
 
 **Date:** August 2026
