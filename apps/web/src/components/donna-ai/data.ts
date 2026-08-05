@@ -8,12 +8,10 @@ import type {
   DataWarehouseSystem,
   EmployeeBand,
   ErpSystem,
-  FitCategory,
   GoalTag,
   Industry,
   InternalSkills,
   ItOrgSizeBand,
-  PlatformProfile,
   PreferredCloud,
   PreferredVendor,
   RevenueBand,
@@ -159,45 +157,6 @@ export const INTERNAL_SKILLS_OPTIONS: Array<{ value: InternalSkills; label: stri
   { value: "limited", label: "Limited" },
 ];
 
-export const FIT_CATEGORY_TRAITS: Record<FitCategory, Trait[]> = {
-  architecture: ["sap-native", "governed-data", "modern-architecture", "multi-cloud"],
-  business: ["enterprise-scale", "cost-efficient"],
-  technology: ["ai-ready", "azure-aligned"],
-};
-
-export const FIT_CATEGORY_LABELS: Record<FitCategory, string> = {
-  architecture: "Architecture fit",
-  business: "Business fit",
-  technology: "Technology fit",
-};
-
-export const PLATFORM_CATALOG: PlatformProfile[] = [
-  {
-    id: "sap-bdc",
-    name: "SAP Business Data Cloud",
-    tagline: "Governed data foundation for SAP-centric enterprises",
-    traits: ["sap-native", "governed-data", "modern-architecture", "enterprise-scale", "ai-ready"],
-  },
-  {
-    id: "ms-fabric",
-    name: "Microsoft Fabric",
-    tagline: "Unified analytics platform for Azure-aligned organizations",
-    traits: ["azure-aligned", "modern-architecture", "enterprise-scale", "ai-ready"],
-  },
-  {
-    id: "snowflake",
-    name: "Snowflake",
-    tagline: "Cloud-agnostic data platform with strong cost efficiency",
-    traits: ["multi-cloud", "modern-architecture", "cost-efficient", "ai-ready"],
-  },
-  {
-    id: "databricks",
-    name: "Databricks",
-    tagline: "Engineering-first lakehouse for advanced AI workloads",
-    traits: ["multi-cloud", "modern-architecture", "ai-ready"],
-  },
-];
-
 export const TRAIT_LABELS: Record<Trait, string> = {
   "sap-native": "SAP-native",
   "governed-data": "Governed data",
@@ -207,6 +166,13 @@ export const TRAIT_LABELS: Record<Trait, string> = {
   "cost-efficient": "Cost efficient",
   "ai-ready": "AI-ready",
   "azure-aligned": "Azure-aligned",
+  "aws-aligned": "AWS-aligned",
+  "gcp-aligned": "Google Cloud-aligned",
+  "hyperscale-infra": "Hyperscale infrastructure",
+  "operational-workload": "Operational workload fit",
+  "high-touch-enterprise": "High-touch enterprise delivery",
+  "legacy-integration": "Legacy system integration",
+  "vendor-neutral": "Vendor-neutral / portable",
 };
 
 export const TRAIT_REASON_TEXT: Record<Trait, string> = {
@@ -218,6 +184,13 @@ export const TRAIT_REASON_TEXT: Record<Trait, string> = {
   "cost-efficient": "Favorable cost profile against your stated budget.",
   "ai-ready": "Built-in path to enable business AI on top of your data.",
   "azure-aligned": "Deep integration with your existing Microsoft Azure investment.",
+  "aws-aligned": "Deep integration with your existing AWS investment.",
+  "gcp-aligned": "Deep integration with your existing Google Cloud investment.",
+  "hyperscale-infra": "Gives you infrastructure-level control rather than a packaged product.",
+  "operational-workload": "Well suited to application/operational data rather than analytics.",
+  "high-touch-enterprise": "Matches a complex, high-stakes operational decision-making need.",
+  "legacy-integration": "Fits an existing legacy or mainframe-adjacent estate.",
+  "vendor-neutral": "Keeps your data more portable, reducing single-vendor dependency.",
 };
 
 export const GOAL_OPPORTUNITY_TEXT: Record<GoalTag, string> = {

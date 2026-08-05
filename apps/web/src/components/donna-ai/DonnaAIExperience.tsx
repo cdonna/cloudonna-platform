@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowRight, Bot, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnalysingState } from "./AnalysingState";
-import { buildDecisionOutput } from "./engine";
+import { decisionEngine } from "./decision-engine";
 import { IntakeWizard } from "./IntakeWizard/IntakeWizard";
 import { WizardProgress } from "./IntakeWizard/WizardProgress";
 import { ResultPanel } from "./ResultPanel/ResultPanel";
@@ -24,8 +24,10 @@ export function DonnaAIExperience() {
 
   function handleAnalysisComplete() {
     if (!wizardState) return;
-    setOutput(buildDecisionOutput(wizardState));
-    setPhase("results");
+    Promise.resolve(decisionEngine.run(wizardState)).then((result) => {
+      setOutput(result);
+      setPhase("results");
+    });
   }
 
   function handleStartNew() {

@@ -1,3 +1,70 @@
+# ClouDonna — Public Alpha 0.4
+
+**Date:** August 2026
+**Branch:** `worktree-sprint-3`
+**Scope:** `apps/web/src/components/donna-ai/` — vendor intelligence, scoring, comparison, and seam modules
+
+## Summary
+
+Donna Intelligence Foundation: the deterministic engine and 4-platform catalog from the previous
+sprint are replaced with a structured 10-platform vendor intelligence model and a transparent,
+10-dimension Donna Score v2. Every recommendation now carries explicit positive evidence and
+concerns per dimension, a real comparison matrix, and a current-situation/decision-drivers
+recap. Two architectural seams (a `RecommendationProvider` interface for future AI integration,
+and persistence-ready interfaces for saved assessments) are defined but intentionally
+unimplemented. No LLM, no backend, no database, no authentication, no external API, no live
+market data — this remains fully runnable without credentials.
+
+## New Features
+
+- **10-platform vendor intelligence catalog** — SAP Business Data Cloud, Snowflake, Databricks,
+  Microsoft Fabric, Oracle, AWS, Google Cloud, Palantir, IBM, MongoDB. Each carries structured
+  fields (best/poor-fit scenarios, strengths, limitations, governance/AI/security maturity,
+  cost tier, lock-in risk, supported industries/sizes, and more) plus an explicit
+  `sourceNotes` field stating this is curated mock data, not live market data or vendor
+  certification.
+- **Donna Score v2** — ten independently-scored, independently-weighted dimensions
+  (Architecture, Business, Technology, Governance, AI Readiness, Security, Ecosystem, Cost,
+  Time-to-Value, Strategic Fit) replace the previous single formula. Weights are centralized in
+  one file and documented.
+- **Comparison matrix** — a reusable component comparing up to 4 platforms across 13 criteria,
+  using real computed scores from the same engine that produced the Donna Score. Flags
+  cross-category comparisons (e.g. an operational database vs. a data platform) rather than
+  implying false equivalence.
+- **Executive Report v2** — the result dashboard gained Current Situation, Decision Drivers, an
+  explicit Alternative Recommendation badge, structured positive evidence and concerns per
+  dimension, and a persistent illustrative-alpha-output disclosure.
+- **Future AI integration seam** — `RecommendationProvider`/`DecisionEngine` interfaces; the
+  deterministic engine is wrapped as the only current provider. Documented, not built: no API
+  keys, network calls, environment variables, or LLM package were added.
+- **Future persistence seam** — `SavedAssessment`/`Project`/`Workspace` interfaces defined for
+  future use. No database, no Supabase, no auth — genuinely unimplemented and unused today.
+
+## Technical Improvements
+
+- Confidence Score now factors in signal quality, not just input completeness — a fully
+  completed assessment that still produces a weak-signal recommendation correctly reports lower
+  confidence.
+- Self-review caught and fixed three real issues before this release: the AI-integration seam
+  was built but never actually called (fixed by wiring `DonnaAIExperience` through
+  `decisionEngine.run()`); an `as never` type cast in the comparison matrix was replaced with
+  correct typing; a duplicated `CATEGORY_LABELS` constant was consolidated into one module.
+- Verified clean at every phase checkpoint: `npx tsc --noEmit`, `npm run lint`, `npm run build`.
+
+## Known Limitations
+
+- 10 platforms and 15 traits remain intentionally small for an explainable mock engine — several
+  valid inputs (Oracle, "Planning" goal, neutral constraints) still produce zero Architecture Fit
+  signal, handled honestly rather than silently.
+- Architecture and TCO tabs remain generic/illustrative, clearly labeled as such.
+- No persistence, no AI call — both seams are interfaces only.
+
+## Next Sprint Preview
+
+- See `docs/sprint-3.md` → Next sprint candidates.
+
+---
+
 # ClouDonna — Public Alpha 0.3
 
 **Date:** August 2026
