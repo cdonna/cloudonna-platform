@@ -2,6 +2,16 @@
 
 **Module:** `apps/web/src/components/donna-ai/decision-engine.ts`
 
+> **Superseded by Sprint 5.** The illustrative `OpenAIRecommendationProvider` sketch below predates
+> the actual intelligence pipeline, which is no longer just a plan — see `docs/intelligence/` for
+> what was really built and shipped: a provider-independent `IntelligenceProvider` interface
+> (narrative-only, never able to touch a score), a `RecommendationOrchestrator`, a fully-tested
+> deterministic fallback, and a real, working `createOpenAIIntelligenceProvider` wired into an
+> API route and the "AI Insights" result tab. This document is kept for history only; every
+> question it raises has a concrete answer now in `docs/intelligence/provider-boundaries.md`
+> (how a real provider plugs in), `prompt-architecture.md` (what it's actually told), and
+> `security-and-privacy.md` (what's enforced vs. still out of scope).
+
 ## What ships this sprint
 
 Exactly one thing: an interface. No API keys, no network calls, no environment variables, no
