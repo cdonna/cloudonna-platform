@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { deriveDemoRecommendation, type DemoDecisionResult } from "./demo-decision-engine";
 
 const exampleQuestions = [
   "We use SAP S/4HANA, BW 7.5 and Azure. Which modern data platform fits us?",
@@ -48,72 +49,42 @@ const resultTabs: Array<{ value: ResultView; label: string }> = [
   { value: "tco", label: "TCO analysis" },
 ];
 
-type Recommendation = {
-  product: string;
-  score: number;
-  summary: string;
-  reasons: string[];
-  risks: string[];
-  alternatives: Array<{
-    name: string;
-    score: number;
-  }>;
-};
+function buildReportText(question: string, recommendation: DemoDecisionResult) {
+  const { reasoningChain, primary, alternatives, rationale, risks, confidenceExplanation } = recommendation;
 
-const demoRecommendation: Recommendation = {
-  product: "SAP Business Data Cloud",
-  score: 94,
-  summary:
-    "The strongest fit for an SAP-centric enterprise seeking governed data products, BW modernization and integrated analytics.",
-  reasons: [
-    "Native alignment with SAP S/4HANA, BW and Datasphere",
-    "Lower transformation complexity for the existing SAP landscape",
-    "Strong governance and semantic business-data foundation",
-    "Integrated path toward analytics and enterprise AI scenarios",
-  ],
-  risks: [
-    "Commercial model and capacity planning require validation",
-    "Non-SAP workloads may need complementary platform services",
-  ],
-  alternatives: [
-    { name: "Microsoft Fabric", score: 86 },
-    { name: "Snowflake", score: 83 },
-    { name: "Databricks", score: 81 },
-  ],
-};
-
-function buildReportText(question: string, recommendation: Recommendation) {
   const lines = [
     "ClouDonna — Donna AI Recommendation (Public Alpha preview)",
     "",
     "Requirement",
     `"${question}"`,
     "",
-    `Recommendation: ${recommendation.product} — ${recommendation.score}% confidence`,
-    recommendation.summary,
+    "Reasoning chain",
+    `Goal: ${reasoningChain.goal}`,
+    `Capability: ${reasoningChain.capability}`,
+    `Solution pattern: ${reasoningChain.solutionPattern}`,
+    `Technology pattern: ${reasoningChain.technologyPattern}`,
     "",
-    "Why this platform fits",
-    ...recommendation.reasons.map((reason) => `- ${reason}`),
+    `Recommendation: ${primary.name} — ${primary.score}% illustrative fit`,
+    rationale,
+    confidenceExplanation,
     "",
     "Risks to validate",
-    ...recommendation.risks.map((risk) => `- ${risk}`),
+    ...risks.map((risk) => `- ${risk}`),
     "",
     "Alternatives considered",
-    ...recommendation.alternatives.map(
-      (alternative) => `- ${alternative.name} — ${alternative.score}%`,
-    ),
+    ...alternatives.map((alternative) => `- ${alternative.name} — ${alternative.score}%`),
     "",
-    "This is illustrative demo output from the ClouDonna Public Alpha and not a certified recommendation.",
+    "This is illustrative demo output from the ClouDonna Public Alpha, derived deterministically from your input using curated mock data — not live analysis, not real AI, and not a certified recommendation.",
   ];
 
   return lines.join("\n");
 }
 
-function downloadReport(question: string, recommendation: Recommendation) {
+function downloadReport(question: string, recommendation: DemoDecisionResult) {
   const text = buildReportText(question, recommendation);
   const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
-  const slug = recommendation.product
+  const slug = recommendation.primary.name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
@@ -142,7 +113,10 @@ export default function DonnaLive() {
   const [liveMessage, setLiveMessage] = useState("");
   const { registerTab, handleTabKeyDown } = useRovingTabs(resultTabs.length);
 
-  const recommendation = useMemo(() => demoRecommendation, []);
+  const recommendation = useMemo(
+    () => deriveDemoRecommendation(submittedQuestion),
+    [submittedQuestion],
+  );
 
   useEffect(() => {
     if (status !== "analysing") {
@@ -169,7 +143,7 @@ export default function DonnaLive() {
       return;
     }
 
-    if (typedSummary.length >= recommendation.summary.length) {
+    if (typedSummary.length >= recommendation.rationale.length) {
       const completionTimer = window.setTimeout(() => {
         setStatus("complete");
       }, 350);
@@ -179,13 +153,13 @@ export default function DonnaLive() {
 
     const timer = window.setTimeout(() => {
       setTypedSummary(
-        recommendation.summary.slice(0, typedSummary.length + 2),
+        recommendation.rationale.slice(0, typedSummary.length + 2),
       );
     }, 18);
 
     return () => window.clearTimeout(timer);
   }, [
-    recommendation.summary,
+    recommendation.rationale,
     status,
     typedSummary,
   ]);
@@ -477,11 +451,11 @@ export default function DonnaLive() {
                   )}
 
                   {activeView === "architecture" && (
-                    <ArchitectureView />
+                    <ArchitectureView recommendation={recommendation} />
                   )}
 
                   {activeView === "tco" && (
-                    <TcoView />
+                    <TcoView recommendation={recommendation} />
                   )}
                 </div>
 
@@ -683,25 +657,72 @@ function AnalysingState({
   );
 }
 
+function ReasoningChain({ chain }: { chain: DemoDecisionResult["reasoningChain"] }) {
+  const steps = [
+    { label: "Goal", value: chain.goal },
+    { label: "Capability", value: chain.capability },
+    { label: "Solution pattern", value: chain.solutionPattern },
+    { label: "Technology pattern", value: chain.technologyPattern },
+  ];
+
+  return (
+    <ol
+      aria-label="Donna's reasoning chain from goal to vendor recommendation"
+      className="flex flex-wrap items-stretch gap-2"
+    >
+      {steps.map((step, index) => (
+        <li key={step.label} className="flex items-stretch gap-2">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">
+              {index + 1}. {step.label}
+            </div>
+            <div className="mt-0.5 max-w-[14rem] text-xs font-medium text-slate-700">
+              {step.value}
+            </div>
+          </div>
+          <ChevronRight size={16} aria-hidden="true" className="mt-4 shrink-0 text-slate-300" />
+        </li>
+      ))}
+      <li className="flex items-stretch">
+        <div className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-violet-500">
+            5. Vendor recommendation
+          </div>
+          <div className="mt-0.5 text-xs font-semibold text-violet-800">Illustrative shortlist below</div>
+        </div>
+      </li>
+    </ol>
+  );
+}
+
 function RecommendationView({
   recommendation,
   typedSummary,
   complete,
 }: {
-  recommendation: Recommendation;
+  recommendation: DemoDecisionResult;
   typedSummary: string;
   complete: boolean;
 }) {
   return (
     <div>
+      <div className="mb-6 overflow-x-auto">
+        <ReasoningChain chain={recommendation.reasoningChain} />
+      </div>
+
       <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
-            Donna recommendation
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
+              Donna recommendation
+            </span>
+            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+              Illustrative example
+            </span>
           </div>
 
           <h3 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
-            {recommendation.product}
+            {recommendation.primary.name}
           </h3>
 
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
@@ -714,76 +735,70 @@ function RecommendationView({
 
         <div className="rounded-2xl bg-emerald-50 px-5 py-4 text-center">
           <div className="text-3xl font-semibold text-emerald-700">
-            {recommendation.score}%
+            {recommendation.primary.score}%
           </div>
           <div className="mt-1 text-xs font-medium text-emerald-600">
-            Confidence
+            Illustrative fit
           </div>
         </div>
       </div>
 
       {complete && (
-        <div className="mt-8 grid gap-5 lg:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 p-5">
-            <h4 className="font-semibold text-slate-950">
-              Why this platform fits
-            </h4>
-
-            <div className="mt-5 space-y-4">
-              {recommendation.reasons.map((reason) => (
-                <div
-                  key={reason}
-                  className="flex items-start gap-3 text-sm leading-6 text-slate-600"
-                >
-                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                    <Check size={14} />
-                  </span>
-                  {reason}
-                </div>
-              ))}
-            </div>
+        <>
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
+            {recommendation.confidenceExplanation}
           </div>
 
-          <div className="rounded-2xl border border-slate-200 p-5">
-            <h4 className="font-semibold text-slate-950">
-              Risks to validate
-            </h4>
+          <div className="mt-6 grid gap-5 lg:grid-cols-2">
+            <div className="rounded-2xl border border-slate-200 p-5">
+              <h4 className="font-semibold text-slate-950">
+                Why this fits the pattern above
+              </h4>
 
-            <div className="mt-5 space-y-4">
-              {recommendation.risks.map((risk) => (
-                <div
-                  key={risk}
-                  className="flex items-start gap-3 text-sm leading-6 text-slate-600"
-                >
-                  <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-amber-400" />
-                  {risk}
-                </div>
-              ))}
+              <p className="mt-4 text-sm leading-6 text-slate-600">{recommendation.rationale}</p>
             </div>
 
-            <div className="mt-6 border-t border-slate-200 pt-5">
-              <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-                Alternatives
-              </div>
+            <div className="rounded-2xl border border-slate-200 p-5">
+              <h4 className="font-semibold text-slate-950">
+                Risks to validate
+              </h4>
 
-              <div className="mt-3 space-y-3">
-                {recommendation.alternatives.map((alternative) => (
+              <div className="mt-5 space-y-4">
+                {recommendation.risks.map((risk) => (
                   <div
-                    key={alternative.name}
-                    className="flex items-center justify-between"
+                    key={risk}
+                    className="flex items-start gap-3 text-sm leading-6 text-slate-600"
                   >
-                    <span className="text-sm text-slate-600">
-                      {alternative.name}
-                    </span>
-                    <span className="text-sm font-semibold text-slate-950">
-                      {alternative.score}%
-                    </span>
+                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-amber-400" />
+                    {risk}
                   </div>
                 ))}
               </div>
+
+              <div className="mt-6 border-t border-slate-200 pt-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                  Alternatives
+                </div>
+
+                <div className="mt-3 space-y-3">
+                  {recommendation.alternatives.map((alternative) => (
+                    <div
+                      key={alternative.name}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="text-sm text-slate-600">
+                        {alternative.name}
+                      </span>
+                      <span className="text-sm font-semibold text-slate-950">
+                        {alternative.score}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
@@ -792,12 +807,12 @@ function RecommendationView({
 function AlternativesComparison({
   recommendation,
 }: {
-  recommendation: Recommendation;
+  recommendation: DemoDecisionResult;
 }) {
   const entries = [
     {
-      name: recommendation.product,
-      score: recommendation.score,
+      name: recommendation.primary.name,
+      score: recommendation.primary.score,
       primary: true,
     },
     ...recommendation.alternatives.map((alternative) => ({
@@ -852,7 +867,9 @@ function AlternativesComparison({
   );
 }
 
-function ArchitectureView() {
+function ArchitectureView({ recommendation }: { recommendation: DemoDecisionResult }) {
+  const { reasoningChain, primary } = recommendation;
+
   return (
     <div>
       <div className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
@@ -860,14 +877,14 @@ function ArchitectureView() {
       </div>
 
       <h3 className="mt-2 text-2xl font-semibold text-slate-950">
-        Governed enterprise data and AI foundation
+        {reasoningChain.solutionPattern}
       </h3>
 
       <div className="mt-8 overflow-x-auto rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-50 to-indigo-50/60 p-8">
         <div className="mx-auto min-w-[40rem] max-w-3xl">
           <ArchitectureNode
             icon={Database}
-            label="SAP S/4HANA & BW"
+            label="Existing systems"
             subtitle="Systems of record"
           />
 
@@ -876,19 +893,19 @@ function ArchitectureView() {
           <div className="grid grid-cols-3 gap-4">
             <ArchitectureNode
               icon={Network}
-              label="Integration Layer"
+              label="Integration layer"
               subtitle="APIs and data products"
             />
             <ArchitectureNode
               icon={Cloud}
-              label="SAP BDC"
-              subtitle="Governed data foundation"
+              label={primary.name}
+              subtitle={reasoningChain.technologyPattern}
               primary
             />
             <ArchitectureNode
               icon={ShieldCheck}
-              label="Governance"
-              subtitle="Security and compliance"
+              label={reasoningChain.capability}
+              subtitle="Capability this fulfils"
             />
           </div>
 
@@ -898,7 +915,7 @@ function ArchitectureView() {
             <ArchitectureNode
               icon={BarChart3}
               label="Analytics"
-              subtitle="SAC and Power BI"
+              subtitle="Reporting and dashboards"
             />
             <ArchitectureNode
               icon={Bot}
@@ -908,8 +925,8 @@ function ArchitectureView() {
             />
             <ArchitectureNode
               icon={Layers3}
-              label="Data Products"
-              subtitle="Reusable business context"
+              label={reasoningChain.goal}
+              subtitle="Business goal this serves"
             />
           </div>
         </div>
@@ -963,12 +980,21 @@ function ArchitectureConnection() {
   );
 }
 
-function TcoView() {
+function TcoView({ recommendation }: { recommendation: DemoDecisionResult }) {
+  const { score } = recommendation.primary;
+
+  // Deterministic, not fabricated-precise: derived from the same score
+  // shown on the Recommendation tab so the two tabs never contradict each
+  // other, scaled within a clearly illustrative CHF 1.6M–2.5M band.
+  const totalCost = Math.round((2_500_000 - (score - 55) * 15_000) / 10_000) * 10_000;
+  const belowReference = Math.max(0, Math.min(30, score - 55));
+  const confidenceLabel = score >= 80 ? "Higher confidence" : score >= 65 ? "Medium confidence" : "Lower confidence";
+
   const costs = [
-    ["Subscription", 820000, 39],
-    ["Implementation", 540000, 26],
-    ["Infrastructure", 360000, 17],
-    ["Operations", 380000, 18],
+    ["Subscription", Math.round((totalCost * 0.39) / 1000) * 1000, 39],
+    ["Implementation", Math.round((totalCost * 0.26) / 1000) * 1000, 26],
+    ["Infrastructure", Math.round((totalCost * 0.17) / 1000) * 1000, 17],
+    ["Operations", Math.round((totalCost * 0.18) / 1000) * 1000, 18],
   ] as const;
 
   return (
@@ -980,15 +1006,15 @@ function TcoView() {
       <div className="mt-3 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div>
           <div className="text-4xl font-semibold text-slate-950">
-            CHF 2.1M
+            CHF {(totalCost / 1_000_000).toFixed(1)}M
           </div>
           <div className="mt-2 text-sm text-emerald-600">
-            Estimated 18% below the reference scenario
+            Illustrative estimate, {belowReference}% below the reference scenario
           </div>
         </div>
 
         <div className="rounded-xl bg-violet-50 px-4 py-3 text-sm font-medium text-violet-700">
-          Medium confidence
+          {confidenceLabel}
         </div>
       </div>
 

@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 export const metadata: Metadata = {
   title: "Terms of Service — ClouDonna",
   description: "Terms governing use of ClouDonna during the Public Alpha program.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

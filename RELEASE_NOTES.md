@@ -1,3 +1,52 @@
+# ClouDonna — Public Alpha 0.4
+
+**Date:** August 2026
+**Branch:** `worktree-web-presence`
+**Scope:** `apps/web` — technical SEO foundation, homepage repositioning, four new journey
+pages, an audience-aware Early Access route
+
+## Summary
+
+This release repositions ClouDonna's public site around the ClouDonna Decision Framework
+(Business Goal → Capabilities → Solution Approaches → Technology → Vendor) and establishes the
+technical SEO foundation that was previously entirely missing (no `robots.txt`, `sitemap.xml`,
+canonical URLs, Open Graph, or structured data existed anywhere on the site). See
+`docs/web-presence-sprint.md` for the full audit findings and the phased implementation plan
+this release follows.
+
+## New Features
+
+- **Technical SEO foundation** — `app/robots.ts`, `app/sitemap.ts`, a dynamic
+  `app/opengraph-image.tsx`, sitewide `metadataBase` and Organization JSON-LD in `layout.tsx`,
+  and a self-referential `alternates.canonical` on every route, new and existing.
+- **Goal-first homepage** — Hero rewritten around a business goal, not a product category; the
+  mock dashboard's fabricated stats and named-vendor "best match" (Snowflake, 91%, fake TCO
+  figures) replaced with an explicitly labeled "Illustrative example" using an anonymized
+  platform and qualitative maturity bands. Added a `NarrativeSequence` section (the eleven-step
+  Discovery path) and a `TrustStrip` linking to the new independence statement.
+- **Four new journey pages** — `/discovery` (the full Discovery path, step by step),
+  `/independence` (the public neutrality statement and rules), `/for-vendors` and
+  `/for-partners` (audience-specific journeys, each ending in an audience-aware Early Access
+  CTA).
+- **Audience-aware Early Access** — `/early-access` is now a dedicated route that reads a
+  `?type=` parameter (customer/vendor/partner/community) and adapts its headline, copy, and
+  preselected "I'm interested as a" field accordingly. The interest field itself was changed
+  from a product-name dropdown to an audience-role dropdown.
+- **Honesty pass on the existing `DonnaLive` demo** — added a visible "Illustrative example"
+  label matching the disclosure standard already used on `/donna-ai`; the demo's underlying
+  fixed-output logic (always recommending the same platform regardless of input) was
+  intentionally left unchanged as a larger, separate piece of work.
+
+## Explicitly Out of Scope This Release
+
+- `/solutions/[goal]`, `/capabilities`, `/compare`, `/vendors`, `/partners`, `/pricing`,
+  `/research`, `/about` — deferred; building them now would mean thin pages with no real content
+  behind them. A content model for the dynamic pages is documented in
+  `docs/web-presence-sprint.md`.
+- Rebuilding `DonnaLive`'s demo logic to actually reason through the Decision Framework instead
+  of returning a fixed result — flagged as a candidate for its own future sprint.
+- No OpenAI integration, no persistence/auth, no analytics, no DNS/Vercel changes.
+
 # ClouDonna — Public Alpha 0.3
 
 **Date:** August 2026
