@@ -5,9 +5,11 @@ import { Check, Download, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRovingTabs } from "@/hooks/use-roving-tabs";
 import { downloadReport } from "../engine";
-import type { DecisionOutput, WizardState } from "../types";
+import type { DecisionReport } from "../intelligence/types";
+import type { WizardState } from "../types";
 import { AlternativesTab } from "./AlternativesTab";
 import { ArchitectureTab } from "./ArchitectureTab";
+import { IntelligenceTab } from "./IntelligenceTab";
 import { OverviewTab } from "./OverviewTab";
 import { RisksOpportunitiesTab } from "./RisksOpportunitiesTab";
 import { RoadmapTab } from "./RoadmapTab";
@@ -15,7 +17,8 @@ import { TcoTab } from "./TcoTab";
 
 const TABS = [
   { value: "overview", label: "Overview" },
-  { value: "alternatives", label: "Alternatives" },
+  { value: "intelligence", label: "AI Insights" },
+  { value: "alternatives", label: "Comparison" },
   { value: "risks", label: "Risks & Opportunities" },
   { value: "roadmap", label: "Roadmap" },
   { value: "architecture", label: "Architecture" },
@@ -26,13 +29,14 @@ type TabValue = (typeof TABS)[number]["value"];
 
 export function ResultPanel({
   state,
-  output,
+  report,
   onStartNew,
 }: {
   state: WizardState;
-  output: DecisionOutput;
+  report: DecisionReport;
   onStartNew: () => void;
 }) {
+  const output = report.output;
   const [activeTab, setActiveTab] = useState<TabValue>("overview");
   const [saved, setSaved] = useState(false);
   const [exported, setExported] = useState(false);
@@ -72,9 +76,16 @@ export function ResultPanel({
         <h2 className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-4xl">
           Your recommendation is ready
         </h2>
+        <p className="mx-auto mt-4 max-w-xl text-xs leading-5 text-slate-400">
+          Illustrative alpha output based on curated mock data. No live market data was used
+          {report.fallback.status === "ok"
+            ? ", and the AI Insights tab below is an AI-enriched narrative that did not affect any score"
+            : ", no AI model was called for this result"}
+          , and this assessment is not saved or persisted anywhere.
+        </p>
       </div>
 
-      <div className="mt-10 overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 shadow-[0_40px_110px_-45px_rgba(79,70,229,0.4)] backdrop-blur-2xl">
+      <div className="mt-8 overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 shadow-[0_40px_110px_-45px_rgba(79,70,229,0.4)] backdrop-blur-2xl">
         <div className="border-b border-slate-200 px-4 py-4 sm:px-8">
           <div role="tablist" aria-label="Donna AI result view" className="flex flex-wrap gap-2">
             {TABS.map((tab, index) => {
@@ -99,6 +110,9 @@ export function ResultPanel({
                   }`}
                 >
                   {tab.label}
+                  {tab.value === "intelligence" && report.fallback.status !== "ok" && (
+                    <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-slate-300" aria-hidden="true" />
+                  )}
                 </button>
               );
             })}
@@ -114,6 +128,7 @@ export function ResultPanel({
           className="animate-in fade-in duration-200 p-6 sm:p-8"
         >
           {activeTab === "overview" && <OverviewTab output={output} />}
+          {activeTab === "intelligence" && <IntelligenceTab report={report} />}
           {activeTab === "alternatives" && <AlternativesTab output={output} />}
           {activeTab === "risks" && <RisksOpportunitiesTab output={output} />}
           {activeTab === "roadmap" && <RoadmapTab output={output} />}

@@ -77,42 +77,28 @@ the deliberate choice, rather than an oversight to fix later.
 
 ## Scoring logic
 
-### Trait activation
+**As of Sprint 3, scoring is Donna Score v2 — a 10-dimension, centrally-weighted model over a
+10-platform vendor intelligence catalog.** Full detail lives in two dedicated docs rather than
+duplicated here:
 
-Selections are mapped to a small set of scoring traits: `sap-native`, `governed-data`,
-`modern-architecture`, `multi-cloud`, `enterprise-scale`, `cost-efficient`, `ai-ready`,
-`azure-aligned`. Not every valid selection activates a trait — e.g. ERP = Oracle, Goal =
-Planning, and Preferred Vendor = No preference are all legitimate answers that don't map to
-anything in the current catalog. This means a user can complete the assessment with zero
-activated traits; the engine handles that case honestly (see "Low-signal input" below) rather
-than fabricating a confident-sounding but meaningless answer.
+- `docs/vendor-intelligence-model.md` — the platform catalog and its field model
+- `docs/donna-score-v2.md` — all ten dimensions, the weighting formula, and confidence scoring
 
-### Donna Score
-
-```
-score(platform) = 34 + 15 × (matched traits)   — capped at 98
-```
-
-The four-platform catalog (SAP Business Data Cloud, Microsoft Fabric, Snowflake, Databricks) is
-ranked by this score. The top result is the **Recommendation**; the next-highest is the
-**Alternative Recommendation** (surfaced explicitly in the Overview tab); the rest appear as
-further alternatives in the Alternatives tab.
+The short version: `donnaScore` is a weighted sum of ten independently-scored dimensions
+(Architecture, Business, Technology, Governance, AI Readiness, Security, Ecosystem, Cost,
+Time-to-Value, Strategic Fit), each returning its own positive/negative evidence. The
+Recommendation is the top-ranked platform; the next-highest is the **Alternative
+Recommendation**, surfaced explicitly in the Overview tab.
 
 ### Confidence Score
 
 ```
 confidence = 55 + 6 × (steps with ≥1 valid answer, max 4) + 5 × (free-text notes written, max 4)
+             − 10 if the top result's Architecture Fit found zero positive evidence
 ```
 
-Capped at 96. This is a distinct signal from Donna Score — it measures how much the user told
-Donna, not how good the resulting match is, and is deliberately capped below 100.
-
-### Score Breakdown (Business / Technology / Architecture fit)
-
-Each trait belongs to exactly one of three categories. A sub-score is
-`matched-in-category ÷ category's total trait count`, using a fixed catalog-wide denominator so
-scores are comparable across platforms rather than inflated by a platform having few traits in
-a category.
+Capped at 96, floored at 30. Distinct from Donna Score — it measures how much the user told
+Donna and how strong the resulting signal was, not how good the match is in absolute terms.
 
 ### Risks, Opportunities, Assumptions, Workshops, Next Steps
 
@@ -140,37 +126,47 @@ that doesn't exist. Found and fixed during self-review by tracing a realistic in
 ## Component architecture
 
 ```
-Data layer      data.ts     — platform catalog, all chip option lists, copy libraries, sample profile
-Logic layer     engine.ts   — wizardReducer, scoring, DecisionOutput generation (pure, no React)
-Presentation    IntakeWizard/, ResultPanel/, DonnaAIExperience.tsx
+Data layer      data.ts, vendor-intelligence/     — chip options, copy libraries, 10-platform catalog
+Logic layer     engine.ts, scoring/, decision-engine.ts — reducer, Donna Score v2, provider seam (pure, no React)
+Presentation    IntakeWizard/, ResultPanel/, comparison/, DonnaAIExperience.tsx
 Shared hook     hooks/use-roving-tabs.ts — Arrow/Home/End keyboard navigation for accessible
                 tablists, shared between this dashboard and the homepage's Donna AI demo
+Future seams    persistence/types.ts — interfaces only, unimplemented and unused
 ```
 
 `DonnaAIExperience` owns a phase state machine (`intro → wizard → analysing → results`) via
 `useState`; the wizard's own multi-field, multi-step data lives in a separate `useReducer`
 inside `IntakeWizard`, only handed to the orchestrator once via `onComplete` when Review is
-confirmed.
+confirmed. It calls `decisionEngine.run(state)` rather than the scoring engine directly — see
+`docs/future-ai-integration.md`.
 
 ```
 components/donna-ai/
-  DonnaAIExperience.tsx    orchestrator
-  types.ts                  WizardState, DecisionOutput, PlatformProfile, and every input union type
-  data.ts                    option lists, platform catalog, copy libraries, sample profile
-  engine.ts                   wizardReducer, scoring, DecisionOutput generation, report export
-  shared.tsx                  Chip, ScoreRing, SectionLabel
-  AnalysingState.tsx           analysis sequence
+  DonnaAIExperience.tsx    orchestrator (calls decisionEngine.run, not the engine directly)
+  decision-engine.ts         RecommendationProvider/DecisionEngine seam
+  types.ts                    WizardState, DecisionOutput, and every input union type
+  data.ts                      chip option lists, copy libraries, sample profile
+  engine.ts                     wizardReducer, DecisionOutput assembly, report export
+  shared.tsx                     Chip, ScoreRing, SectionLabel
+  AnalysingState.tsx              analysis sequence
+  vendor-intelligence/
+    types.ts, catalog.ts            10-platform catalog — see docs/vendor-intelligence-model.md
+  scoring/
+    types.ts, weights.ts, engine.ts   Donna Score v2 — see docs/donna-score-v2.md
+  persistence/
+    types.ts                          SavedAssessment/Project/Workspace — unused, interfaces only
   IntakeWizard/
     IntakeWizard.tsx             shell — reducer, step transitions, focus management
     WizardProgress.tsx            progress bar + step list + aria-live announcement
     ChipStep.tsx                   generic step — renders N chip fields + one note field
     ReviewStep.tsx                  recap with per-step Edit links
+  comparison/
+    ComparisonMatrix.tsx            up to 4 platforms, real computed dimension scores
   ResultPanel/
     ResultPanel.tsx                6-tab accessible shell (uses useRovingTabs), owns Save/Export
-    OverviewTab.tsx                 Executive Summary, Donna Score, Confidence, Score Breakdown,
-                                     Why this recommendation, comparison (incl. Alternative
-                                     Recommendation badge)
-    AlternativesTab.tsx              full per-platform cards with matched-trait chips
+    OverviewTab.tsx                 Executive Summary, Donna/Confidence Score, Score Breakdown,
+                                     Current Situation, Decision Drivers, evidence + concerns
+    AlternativesTab.tsx              ComparisonMatrix + full per-platform detail cards
     RisksOpportunitiesTab.tsx         risks / opportunities / assumptions
     RoadmapTab.tsx                     Now/Next/Later next steps + Suggested Workshops
     ArchitectureTab.tsx                 illustrative, generic (not yet per-platform)
@@ -184,14 +180,14 @@ implementation rather than three near-duplicates.
 
 ## Future AI integration points
 
-- Swap `engine.ts`'s deterministic scoring for a real backend/LLM-backed service behind the
-  same `DecisionOutput` shape — the entire presentation layer (`ResultPanel/*`) only depends on
-  that type, not on how it's produced, so this is a drop-in replacement at the orchestrator
-  level.
+See `docs/future-ai-integration.md` for the full detail. Short version: `decision-engine.ts`
+defines `RecommendationProvider`/`DecisionEngine`; the deterministic engine is the only provider
+today; a future LLM-backed provider implements the same interface and requires no UI changes.
+
+Also still open:
 - Generate Architecture and TCO tab content per recommended platform instead of the current
   generic illustrations.
-- Expand the platform catalog and trait set — the current 4 platforms / 8 traits are
-  intentionally small for an explainable mock engine, not a real market analysis.
+- Expand the platform catalog and trait set further (see `docs/vendor-intelligence-model.md`).
 - If free-text notes are ever actually parsed (rather than only echoed back), that's the
   natural seam for an LLM: notes stay optional and additive, so a real NLP step could enrich
   `DecisionOutput` without changing the required chip-based flow.

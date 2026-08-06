@@ -1,3 +1,139 @@
+# ClouDonna — Public Alpha 0.6
+
+**Date:** August 2026
+**Branch:** `worktree-sprint-5`
+**Scope:** `apps/web/src/components/donna-ai/intelligence/` (new module), `app/api/donna-ai/decision/` (new route), `ResultPanel`/`DonnaAIExperience` (AI Insights tab wiring), `docs/intelligence/` (new documentation set)
+
+## Summary
+
+The Donna Intelligence Engine: an explainable, provider-independent narrative layer on top of
+Donna's existing deterministic scoring engine. A real OpenAI-backed provider now ships alongside
+the deterministic one, selected automatically by whether `OPENAI_API_KEY` is configured — with no
+code change required to run without it. The deterministic engine remains the sole source of every
+score, ranking, and dimension; the AI layer narrates and explains what was already computed and is
+structurally unable to change it — enforced by type shape, `.strict()` schema validation, and two
+content-level claim checks (unsupported numeric claims, unsupported vendor mentions), not by
+prompt wording alone. Every failure mode — no key, timeout, rate limit, malformed response,
+network error, an attempted score override, a fabricated vendor claim — degrades to a complete,
+valid `DecisionReport` with a clear, honest "AI enrichment unavailable" state in the UI; the
+Donna Score, ranking, and every existing `ResultPanel` tab are unaffected by any of it.
+
+## New Features
+
+- **`intelligence/` module** — `DecisionInput`, `EvidencePackage`, `IntelligenceEnrichment`,
+  `DecisionReport` (with nested `ProviderMetadata`/`FallbackMetadata`) contracts;
+  `IntelligenceProvider` and `KnowledgeProvider` interfaces; `RecommendationOrchestrator`
+  composition root with rate-limiting and metadata-only audit seams built in.
+- **Two providers** — `deterministicIntelligenceProvider` (template-based, always succeeds, the
+  default with no configuration) and `createOpenAIIntelligenceProvider` (structured-output OpenAI
+  calls via `zodResponseFormat`, server-only, configurable model/timeout/token budget/retries via
+  environment variables — see `.env.example`).
+- **Layered prompt architecture** (`prompt.ts`) — immutable policy and methodology layers,
+  structured evidence serialization with an explicit untrusted-data boundary around user notes and
+  retrieved evidence, defense-in-depth against prompt injection.
+- **Runtime validation** (Zod) — every enrichment field bounded and schema-checked
+  (`.strict()`, rejecting any smuggled field such as a numeric score); evidence references checked
+  against the real evidence package; narrative text screened for unsupported numeric claims *and*
+  unsupported vendor mentions (a real catalog product outside the session's shortlist).
+- **Deterministic fallback matrix** — `disabled` / `timeout` / `rate_limited` / `unavailable` /
+  `invalid_output`, every one producing a complete `DecisionReport`; a client-side fallback in
+  `DonnaAIExperience.tsx` additionally covers total network failure by calling the local
+  deterministic engine directly.
+- **`app/api/donna-ai/decision` route** — the only place `OPENAI_API_KEY` is ever read; verified
+  by grepping a real production build's client bundles for zero occurrences of the key or any
+  OpenAI SDK call.
+- **"AI Insights" tab** (`ResultPanel`) — surfaces the executive summary, situation framing,
+  business outcomes, decision drivers, recommendation/alternative narrative, trade-offs, risks and
+  opportunities in context, missing information, validation/challenge questions, next
+  steps/workshops, confidence explanation, evidence references, and a disclosure notice — or a
+  clear, accessible "unavailable" state with an explicit reassurance that scores are unaffected.
+- **Test suite** (Vitest) — 92 tests across 12 files (unit, contract, failure-mode, security,
+  integration, mocked-provider), plus one intentionally skipped cross-tenant placeholder and a
+  separately-gated live-provider test never required in CI. Zero network access, zero API keys,
+  zero environment variables required for the default run.
+- **`docs/intelligence/`** — architecture, the `DecisionReport` contract, evidence package,
+  provider boundaries, fallback/failure model, prompt architecture, security and privacy, cost
+  controls, testing strategy, and a sprint review.
+
+## Explicitly Not Done This Release
+
+- No production authentication, no persistence of `DecisionReport` anywhere, no unrestricted chat
+  or multi-turn conversation.
+- No claim of GDPR compliance — see `docs/intelligence/security-and-privacy.md` for the specific
+  legal/operational work that remains before real customer data reaches this pipeline.
+- No billing, quota enforcement, or multi-instance-safe rate limiting — the in-memory limiter
+  shipped is explicitly a single-instance reference implementation, not a production control.
+- No live-vendor crawling, price scraping, model fine-tuning, or document ingestion.
+
+---
+
+# ClouDonna — Public Alpha 0.5
+
+**Date:** August 2026
+**Branch:** `worktree-sprint-3`
+**Scope:** `apps/web/src/components/donna-ai/` — vendor intelligence, scoring, comparison, and seam modules
+
+## Summary
+
+Donna Intelligence Foundation: the deterministic engine and 4-platform catalog from the previous
+sprint are replaced with a structured 10-platform vendor intelligence model and a transparent,
+10-dimension Donna Score v2. Every recommendation now carries explicit positive evidence and
+concerns per dimension, a real comparison matrix, and a current-situation/decision-drivers
+recap. Two architectural seams (a `RecommendationProvider` interface for future AI integration,
+and persistence-ready interfaces for saved assessments) are defined but intentionally
+unimplemented. No LLM, no backend, no database, no authentication, no external API, no live
+market data — this remains fully runnable without credentials.
+
+## New Features
+
+- **10-platform vendor intelligence catalog** — SAP Business Data Cloud, Snowflake, Databricks,
+  Microsoft Fabric, Oracle, AWS, Google Cloud, Palantir, IBM, MongoDB. Each carries structured
+  fields (best/poor-fit scenarios, strengths, limitations, governance/AI/security maturity,
+  cost tier, lock-in risk, supported industries/sizes, and more) plus an explicit
+  `sourceNotes` field stating this is curated mock data, not live market data or vendor
+  certification.
+- **Donna Score v2** — ten independently-scored, independently-weighted dimensions
+  (Architecture, Business, Technology, Governance, AI Readiness, Security, Ecosystem, Cost,
+  Time-to-Value, Strategic Fit) replace the previous single formula. Weights are centralized in
+  one file and documented.
+- **Comparison matrix** — a reusable component comparing up to 4 platforms across 13 criteria,
+  using real computed scores from the same engine that produced the Donna Score. Flags
+  cross-category comparisons (e.g. an operational database vs. a data platform) rather than
+  implying false equivalence.
+- **Executive Report v2** — the result dashboard gained Current Situation, Decision Drivers, an
+  explicit Alternative Recommendation badge, structured positive evidence and concerns per
+  dimension, and a persistent illustrative-alpha-output disclosure.
+- **Future AI integration seam** — `RecommendationProvider`/`DecisionEngine` interfaces; the
+  deterministic engine is wrapped as the only current provider. Documented, not built: no API
+  keys, network calls, environment variables, or LLM package were added.
+- **Future persistence seam** — `SavedAssessment`/`Project`/`Workspace` interfaces defined for
+  future use. No database, no Supabase, no auth — genuinely unimplemented and unused today.
+
+## Technical Improvements
+
+- Confidence Score now factors in signal quality, not just input completeness — a fully
+  completed assessment that still produces a weak-signal recommendation correctly reports lower
+  confidence.
+- Self-review caught and fixed three real issues before this release: the AI-integration seam
+  was built but never actually called (fixed by wiring `DonnaAIExperience` through
+  `decisionEngine.run()`); an `as never` type cast in the comparison matrix was replaced with
+  correct typing; a duplicated `CATEGORY_LABELS` constant was consolidated into one module.
+- Verified clean at every phase checkpoint: `npx tsc --noEmit`, `npm run lint`, `npm run build`.
+
+## Known Limitations
+
+- 10 platforms and 15 traits remain intentionally small for an explainable mock engine — several
+  valid inputs (Oracle, "Planning" goal, neutral constraints) still produce zero Architecture Fit
+  signal, handled honestly rather than silently.
+- Architecture and TCO tabs remain generic/illustrative, clearly labeled as such.
+- No persistence, no AI call — both seams are interfaces only.
+
+## Next Sprint Preview
+
+- See `docs/sprint-3.md` → Next sprint candidates.
+
+---
+
 # ClouDonna — Public Alpha 0.4
 
 **Date:** August 2026
@@ -46,6 +182,8 @@ this release follows.
 - Rebuilding `DonnaLive`'s demo logic to actually reason through the Decision Framework instead
   of returning a fixed result — flagged as a candidate for its own future sprint.
 - No OpenAI integration, no persistence/auth, no analytics, no DNS/Vercel changes.
+
+---
 
 # ClouDonna — Public Alpha 0.3
 

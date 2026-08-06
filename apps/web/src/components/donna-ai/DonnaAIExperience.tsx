@@ -5,17 +5,65 @@ import { ArrowRight, Bot, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnalysingState } from "./AnalysingState";
 import { buildDecisionOutput } from "./engine";
+import type { DecisionReport } from "./intelligence/types";
 import { IntakeWizard } from "./IntakeWizard/IntakeWizard";
 import { WizardProgress } from "./IntakeWizard/WizardProgress";
 import { ResultPanel } from "./ResultPanel/ResultPanel";
-import { ANALYSIS_STEP_INDEX, type DecisionOutput, type WizardState } from "./types";
+import { ANALYSIS_STEP_INDEX, type WizardState } from "./types";
 
 type Phase = "intro" | "wizard" | "analysing" | "results";
+
+/**
+ * Used only if the API route itself is unreachable (not if AI enrichment
+ * merely fails or is unconfigured — the route already returns a complete,
+ * valid DecisionReport in every one of those cases). This is the last
+ * line of defense: even a total network failure still produces a
+ * complete deterministic result, computed locally with the same engine
+ * the server would have called first. See
+ * docs/intelligence/fallback-and-failure-model.md, "Client-side fallback".
+ */
+function buildLocalFallbackReport(state: WizardState): DecisionReport {
+  return {
+    output: buildDecisionOutput(state),
+    enrichment: null,
+    provider: { providerId: "local-fallback", model: null },
+    fallback: {
+      status: "unavailable",
+      reason: "Could not reach the Donna AI service — showing a locally-computed deterministic result only.",
+    },
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+async function requestDecision(state: WizardState): Promise<DecisionReport> {
+  try {
+    const response = await fetch("/api/donna-ai/decision", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ wizardState: state }),
+    });
+
+    if (!response.ok) {
+      return buildLocalFallbackReport(state);
+    }
+
+    const data: unknown = await response.json();
+    if (typeof data !== "object" || data === null || !("report" in data)) {
+      return buildLocalFallbackReport(state);
+    }
+
+    return (data as { report: DecisionReport }).report;
+  } catch {
+    // Network entirely unreachable, request aborted, JSON parse failure —
+    // all land here. Never thrown further; the UI always gets a report.
+    return buildLocalFallbackReport(state);
+  }
+}
 
 export function DonnaAIExperience() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [wizardState, setWizardState] = useState<WizardState | null>(null);
-  const [output, setOutput] = useState<DecisionOutput | null>(null);
+  const [report, setReport] = useState<DecisionReport | null>(null);
 
   function handleWizardComplete(state: WizardState) {
     setWizardState(state);
@@ -24,13 +72,15 @@ export function DonnaAIExperience() {
 
   function handleAnalysisComplete() {
     if (!wizardState) return;
-    setOutput(buildDecisionOutput(wizardState));
-    setPhase("results");
+    requestDecision(wizardState).then((result) => {
+      setReport(result);
+      setPhase("results");
+    });
   }
 
   function handleStartNew() {
     setWizardState(null);
-    setOutput(null);
+    setReport(null);
     setPhase("intro");
   }
 
@@ -74,7 +124,7 @@ export function DonnaAIExperience() {
             </Button>
 
             <p className="mt-4 text-xs text-slate-400">
-              Takes about two minutes · deterministic preview, no account needed
+              Takes about two minutes · deterministic core, optional AI narrative, no account needed
             </p>
           </div>
         )}
@@ -94,8 +144,8 @@ export function DonnaAIExperience() {
           </div>
         )}
 
-        {phase === "results" && wizardState && output && (
-          <ResultPanel state={wizardState} output={output} onStartNew={handleStartNew} />
+        {phase === "results" && wizardState && report && (
+          <ResultPanel state={wizardState} report={report} onStartNew={handleStartNew} />
         )}
       </div>
     </section>

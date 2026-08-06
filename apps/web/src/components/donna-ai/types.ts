@@ -1,3 +1,6 @@
+export type { DimensionResult, EvidenceItem, RankedPlatform, ScoreDimensionKey } from "./scoring/types";
+import type { DimensionResult, EvidenceItem, RankedPlatform } from "./scoring/types";
+
 export type Industry =
   | "manufacturing"
   | "financial-services"
@@ -52,9 +55,15 @@ export type Trait =
   | "enterprise-scale"
   | "cost-efficient"
   | "ai-ready"
-  | "azure-aligned";
+  | "azure-aligned"
+  | "aws-aligned"
+  | "gcp-aligned"
+  | "hyperscale-infra"
+  | "operational-workload"
+  | "high-touch-enterprise"
+  | "legacy-integration"
+  | "vendor-neutral";
 
-export type FitCategory = "architecture" | "business" | "technology";
 
 export interface CompanyInput {
   industry: Industry | null;
@@ -138,30 +147,6 @@ export type WizardAction =
   | { type: "LOAD_SAMPLE" }
   | { type: "RESET" };
 
-export interface PlatformProfile {
-  id: string;
-  name: string;
-  tagline: string;
-  traits: Trait[];
-}
-
-export interface RankedPlatform {
-  platform: PlatformProfile;
-  score: number;
-  matchedTraits: Trait[];
-}
-
-export interface FitBreakdown {
-  category: FitCategory;
-  label: string;
-  score: number;
-}
-
-export interface ReasonItem {
-  trait: Trait;
-  text: string;
-}
-
 export interface RiskItem {
   text: string;
 }
@@ -190,9 +175,12 @@ export interface DecisionOutput {
   alternatives: RankedPlatform[];
   donnaScore: number;
   confidenceScore: number;
-  fitBreakdown: FitBreakdown[];
+  dimensions: DimensionResult[];
+  currentSituation: string;
+  decisionDrivers: string[];
   executiveSummary: string;
-  reasons: ReasonItem[];
+  positiveEvidence: EvidenceItem[];
+  concerns: EvidenceItem[];
   risks: RiskItem[];
   opportunities: OpportunityItem[];
   assumptions: AssumptionItem[];
