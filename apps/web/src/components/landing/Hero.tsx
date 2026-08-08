@@ -12,6 +12,7 @@ const navLinks = [
   { label: "Independence", href: "/independence" },
   { label: "For Vendors", href: "/for-vendors" },
   { label: "For Partners", href: "/for-partners" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Hero() {

@@ -110,7 +110,7 @@ export default function ForVendorsPage() {
 
         <div className="mt-10 text-center">
           <Link
-            href="/early-access?type=vendor"
+            href="/contact?type=vendor"
             className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:opacity-90"
           >
             Apply as a vendor

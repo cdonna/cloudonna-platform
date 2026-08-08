@@ -11,6 +11,7 @@ const audienceLinks = [
   { label: "For Vendors", href: "/for-vendors" },
   { label: "For Partners", href: "/for-partners" },
   { label: "Become a Founding Tester", href: "/early-access" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const legalLinks = [

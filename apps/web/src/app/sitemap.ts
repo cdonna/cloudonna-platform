@@ -13,7 +13,7 @@ const routes: Array<{
   { path: "/independence", changeFrequency: "monthly", priority: 0.7 },
   { path: "/for-vendors", changeFrequency: "monthly", priority: 0.6 },
   { path: "/for-partners", changeFrequency: "monthly", priority: 0.6 },
-  { path: "/early-access", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/contact", changeFrequency: "monthly", priority: 0.8 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.2 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.2 },
   { path: "/imprint", changeFrequency: "yearly", priority: 0.2 },
