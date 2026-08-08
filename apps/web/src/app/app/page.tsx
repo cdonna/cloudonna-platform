@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, History, Sparkles } from "lucide-react";
 import { createSupabaseServerClient, getCurrentUser } from "@/lib/supabase/server";
-import { listDecisionsForCurrentUser } from "@/components/donna-ai/persistence/decisions-repository";
+import { listDecisionsForCurrentUser, type DecisionListItem } from "@/components/donna-ai/persistence/decisions-repository";
 
 export const metadata: Metadata = {
   title: "Dashboard — ClouDonna",
@@ -10,9 +10,19 @@ export const metadata: Metadata = {
 
 export default async function AppDashboardPage() {
   const user = await getCurrentUser();
-  const supabase = await createSupabaseServerClient();
-  const result = await listDecisionsForCurrentUser(supabase);
-  const recent = result.ok ? result.data.slice(0, 5) : [];
+
+  // AppLayout already redirects an unauthenticated request to /login, but
+  // Next.js does not guarantee that redirect fully resolves before this
+  // page's own body starts rendering — falling through here would call
+  // the throwing Supabase client constructor for a request that's about
+  // to be redirected anyway. Matches the non-throwing pattern every other
+  // page in this domain uses (see decisions-repository.ts callers).
+  let recent: DecisionListItem[] = [];
+  if (user) {
+    const supabase = await createSupabaseServerClient();
+    const result = await listDecisionsForCurrentUser(supabase);
+    recent = result.ok ? result.data.slice(0, 5) : [];
+  }
 
   return (
     <div>

@@ -1,8 +1,22 @@
 # v0.2.0-alpha — Project NOVA Phase 1
 
 **Date:** 2026-08-08
-**Branch:** `worktree-sprint-6`
-**Status:** Committed locally (`e14f920`). Not pushed. Not deployed.
+**Deployed commit:** `4794ad4` (tag `v0.2.0-alpha`)
+**Branch:** merged into `main` (fast-forward from `project-nova-v0.2.0-alpha`, no merge commit)
+**Status:** On `main`, tagged. **Production deployment not verified from this environment** — no Vercel CLI or credentials available here; see "Deployment" below.
+
+## Build summary
+
+- 195 files changed across the full history leading to this tag (`e14f920` + `4794ad4` on top of `b5abcfd`)
+- `npx tsc --noEmit`: clean
+- `npm run lint`: clean
+- `npm test`: 185 passed, 1 skipped, 0 failed
+- `npm run build`: succeeds, 22 routes (13 static, 9 dynamic)
+- Verified against an actual production server (`next start`, not just `next dev`): all 15 public/app routes return correct status codes, zero server errors logged
+
+## Deployment
+
+This environment has no `vercel` CLI installed and no Vercel credentials, so the actual Production deploy could not be triggered or verified here. `main` has been pushed with the tagged commit — if this repo's Vercel project has Git integration configured for `main`, a Production deployment should have started automatically on the push above. **Production URL, deployment ID, and build status need to be confirmed from the Vercel dashboard** and added here once available.
 
 ## Highlights
 
@@ -26,6 +40,8 @@ Before sharing this release externally, capture:
 
 ## Known issues
 
+- Fixed in this release: `/app` (dashboard) threw an unhandled server-side exception when Supabase env vars are unset, because the page called the throwing Supabase client constructor unconditionally instead of gating on `getCurrentUser()` first like every other route. Only reachable when Supabase is unconfigured — production has it configured — but it was a real logged error, now fixed with a defensive guard.
+- Investigated, not a real defect: `/opengraph-image` returned HTTP 500 under `next dev` ("Input buffer contains unsupported image format") but rendered a correct 1200×630 PNG under `next start` (the actual production server) with zero errors. Confirmed dev-mode-only artifact, not present in the production build.
 - `/discovery`, `/independence`, `/for-vendors`, `/for-partners`, `/login`, `/signup` were **not** included in the Deep Space redesign — still the earlier light theme. The global Footer is now dark, so these pages currently end in a visible light-to-dark seam.
 - Donna AI's secondary result tabs (Comparison, Risks & Opportunities, Roadmap, Architecture, TCO) and the wizard's inner steps were not restyled — only the top-level shell, Overview tab, and loading state.
 - Billing is schema-only — `BILLING STATUS = DESIGNED / NOT ACTIVE` (see `docs/commercial/01-billing-architecture.md`).
