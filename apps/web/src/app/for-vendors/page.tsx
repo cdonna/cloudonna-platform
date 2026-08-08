@@ -30,7 +30,7 @@ const points = [
 
 export default function ForVendorsPage() {
   return (
-    <div>
+    <div className="min-h-screen bg-void">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
@@ -40,14 +40,14 @@ export default function ForVendorsPage() {
             height={32}
             className="h-8 w-8 object-contain"
           />
-          <span className="text-lg font-semibold tracking-tight text-slate-950">
-            Clou<span className="text-violet-600">Donna</span>
+          <span className="text-lg font-semibold tracking-tight text-nova-ink">
+            Clou<span className="text-nova-accent-strong">Donna</span>
           </span>
         </Link>
 
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition hover:text-violet-700"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition hover:text-nova-accent-strong"
         >
           <ArrowLeft size={15} />
           Back to home
@@ -55,15 +55,15 @@ export default function ForVendorsPage() {
       </div>
 
       <div className="mx-auto max-w-3xl px-6 pb-24 pt-14">
-        <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-violet-700 shadow-sm">
+        <div className="inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
           For Vendors
         </div>
 
-        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-5xl">
+        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-nova-ink sm:text-5xl">
           Be evaluated fairly, not sold to
         </h1>
 
-        <p className="mt-5 text-lg leading-8 text-slate-600">
+        <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
           Enterprise buyers come to ClouDonna specifically because vendors
           can&apos;t buy their way into a better recommendation. That&apos;s
           also true if you&apos;re the vendor.
@@ -76,17 +76,17 @@ export default function ForVendorsPage() {
             return (
               <div
                 key={point.title}
-                className="flex gap-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+                className="flex gap-5 rounded-3xl border border-titanium bg-carbon p-6 shadow-sm"
               >
-                <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 text-white">
+                <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-nova-accent text-white">
                   <Icon size={20} />
                 </span>
 
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-950">
+                  <h2 className="text-lg font-semibold text-nova-ink">
                     {point.title}
                   </h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                  <p className="mt-2 text-sm leading-6 text-nova-ink-muted">
                     {point.body}
                   </p>
                 </div>
@@ -95,11 +95,11 @@ export default function ForVendorsPage() {
           })}
         </div>
 
-        <div className="mt-14 rounded-3xl border border-slate-200 bg-slate-50 p-8">
-          <h2 className="text-xl font-semibold text-slate-950">
+        <div className="mt-14 rounded-3xl border border-titanium bg-carbon-2 p-8">
+          <h2 className="text-xl font-semibold text-nova-ink">
             Where things stand today
           </h2>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">
             During the Public Alpha, the vendor catalog is curated by
             ClouDonna from public information — there is no self-service
             vendor submission flow yet. If you&apos;d like to be notified
@@ -111,14 +111,14 @@ export default function ForVendorsPage() {
         <div className="mt-10 text-center">
           <Link
             href="/contact?type=vendor"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:opacity-90"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-nova-accent px-6 py-3 text-sm font-semibold text-white shadow-nova-glow transition hover:opacity-90"
           >
             Apply as a vendor
             <ArrowRight size={16} />
           </Link>
-          <p className="mt-4 text-xs text-slate-400">
+          <p className="mt-4 text-xs text-nova-ink-faint">
             Read the full{" "}
-            <Link href="/independence" className="font-medium text-violet-700 hover:text-violet-800">
+            <Link href="/independence" className="font-medium text-nova-accent-strong hover:text-nova-ink">
               neutrality rules
             </Link>
             .

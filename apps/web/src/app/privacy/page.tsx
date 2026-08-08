@@ -41,21 +41,26 @@ export default function PrivacyPage() {
           </p>
 
           <div className="mt-10 space-y-8 text-sm leading-7 text-nova-ink-muted">
-            <Section title="What we collect">
+            <Section title="What we collect — inquiries">
               <p>
                 When you submit the contact form (at <code>/contact</code>, <code>/early-access</code>, or the homepage Founding
                 Testers section), we store: your name, work email, company, role, country and phone number if you provide them, your
-                message, which of the six inquiry categories you selected, the page you submitted from, and — if present in the URL —
-                UTM campaign parameters and referrer.
+                message, which of the five inquiry categories you selected, the page you submitted from, and — if present in the URL —
+                UTM parameters and referrer.
               </p>
-              <p className="mt-3">
-                We do not collect this data anywhere else on the site today. There is no analytics or visitor-tracking script running
-                on ClouDonna yet — an abstraction for one exists in the codebase, but nothing is deployed or active.
+            </Section>
+
+            <Section title="What we collect — product usage">
+              <p>
+                We log a small set of first-party events on our own contact and inquiry flow — a page was viewed, a form was started,
+                a form was submitted, and which category. This is not third-party analytics: no Google Analytics, Plausible, PostHog,
+                Clarity, or visitor-intelligence vendor is installed anywhere on ClouDonna. These events carry no name, no email, no IP
+                address, and no way to identify who triggered them — just the event, the page, and the time.
               </p>
             </Section>
 
             <Section title="Why we collect it">
-              <p>Solely to respond to your inquiry. Nothing submitted through this form is used for advertising, sold, or shared with a third party.</p>
+              <p>Inquiry data: solely to respond to your inquiry. Usage events: to understand which parts of the site people actually use. Neither is sold, used for advertising, or shared with a third party.</p>
             </Section>
 
             <Section title="Where it's stored">
@@ -68,8 +73,9 @@ export default function PrivacyPage() {
 
             <Section title="Third parties">
               <p>
-                None today. No email-notification provider is configured yet — a new inquiry is currently only logged server-side, not
-                emailed anywhere. This section will name the provider once one is configured.
+                None active today. No email-notification provider is configured in production — a new inquiry is currently only logged
+                server-side, not emailed anywhere. If a provider (we&apos;ve evaluated Resend) is configured, this section will name it
+                and be updated before that happens, not after.
               </p>
             </Section>
 

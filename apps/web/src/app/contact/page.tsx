@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Building2, HandshakeIcon, MessageCircle, Rocket, Sparkles, Store } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, HandshakeIcon, Rocket, Sparkles, Store } from "lucide-react";
 import { InquiryForm } from "@/components/landing/InquiryForm";
+import { ContactViewedTracker } from "@/components/landing/ContactViewedTracker";
 import { inquiryTypeSchema, type InquiryType } from "@/lib/inquiries/schema";
 
 export const metadata: Metadata = {
   title: "Contact — ClouDonna",
-  description: "Become a Founding Tester, request an Enterprise Pilot, talk to the founders, or reach ClouDonna as a partner or vendor.",
+  description: "Become a Founding Tester, request an Enterprise Conversation, or reach ClouDonna as a partner or vendor.",
   alternates: { canonical: "/contact" },
 };
 
 const entryPoints: { type: InquiryType; label: string; icon: typeof Rocket }[] = [
   { type: "founding_tester", label: "Become a Founding Tester", icon: Rocket },
-  { type: "enterprise_pilot", label: "Request an Enterprise Pilot", icon: Building2 },
-  { type: "customer", label: "Talk to the Founders", icon: MessageCircle },
+  { type: "enterprise", label: "Request an Enterprise Conversation", icon: Building2 },
   { type: "partner", label: "Partner with ClouDonna", icon: HandshakeIcon },
-  { type: "vendor", label: "Vendor Information", icon: Store },
-  { type: "general", label: "General Contact", icon: Sparkles },
+  { type: "vendor", label: "Vendor / Product Information", icon: Store },
+  { type: "general", label: "General Enquiry", icon: Sparkles },
 ];
 
 function parseType(value: string | string[] | undefined): InquiryType | null {
@@ -36,6 +36,8 @@ export default async function ContactPage({
 
   return (
     <div className="min-h-screen bg-void">
+      <ContactViewedTracker />
+
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
         <Link href="/" className="flex items-center gap-2.5">
           <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={32} height={32} className="h-8 w-8 object-contain" />
@@ -68,7 +70,7 @@ export default async function ContactPage({
 
           <h1 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">What brings you here?</h1>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-nova-ink-muted">
-            One form, six reasons. Pick the one that fits and it reaches the right person.
+            One form, five reasons. Pick the one that fits and it reaches the right person.
           </p>
 
           <div className="mt-14 grid gap-4 sm:grid-cols-2">

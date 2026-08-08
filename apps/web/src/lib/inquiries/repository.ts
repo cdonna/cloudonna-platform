@@ -23,6 +23,21 @@ function classifySupabaseError(message: string): string {
   return "This inquiry could not be submitted. Please try again.";
 }
 
+/** Backs the application-level rate limit — calls
+ * count_recent_inquiries_by_email(), the one narrow read anon is
+ * allowed against this table (a count for its own email, nothing
+ * else). Fails open (returns 0) on any error: a rate-limit check that
+ * can't run must never block a legitimate submission from a real
+ * infrastructure hiccup — the DB-level constraints and RLS are still
+ * there as the real backstop either way. */
+export async function countRecentInquiriesByEmail(supabase: SupabaseClient, businessEmail: string): Promise<number> {
+  const { data, error } = await supabase.rpc("count_recent_inquiries_by_email", { p_email: businessEmail });
+  if (error || typeof data !== "number") {
+    return 0;
+  }
+  return data;
+}
+
 export interface CreateInquiryResult {
   id: string;
 }
@@ -42,8 +57,9 @@ export async function createInquiry(
       country: request.country ?? null,
       phone: request.phone ?? null,
       message: request.message ?? null,
-      source_page: request.sourcePage ?? null,
+      source_page: request.sourcePage,
       utm_source: request.utmSource ?? null,
+      utm_medium: request.utmMedium ?? null,
       utm_campaign: request.utmCampaign ?? null,
       referrer: request.referrer ?? null,
     })
@@ -65,43 +81,65 @@ export interface InquirySummary {
   company: string | null;
   country: string | null;
   status: string;
-  owner: string | null;
-  ownerEmail: string | null;
+  message: string | null;
+  sourcePage: string | null;
   createdAt: string;
 }
 
-/** Powers the Founder Dashboard. RLS (inquiries_select_staff) is the
- * actual enforcement — this function issues no explicit staff check of
- * its own, matching the rest of this codebase's "RLS is the real
- * boundary, the repository is just a typed surface over it" posture. A
- * non-staff caller gets an empty list, not an error, the same
- * "not-found and not-allowed look identical" posture as
- * getDecisionDetail(). */
+/** Powers /app/inquiries. RLS (inquiries_select_staff) is the actual
+ * enforcement — this function issues no explicit staff check of its
+ * own, matching the rest of this codebase's "RLS is the real boundary,
+ * the repository is just a typed surface over it" posture. A non-staff
+ * caller gets an empty list, not an error, the same "not-found and
+ * not-allowed look identical" posture as getDecisionDetail(). */
 export async function listInquiriesForStaff(supabase: SupabaseClient): Promise<RepositoryResult<InquirySummary[]>> {
   const { data, error } = await supabase
     .from("inquiries")
-    .select("id, inquiry_type, name, business_email, company, country, status, owner, created_at, profiles:owner(email)")
+    .select("id, inquiry_type, name, business_email, company, country, status, message, source_page, created_at")
     .order("created_at", { ascending: false });
 
   if (error) {
     return { ok: false, reason: classifySupabaseError(error.message) };
   }
 
-  const items: InquirySummary[] = (data ?? []).map((row) => {
-    const ownerProfile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
-    return {
-      id: row.id,
-      inquiryType: row.inquiry_type,
-      name: row.name,
-      businessEmail: row.business_email,
-      company: row.company,
-      country: row.country,
-      status: row.status,
-      owner: row.owner,
-      ownerEmail: ownerProfile?.email ?? null,
-      createdAt: row.created_at,
-    };
-  });
+  const items: InquirySummary[] = (data ?? []).map((row) => ({
+    id: row.id,
+    inquiryType: row.inquiry_type,
+    name: row.name,
+    businessEmail: row.business_email,
+    company: row.company,
+    country: row.country,
+    status: row.status,
+    message: row.message,
+    sourcePage: row.source_page,
+    createdAt: row.created_at,
+  }));
 
   return { ok: true, data: items };
+}
+
+export const VALID_STATUSES = ["new", "reviewing", "contacted", "qualified", "closed"] as const;
+export type InquiryStatus = (typeof VALID_STATUSES)[number];
+
+/** The one mutation /app/inquiries supports — status changes only, no
+ * owner assignment, no notes, no workflow engine. RLS
+ * (inquiries_update_staff) is the real enforcement; a non-staff caller
+ * updates zero rows (Postgres UPDATE against a row RLS hides is a
+ * silent no-op, not an error) rather than a distinct "not allowed"
+ * signal. */
+export async function updateInquiryStatus(
+  supabase: SupabaseClient,
+  inquiryId: string,
+  status: InquiryStatus,
+): Promise<RepositoryResult<{ id: string }>> {
+  const { data, error } = await supabase.from("inquiries").update({ status }).eq("id", inquiryId).select("id").maybeSingle();
+
+  if (error) {
+    return { ok: false, reason: classifySupabaseError(error.message) };
+  }
+  if (!data) {
+    return { ok: false, reason: "This inquiry could not be updated." };
+  }
+
+  return { ok: true, data: { id: data.id } };
 }

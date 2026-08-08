@@ -9,48 +9,54 @@
  * transmitted or stored — see its own prior disclosed copy) with a
  * real, persisted one. See docs/operations/01-business-operations.md.
  */
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { ArrowRight, CheckCircle2, LoaderCircle, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { getAnalyticsProvider } from "@/lib/analytics/config";
 import type { InquiryType } from "@/lib/inquiries/schema";
 
-const copyByType: Record<InquiryType, { eyebrow: string; heading: string; body: string; submitLabel: string }> = {
+const SUBMITTED_EVENT_BY_TYPE: Partial<Record<InquiryType, string>> = {
+  founding_tester: "founding_tester_submitted",
+  partner: "partner_inquiry_submitted",
+  vendor: "vendor_inquiry_submitted",
+};
+
+const copyByType: Record<InquiryType, { eyebrow: string; heading: string; body: string; submitLabel: string; successBody: string }> = {
   founding_tester: {
     eyebrow: "Founding Testers · Public Alpha",
     heading: "Become a Founding Tester",
     body: "ClouDonna is opening access to Donna AI's assessment in waves. Tell us a bit about your landscape and we'll reach out.",
     submitLabel: "Become a Founding Tester",
+    successBody: "Application received. We'll review it and follow up if it's a fit for this wave.",
   },
-  enterprise_pilot: {
-    eyebrow: "Enterprise Pilot",
-    heading: "Request an Enterprise Pilot",
-    body: "There's no self-service pilot program yet — this reaches a founder directly, who'll follow up to scope what a pilot with your organization would look like.",
-    submitLabel: "Request a pilot",
-  },
-  customer: {
-    eyebrow: "Talk to the Founders",
-    heading: "Talk to the founders",
-    body: "Questions about Donna AI, the scoring model, or whether ClouDonna fits what you're evaluating — this goes straight to a founder, not a queue.",
-    submitLabel: "Talk to us",
+  enterprise: {
+    eyebrow: "Enterprise Conversation",
+    heading: "Request an Enterprise Conversation",
+    body: "There's no self-service pilot program yet — this reaches a founder directly, who'll follow up to scope what working with your organization would look like.",
+    submitLabel: "Request a conversation",
+    successBody: "Received. A founder will follow up directly — this doesn't go into a queue.",
   },
   partner: {
     eyebrow: "Partners",
     heading: "Partner with ClouDonna",
     body: "The partner directory and matching flow aren't live yet. Tell us about your practice and we'll follow up when partner profiles open.",
     submitLabel: "Apply as a partner",
+    successBody: "Received. We'll follow up when partner profiles open.",
   },
   vendor: {
     eyebrow: "Vendors",
-    heading: "Vendor information",
-    body: "There's no self-service vendor submission flow yet. Tell us about your product and we'll follow up when verified vendor profiles open.",
-    submitLabel: "Apply as a vendor",
+    heading: "Vendor / Product Information",
+    body: "There's no self-service vendor submission flow yet. Tell us about your product and we'll follow up — this never affects any product's score or ranking.",
+    submitLabel: "Send vendor information",
+    successBody: "Received. Note: nothing submitted here affects any recommendation, score, or ranking.",
   },
   general: {
-    eyebrow: "General Contact",
+    eyebrow: "General Enquiry",
     heading: "Get in touch",
     body: "Anything that doesn't fit the other categories — this reaches a founder directly.",
     submitLabel: "Send message",
+    successBody: "Received. We typically reply within a few business days.",
   },
 };
 
@@ -68,6 +74,13 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
   const formId = useId();
   const copy = copyByType[inquiryType];
 
+  useEffect(() => {
+    getAnalyticsProvider().trackEvent({ name: "inquiry_started", properties: { inquiryType } });
+    // Only on mount for this specific inquiryType — not on every
+    // re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (status === "submitting") return;
@@ -84,6 +97,7 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
     // side read inside this event handler needs no such boundary: it
     // only ever runs after hydration, in response to a user action.
     const currentUrl = new URL(window.location.href);
+    const sourcePage = currentUrl.pathname === "/" ? "/" : currentUrl.pathname;
 
     try {
       const response = await fetch("/api/inquiries", {
@@ -98,10 +112,12 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
           country: trim("country"),
           phone: trim("phone"),
           message: trim("message"),
-          sourcePage: currentUrl.pathname,
+          sourcePage,
           utmSource: currentUrl.searchParams.get("utm_source") ?? undefined,
+          utmMedium: currentUrl.searchParams.get("utm_medium") ?? undefined,
           utmCampaign: currentUrl.searchParams.get("utm_campaign") ?? undefined,
           referrer: document.referrer || undefined,
+          website: trim("website"), // honeypot — always empty for a real visitor
         }),
       });
 
@@ -113,6 +129,12 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
       }
 
       setStatus("success");
+      const analytics = getAnalyticsProvider();
+      analytics.trackEvent({ name: "inquiry_submitted", properties: { inquiryType } });
+      const typeSpecificEvent = SUBMITTED_EVENT_BY_TYPE[inquiryType];
+      if (typeSpecificEvent) {
+        analytics.trackEvent({ name: typeSpecificEvent });
+      }
     } catch {
       setStatus("error");
       setErrorMessage("This inquiry could not be submitted. Check your connection and try again.");
@@ -146,9 +168,7 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
 
               <h3 className="text-2xl font-semibold text-nova-ink">Thanks — we&apos;ve got it</h3>
 
-              <p className="max-w-md text-sm leading-6 text-nova-ink-muted">
-                Your message has been received. We typically reply within a few business days.
-              </p>
+              <p className="max-w-md text-sm leading-6 text-nova-ink-muted">{copy.successBody}</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="grid gap-5 p-7 sm:grid-cols-2 sm:p-10">
@@ -189,6 +209,13 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
                   placeholder="Tell us what you're trying to do..."
                   className="resize-none rounded-xl border border-titanium bg-carbon-2 px-3 py-2.5 text-sm text-nova-ink outline-none placeholder:text-nova-ink-faint focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
                 />
+              </div>
+
+              {/* Honeypot — hidden from real visitors via CSS, not `type="hidden"`
+                  (some bots skip those). Never focusable, never announced. */}
+              <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+                <label htmlFor={`${formId}-website`}>Website</label>
+                <input id={`${formId}-website`} name="website" type="text" tabIndex={-1} autoComplete="off" />
               </div>
 
               {status === "error" && errorMessage && (

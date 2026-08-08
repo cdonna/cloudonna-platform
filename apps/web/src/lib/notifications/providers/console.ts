@@ -19,7 +19,10 @@ export class ConsoleNotificationProvider implements NotificationProvider {
 
   async notifyNewInquiry(notification: InquiryNotification): Promise<void> {
     console.log(
-      `[inquiries] New ${notification.inquiryType} inquiry ${notification.inquiryId} from ${notification.name} <${notification.businessEmail}>${notification.company ? ` (${notification.company})` : ""}. No email sent — no notification provider configured. See docs/operations/01-business-operations.md.`,
+      `INQUIRY STORED — ${notification.inquiryType} inquiry ${notification.inquiryId} from ${notification.name} <${notification.businessEmail}>${notification.company ? ` (${notification.company})` : ""}.`,
+    );
+    console.warn(
+      "FOUNDER EMAIL NOT CONFIGURED — set RESEND_API_KEY and FOUNDER_CONTACT_EMAIL to enable real notifications. See docs/operations/01-business-operations.md.",
     );
   }
 }

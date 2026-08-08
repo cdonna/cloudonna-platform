@@ -1,36 +1,29 @@
 import type { Metadata } from "next";
 import { createSupabaseServerClient, getCurrentUser } from "@/lib/supabase/server";
 import { listInquiriesForStaff, type InquirySummary } from "@/lib/inquiries/repository";
+import { StatusSelect } from "./StatusSelect";
 
 export const metadata: Metadata = {
-  title: "Founder Dashboard — ClouDonna",
+  title: "Inquiries — ClouDonna",
 };
 
 const TYPE_LABELS: Record<string, string> = {
   founding_tester: "Founding Tester",
-  enterprise_pilot: "Enterprise Pilot",
-  customer: "Customer",
+  enterprise: "Enterprise",
   partner: "Partner",
   vendor: "Vendor",
   general: "General",
 };
 
-const STATUS_STYLES: Record<string, string> = {
-  new: "bg-nova-accent/10 text-nova-accent-strong border-nova-accent/30",
-  in_review: "bg-nova-warning/10 text-nova-warning border-nova-warning/30",
-  responded: "bg-nova-success/10 text-nova-success border-nova-success/30",
-  closed: "bg-carbon-2 text-nova-ink-faint border-titanium",
-  spam: "bg-carbon-2 text-nova-ink-faint border-titanium",
-};
-
 /**
- * Staff-gated operational dashboard, not a CRM. Access is checked by
- * calling the is_platform_staff() RLS predicate directly (RPC) rather
- * than trusting anything client-side — the same function that already
- * gates every row of the inquiries table itself, so this check and the
- * data it protects can never drift apart.
+ * Staff-gated inbox, not a CRM — see docs/operations/05-inquiry-system-v2.md,
+ * "This is an inbox, nothing more." Access is checked by calling the
+ * is_platform_staff() RLS predicate directly (RPC) rather than trusting
+ * anything client-side — the same function that already gates every
+ * row of the inquiries table itself, so this check and the data it
+ * protects can never drift apart.
  */
-export default async function FounderDashboardPage() {
+export default async function InquiriesPage() {
   const user = await getCurrentUser();
   if (!user) {
     return <RestrictedNotice reason="Sign in to view this page." />;
@@ -50,7 +43,7 @@ export default async function FounderDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-nova-ink">Founder Dashboard</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-nova-ink">Inquiries</h1>
       <p className="mt-2 text-sm text-nova-ink-muted">Every inquiry across every public entry point, in one place.</p>
 
       {!result.ok && (
@@ -60,16 +53,16 @@ export default async function FounderDashboardPage() {
       )}
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        <SummaryCard label="New Leads" value={counts.byStatus.new ?? 0} />
+        <SummaryCard label="New" value={counts.byStatus.new ?? 0} />
         <SummaryCard label="Founding Testers" value={counts.byType.founding_tester ?? 0} />
-        <SummaryCard label="Enterprise Requests" value={counts.byType.enterprise_pilot ?? 0} />
+        <SummaryCard label="Enterprise" value={counts.byType.enterprise ?? 0} />
         <SummaryCard label="Partners" value={counts.byType.partner ?? 0} />
-        <SummaryCard label="Vendor Requests" value={counts.byType.vendor ?? 0} />
+        <SummaryCard label="Vendors" value={counts.byType.vendor ?? 0} />
         <SummaryCard label="Countries" value={counts.countries} />
       </div>
 
       <div className="mt-10">
-        <h2 className="text-sm font-semibold tracking-wide text-nova-ink-muted uppercase">Recent activity</h2>
+        <h2 className="text-sm font-semibold tracking-wide text-nova-ink-muted uppercase">All inquiries</h2>
 
         {inquiries.length === 0 ? (
           <div className="mt-4 rounded-2xl border border-dashed border-titanium bg-carbon p-10 text-center">
@@ -80,40 +73,31 @@ export default async function FounderDashboardPage() {
             <table className="w-full text-left text-sm">
               <thead className="border-b border-titanium bg-carbon-2 text-xs font-semibold tracking-wide text-nova-ink-muted uppercase">
                 <tr>
-                  <th className="px-5 py-3">Name</th>
+                  <th className="px-5 py-3">Name / Company</th>
                   <th className="px-5 py-3">Type</th>
-                  <th className="px-5 py-3">Company</th>
-                  <th className="px-5 py-3">Country</th>
+                  <th className="px-5 py-3">Source</th>
+                  <th className="px-5 py-3">Message</th>
                   <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3">Owner</th>
-                  <th className="px-5 py-3">Response Required</th>
                   <th className="px-5 py-3">Received</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-titanium">
                 {inquiries.map((inquiry) => (
-                  <tr key={inquiry.id} className="transition duration-200 hover:bg-carbon-2">
+                  <tr key={inquiry.id} className="align-top transition duration-200 hover:bg-carbon-2">
                     <td className="px-5 py-4">
                       <div className="font-medium text-nova-ink">{inquiry.name}</div>
                       <div className="text-xs text-nova-ink-faint">{inquiry.businessEmail}</div>
+                      {inquiry.company && <div className="text-xs text-nova-ink-faint">{inquiry.company}</div>}
                     </td>
                     <td className="px-5 py-4 text-nova-ink-muted">{TYPE_LABELS[inquiry.inquiryType] ?? inquiry.inquiryType}</td>
-                    <td className="px-5 py-4 text-nova-ink-muted">{inquiry.company ?? "—"}</td>
-                    <td className="px-5 py-4 text-nova-ink-muted">{inquiry.country ?? "—"}</td>
-                    <td className="px-5 py-4">
-                      <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[inquiry.status] ?? STATUS_STYLES.new}`}>
-                        {inquiry.status}
-                      </span>
+                    <td className="px-5 py-4 font-mono text-xs text-nova-ink-faint">{inquiry.sourcePage ?? "—"}</td>
+                    <td className="px-5 py-4 max-w-xs text-nova-ink-muted">
+                      <span className="line-clamp-2">{inquiry.message ?? "—"}</span>
                     </td>
-                    <td className="px-5 py-4 text-nova-ink-muted">{inquiry.ownerEmail ?? "Unassigned"}</td>
                     <td className="px-5 py-4">
-                      {inquiry.status === "new" || inquiry.status === "in_review" ? (
-                        <span className="text-nova-warning">Yes</span>
-                      ) : (
-                        <span className="text-nova-ink-faint">No</span>
-                      )}
+                      <StatusSelect inquiryId={inquiry.id} initialStatus={inquiry.status} />
                     </td>
-                    <td className="px-5 py-4 text-nova-ink-muted">{new Date(inquiry.createdAt).toLocaleDateString()}</td>
+                    <td className="px-5 py-4 whitespace-nowrap text-nova-ink-muted">{new Date(inquiry.createdAt).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>

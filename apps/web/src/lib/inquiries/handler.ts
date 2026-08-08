@@ -9,13 +9,15 @@ import "server-only";
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createInquiryRequestSchema } from "./schema";
-import { createInquiry } from "./repository";
+import { createInquiry, countRecentInquiriesByEmail } from "./repository";
 import { getNotificationProvider } from "../notifications/config";
 
 export interface CreateInquiryHandlerResult {
   status: number;
   body: { id: string } | { error: string };
 }
+
+const RATE_LIMIT_MAX_PER_HOUR = 3;
 
 export async function handleCreateInquiryRequest(
   rawBody: unknown,
@@ -27,16 +29,33 @@ export async function handleCreateInquiryRequest(
   }
   const request = parsed.data;
 
+  // Honeypot: a real visitor never sees or fills this field (hidden via
+  // CSS in InquiryForm). A filled value is a near-certain bot. Return a
+  // fake success rather than a 400 — rejecting outright just teaches
+  // the bot what to fix, silently accepting teaches it nothing while
+  // storing nothing either.
+  if (request.website) {
+    return { status: 200, body: { id: "00000000-0000-0000-0000-000000000000" } };
+  }
+
+  // Simple, DB-backed rate limit — no new infrastructure, just the one
+  // narrow security-definer count this schema already exposes. Fails
+  // open (see countRecentInquiriesByEmail's own comment): if the check
+  // itself can't run, a legitimate submission is never blocked because
+  // of it.
+  const recentCount = await countRecentInquiriesByEmail(supabase, request.businessEmail);
+  if (recentCount >= RATE_LIMIT_MAX_PER_HOUR) {
+    return { status: 429, body: { error: "Please wait a little before submitting again." } };
+  }
+
+  // Persist first, notify second — the brief's own ordering. A
+  // notification failure below must never undo or hide a successful
+  // persist.
   const result = await createInquiry(supabase, request);
   if (!result.ok) {
     return { status: 400, body: { error: result.reason } };
   }
 
-  // Best-effort: a notification failure never fails the request — the
-  // inquiry is already durably stored by this point, which is the part
-  // that actually matters. See ConsoleNotificationProvider's own
-  // comment for what "notify" means until a real provider is
-  // configured.
   try {
     await getNotificationProvider().notifyNewInquiry({
       inquiryId: result.data.id,
@@ -46,7 +65,10 @@ export async function handleCreateInquiryRequest(
       company: request.company ?? null,
     });
   } catch {
-    // Deliberately swallowed — see comment above.
+    // Deliberately swallowed — persistence already succeeded, which is
+    // the part that actually matters. See ResendNotificationProvider's
+    // own comment: it throws on failure precisely so this layer, not
+    // the provider, decides that a notification failure is non-fatal.
   }
 
   return { status: 200, body: { id: result.data.id } };

@@ -2,7 +2,11 @@
 --
 -- NOT EXECUTED as part of this task, for the same disclosed reason as
 -- every other verification script in this directory: no local
--- Postgres/Docker/psql binary is available in this environment.
+-- Postgres/Docker/psql binary is available in this environment. Run
+-- after both 20260809090000_inquiries.sql and
+-- 20260809120000_inquiries_taxonomy_refinement.sql are applied — this
+-- tests the refined shape (5-value inquiry_type/inquiry_status, no
+-- owner/notes columns, count_recent_inquiries_by_email()).
 
 begin;
 
@@ -13,6 +17,7 @@ insert into auth.users (id, email) values
 do $$
 declare
   v_inquiry_id uuid;
+  v_recent_count integer;
 begin
   -- ── Test 1: an anonymous visitor can submit an inquiry. ──────────────
   set local role anon;
@@ -38,7 +43,9 @@ begin
     'Test 3 FAILED: a non-staff authenticated user must not see any inquiry';
   reset role;
 
-  -- ── Test 4: seed staff, confirm they CAN read and update. ────────────
+  -- ── Test 4: seed staff, confirm they CAN read and change status
+  -- (the one mutation this schema supports post-refinement — no owner
+  -- column anymore). ────────────────────────────────────────────────────
   insert into platform_staff (user_id) values ('22222222-2222-2222-2222-222222222222');
 
   set local role authenticated;
@@ -46,9 +53,9 @@ begin
   assert (select count(*) from inquiries) = 1,
     'Test 4a FAILED: seeded platform staff should see the inquiry';
 
-  update inquiries set status = 'in_review', owner = '22222222-2222-2222-2222-222222222222' where id = v_inquiry_id;
-  assert (select status from inquiries where id = v_inquiry_id) = 'in_review',
-    'Test 4b FAILED: platform staff should be able to update status/owner';
+  update inquiries set status = 'reviewing' where id = v_inquiry_id;
+  assert (select status from inquiries where id = v_inquiry_id) = 'reviewing',
+    'Test 4b FAILED: platform staff should be able to update status';
   reset role;
 
   -- ── Test 5: no DELETE policy exists for any role — even staff cannot
@@ -74,6 +81,14 @@ begin
     when check_violation then
       null; -- expected
   end;
+  reset role;
+
+  -- ── Test 7: count_recent_inquiries_by_email() is callable by anon and
+  -- returns a count only, never rows — backs the application-level rate
+  -- limit without granting SELECT on the table itself. ──────────────────
+  set local role anon;
+  select count_recent_inquiries_by_email('jane@example.com') into v_recent_count;
+  assert v_recent_count = 1, 'Test 7 FAILED: rate-limit function should count the one inquiry just submitted by this email';
   reset role;
 
   raise notice 'All inquiries verification tests passed.';
