@@ -49,7 +49,7 @@ export default async function DecisionHistoryPage() {
             </thead>
             <tbody className="divide-y divide-titanium">
               {decisions.map((decision) => (
-                <tr key={decision.id} className="transition duration-200 hover:bg-carbon-2">
+                <tr key={decision.id} className="transition-colors duration-control hover:bg-carbon-2">
                   <td className="px-5 py-4">
                     <Link href={`/app/decisions/${decision.id}`} className="font-medium text-nova-ink hover:text-nova-accent-strong">
                       {decision.title}

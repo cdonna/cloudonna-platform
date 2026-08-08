@@ -6,6 +6,7 @@ import Hero from "@/components/landing/Hero";
 import { InquiryForm } from "@/components/landing/InquiryForm";
 import NarrativeSequence from "@/components/landing/NarrativeSequence";
 import Problem from "@/components/landing/Problem";
+import { Reveal } from "@/components/landing/Reveal";
 import TrustStrip from "@/components/landing/TrustStrip";
 
 export const metadata: Metadata = {
@@ -32,13 +33,27 @@ export default function Home() {
     <main className="min-h-screen bg-obsidian">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationJsonLd) }} />
       <Hero />
-      <Problem />
-      <NarrativeSequence />
-      <DonnaLive />
-      <TrustStrip />
-      <EnterpriseIntelligence />
-      <Ecosystem />
-      <InquiryForm inquiryType="founding_tester" sectionId="early-access" />
+      <Reveal>
+        <Problem />
+      </Reveal>
+      <Reveal>
+        <NarrativeSequence />
+      </Reveal>
+      <Reveal>
+        <DonnaLive />
+      </Reveal>
+      <Reveal>
+        <TrustStrip />
+      </Reveal>
+      <Reveal>
+        <EnterpriseIntelligence />
+      </Reveal>
+      <Reveal>
+        <Ecosystem />
+      </Reveal>
+      <Reveal>
+        <InquiryForm inquiryType="founding_tester" sectionId="early-access" />
+      </Reveal>
     </main>
   );
 }

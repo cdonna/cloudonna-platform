@@ -134,6 +134,12 @@
   --transition-duration-modal: 340ms; /* dialogs, drawers */
   --transition-duration-reveal: 550ms; /* the recommendation itself */
   --animate-aurora-drift: aurora-drift 90s ease-in-out infinite;
+  /* Replaces Tailwind's default animate-ping for "Donna is thinking" —
+     ping's sharp expand-to-transparent reads as an alert (a browser
+     notification dot), not calm ongoing work. This is a slower,
+     gentler scale+opacity pulse — GPU-only properties, same as
+     aurora-drift. */
+  --animate-nova-breathe: nova-breathe 2.4s ease-in-out infinite;
 }
 
 @keyframes aurora-drift {
@@ -143,6 +149,18 @@
   }
   50% {
     transform: translate(2%, -3%) scale(1.05);
+  }
+}
+
+@keyframes nova-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.15;
   }
 }
 

@@ -53,7 +53,7 @@ export function AnalysingState({
         <div className="flex items-center gap-4">
           <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-nova-accent text-white">
             <Bot size={25} />
-            <span className="absolute inset-0 rounded-2xl border border-nova-accent-strong opacity-30 motion-safe:animate-ping" />
+            <span className="absolute inset-0 rounded-2xl border border-nova-accent-strong motion-safe:animate-nova-breathe" />
           </div>
 
           <div>

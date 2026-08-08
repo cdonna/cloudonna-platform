@@ -83,7 +83,7 @@ export default async function InquiriesPage() {
               </thead>
               <tbody className="divide-y divide-titanium">
                 {inquiries.map((inquiry) => (
-                  <tr key={inquiry.id} className="align-top transition duration-200 hover:bg-carbon-2">
+                  <tr key={inquiry.id} className="align-top transition-colors duration-control hover:bg-carbon-2">
                     <td className="px-5 py-4">
                       <div className="font-medium text-nova-ink">{inquiry.name}</div>
                       <div className="text-xs text-nova-ink-faint">{inquiry.businessEmail}</div>
