@@ -46,18 +46,14 @@ export function AnalysingState({
     <div className="flex min-h-[38rem] flex-col justify-center p-8 sm:p-12">
       <div className="mx-auto w-full max-w-xl">
         <div className="flex items-center gap-4">
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 text-white">
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-nova-accent text-white">
             <Bot size={25} />
-            <span className="absolute inset-0 animate-ping rounded-2xl border border-violet-400 opacity-30" />
+            <span className="absolute inset-0 rounded-2xl border border-nova-accent-strong opacity-30 motion-safe:animate-ping" />
           </div>
 
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
-              Donna is thinking
-            </div>
-            <div className="mt-1 font-semibold text-slate-950">
-              Analysing your decision
-            </div>
+            <div className="text-xs font-semibold tracking-[0.16em] text-nova-accent-strong uppercase">Donna is thinking</div>
+            <div className="mt-1 font-semibold text-nova-ink">Analysing your decision</div>
           </div>
         </div>
 
@@ -69,32 +65,22 @@ export function AnalysingState({
             return (
               <div
                 key={step}
-                className={`flex items-center gap-4 rounded-xl border px-4 py-4 transition ${
+                className={`flex items-center gap-4 rounded-xl border px-4 py-4 transition duration-300 ${
                   active
-                    ? "border-violet-200 bg-violet-50"
+                    ? "border-nova-accent/40 bg-nova-accent/10"
                     : completed
-                      ? "border-emerald-100 bg-emerald-50/60"
-                      : "border-slate-100 bg-white opacity-45"
+                      ? "border-nova-success/25 bg-nova-success/10"
+                      : "border-titanium bg-carbon opacity-45"
                 }`}
               >
                 <div
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                    completed
-                      ? "bg-emerald-500 text-white"
-                      : active
-                        ? "bg-violet-600 text-white"
-                        : "bg-slate-100 text-slate-400"
+                    completed ? "bg-nova-success text-white" : active ? "bg-nova-accent text-white" : "bg-carbon-2 text-nova-ink-faint"
                   }`}
                 >
-                  {completed ? (
-                    <Check size={16} />
-                  ) : active ? (
-                    <LoaderCircle size={16} className="animate-spin" />
-                  ) : (
-                    <span className="text-xs">{index + 1}</span>
-                  )}
+                  {completed ? <Check size={16} /> : active ? <LoaderCircle size={16} className="animate-spin" /> : <span className="text-xs">{index + 1}</span>}
                 </div>
-                <span className="text-sm font-medium text-slate-700">{step}</span>
+                <span className="text-sm font-medium text-nova-ink-muted">{step}</span>
               </div>
             );
           })}

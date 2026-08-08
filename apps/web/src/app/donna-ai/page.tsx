@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { DonnaAIExperience } from "@/components/donna-ai/DonnaAIExperience";
+import { getCurrentUser } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Donna AI — Enterprise Decision Assistant · ClouDonna",
@@ -11,7 +12,17 @@ export const metadata: Metadata = {
   alternates: { canonical: "/donna-ai" },
 };
 
-export default function DonnaAIPage() {
+// isSignedIn must reflect the real, current session on every request —
+// forced dynamic explicitly rather than trusting automatic detection,
+// which would otherwise depend on whether Supabase env vars happen to
+// be present at build time (see docs/sprint-6/17-auth-implementation.md,
+// "Why /donna-ai is forced dynamic"). The wizard itself remains fully
+// client-rendered and interactive regardless of this.
+export const dynamic = "force-dynamic";
+
+export default async function DonnaAIPage() {
+  const user = await getCurrentUser();
+
   return (
     <div>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
@@ -37,7 +48,7 @@ export default function DonnaAIPage() {
         </Link>
       </div>
 
-      <DonnaAIExperience />
+      <DonnaAIExperience isSignedIn={Boolean(user)} />
     </div>
   );
 }

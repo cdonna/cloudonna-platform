@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { ArrowRight, CheckCircle2, LoaderCircle, Mail } from "lucide-react";
+import { ArrowRight, CheckCircle2, LoaderCircle, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -24,8 +24,8 @@ const audienceOptions: { value: Audience | ""; label: string }[] = [
 
 const audienceCopy: Record<Audience, { heading: string; body: string }> = {
   customer: {
-    heading: "Request early access",
-    body: "ClouDonna is opening access to Donna AI's guided assessment in waves. This is a preview of the request flow — in this alpha build, submissions are not transmitted or stored anywhere.",
+    heading: "Become a Founding Tester",
+    body: "ClouDonna is opening access to Donna AI's assessment in waves. This is a preview of the request flow — submissions aren't transmitted or stored anywhere in this alpha build.",
   },
   vendor: {
     heading: "Apply as a vendor",
@@ -69,50 +69,45 @@ export default function EarlyAccess({
   return (
     <section
       id="early-access"
-      className="relative scroll-mt-8 overflow-hidden bg-gradient-to-b from-white via-indigo-50/40 to-white px-6 py-24"
+      className="relative scroll-mt-8 overflow-hidden bg-void px-6 py-28"
     >
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-[26rem] w-[40rem] -translate-x-1/2 rounded-full bg-violet-200/30 blur-[140px]" />
+      <div className="pointer-events-none absolute inset-0 motion-safe:animate-aurora-drift">
+        <div className="absolute left-1/2 top-0 h-[26rem] w-[40rem] -translate-x-1/2 rounded-full bg-aurora-primary/20 blur-[140px]" />
       </div>
 
       <div className="relative mx-auto max-w-3xl">
         <div className="text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-700 shadow-sm">
-            <Mail size={14} />
-            Public Alpha
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
+            <Sparkles size={14} />
+            Founding Testers · Public Alpha
           </div>
 
-          <h2 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-5xl">
-            {copy.heading}
-          </h2>
+          <h2 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">{copy.heading}</h2>
 
-          <p className="mt-5 text-lg leading-8 text-slate-600">{copy.body}</p>
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-nova-ink-muted">{copy.body}</p>
         </div>
 
         <div
-          className="mt-12 overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 shadow-[0_35px_100px_-35px_rgba(79,70,229,0.35)] backdrop-blur-xl"
+          className="mt-12 overflow-hidden rounded-[2rem] border border-titanium bg-carbon shadow-nova-glow"
           aria-live="polite"
         >
           {status === "success" ? (
             <div className="flex flex-col items-center gap-4 p-10 text-center sm:p-14">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full border border-nova-success/30 bg-nova-success/10 text-nova-success">
                 <CheckCircle2 size={28} />
               </span>
 
-              <h3 className="text-2xl font-semibold text-slate-950">
-                Preview complete
-              </h3>
+              <h3 className="text-2xl font-semibold text-nova-ink">Preview complete</h3>
 
-              <p className="max-w-md text-sm leading-6 text-slate-600">
-                Thanks for trying the Early Access flow. In this alpha
-                build, submissions are not transmitted or stored anywhere —
-                a live intake process will be enabled in a future release.
+              <p className="max-w-md text-sm leading-6 text-nova-ink-muted">
+                Thanks for trying the Founding Tester flow. In this alpha build, submissions are not transmitted or stored anywhere — a
+                live intake process will be enabled in a future release.
               </p>
 
               <button
                 type="button"
                 onClick={() => setStatus("idle")}
-                className="mt-2 text-sm font-medium text-violet-700 hover:text-violet-800"
+                className="mt-2 text-sm font-medium text-nova-accent-strong hover:text-nova-ink"
               >
                 Submit another request
               </button>
@@ -148,16 +143,16 @@ export default function EarlyAccess({
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor={`${formId}-role`}
-                  className="text-sm font-medium text-slate-800"
+                  className="text-sm font-medium text-nova-ink"
                 >
-                  Role <span className="text-violet-600">*</span>
+                  Role <span className="text-nova-accent-strong">*</span>
                 </label>
                 <select
                   id={`${formId}-role`}
                   name="role"
                   required
                   defaultValue=""
-                  className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus-visible:border-violet-400 focus-visible:ring-3 focus-visible:ring-violet-500/20"
+                  className="h-11 rounded-xl border border-titanium bg-carbon-2 px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
                 >
                   <option value="" disabled>
                     Select your role
@@ -173,17 +168,17 @@ export default function EarlyAccess({
               <div className="flex flex-col gap-1.5 sm:col-span-2">
                 <label
                   htmlFor={`${formId}-audience`}
-                  className="text-sm font-medium text-slate-800"
+                  className="text-sm font-medium text-nova-ink"
                 >
                   I&apos;m interested as a{" "}
-                  <span className="text-violet-600">*</span>
+                  <span className="text-nova-accent-strong">*</span>
                 </label>
                 <select
                   id={`${formId}-audience`}
                   name="audience"
                   required
                   defaultValue={audience ?? ""}
-                  className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus-visible:border-violet-400 focus-visible:ring-3 focus-visible:ring-violet-500/20"
+                  className="h-11 rounded-xl border border-titanium bg-carbon-2 px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
                 >
                   <option value="" disabled>
                     Select what best describes you
@@ -199,10 +194,10 @@ export default function EarlyAccess({
               <div className="flex flex-col gap-1.5 sm:col-span-2">
                 <label
                   htmlFor={`${formId}-message`}
-                  className="text-sm font-medium text-slate-800"
+                  className="text-sm font-medium text-nova-ink"
                 >
                   Message{" "}
-                  <span className="font-normal text-slate-400">
+                  <span className="font-normal text-nova-ink-faint">
                     (optional)
                   </span>
                 </label>
@@ -211,7 +206,7 @@ export default function EarlyAccess({
                   name="message"
                   rows={4}
                   placeholder="Tell us about your landscape or what you'd like Donna to help with..."
-                  className="resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus-visible:border-violet-400 focus-visible:ring-3 focus-visible:ring-violet-500/20"
+                  className="resize-none rounded-xl border border-titanium bg-carbon-2 px-3 py-2.5 text-sm text-nova-ink outline-none placeholder:text-nova-ink-faint focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
                 />
               </div>
 
@@ -219,7 +214,7 @@ export default function EarlyAccess({
                 <Button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="h-12 w-full bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg shadow-violet-200"
+                  className="h-12 w-full bg-nova-accent text-white shadow-nova-glow hover:bg-nova-accent-strong"
                 >
                   {status === "submitting" ? (
                     <>
@@ -228,16 +223,14 @@ export default function EarlyAccess({
                     </>
                   ) : (
                     <>
-                      Request early access
+                      Become a Founding Tester
                       <ArrowRight size={16} />
                     </>
                   )}
                 </Button>
 
-                <p className="mt-3 text-center text-xs text-slate-400">
-                  Preview only — no account or payment required, and
-                  submissions are not transmitted or stored in this alpha
-                  build.
+                <p className="mt-3 text-center text-xs text-nova-ink-faint">
+                  Preview only. No account, no payment. Nothing here is transmitted or stored.
                 </p>
               </div>
             </form>
@@ -263,8 +256,8 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-slate-800">
-        {label} {required && <span className="text-violet-600">*</span>}
+      <label htmlFor={id} className="text-sm font-medium text-nova-ink">
+        {label} {required && <span className="text-nova-accent-strong">*</span>}
       </label>
       <input
         id={id}
@@ -272,7 +265,7 @@ function Field({
         type={type}
         required={required}
         autoComplete={autoComplete}
-        className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus-visible:border-violet-400 focus-visible:ring-3 focus-visible:ring-violet-500/20"
+        className="h-11 rounded-xl border border-titanium bg-carbon-2 px-3 text-sm text-nova-ink outline-none placeholder:text-nova-ink-faint focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
       />
     </div>
   );

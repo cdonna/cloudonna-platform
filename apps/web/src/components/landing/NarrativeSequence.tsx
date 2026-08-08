@@ -29,35 +29,30 @@ const steps = [
 
 export default function NarrativeSequence() {
   return (
-    <section className="relative overflow-hidden bg-slate-50 px-6 py-24">
+    <section className="relative overflow-hidden bg-void px-6 py-28">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-4xl">
-            From business goal to executive report
-          </h2>
-          <p className="mt-4 text-lg leading-8 text-slate-600">
-            Every ClouDonna recommendation follows the same evidence-based
-            path — no step is skipped, and no product is named until the
-            reasoning behind it is on the table.
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">
+            The solution
+          </div>
+
+          <h2 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">The same path, every time</h2>
+          <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
+            From business goal to executive report, Donna never skips a step. No product gets named until the reasoning is on the table.
           </p>
         </div>
 
-        <ol className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 xl:grid-cols-11">
+        <ol className="mt-16 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 xl:grid-cols-11">
           {steps.map((step, index) => {
             const Icon = step.icon;
 
             return (
-              <li
-                key={step.label}
-                className="flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm"
-              >
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 text-xs font-semibold text-white">
+              <li key={step.label} className="flex flex-col items-center gap-3 rounded-2xl border border-titanium bg-carbon p-4 text-center">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-nova-accent text-xs font-semibold text-white">
                   {index + 1}
                 </span>
-                <Icon size={18} className="text-violet-600" />
-                <span className="text-xs font-medium leading-tight text-slate-700">
-                  {step.label}
-                </span>
+                <Icon size={18} className="text-nova-accent-strong" />
+                <span className="text-xs font-medium leading-tight text-nova-ink-muted">{step.label}</span>
               </li>
             );
           })}
@@ -66,7 +61,7 @@ export default function NarrativeSequence() {
         <div className="mt-10 flex justify-center">
           <Link
             href="/discovery"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-700 transition hover:text-violet-800"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-nova-accent-strong transition duration-200 hover:text-nova-ink"
           >
             See how each step works →
           </Link>

@@ -1,0 +1,7 @@
+# Archived — Pre-Project-NOVA Design System
+
+These 12 documents (the original design audit, the "Design System v2" token specification, and the "Cinematic Layer" proposal) were the real, evidence-grounded design work produced before Project NOVA's Design Constitution (`../01-design-philosophy.md` onward). They are **not superseded in substance** — the specific findings (the 5.1/10 audit scores, the actual codebase greps, the chosen hex values, the typeface comparison table, the WCAG contrast checks) remain real and useful implementation-detail reference.
+
+They were moved here, not deleted or overwritten, because Project NOVA's Design Constitution deliberately reuses the same file numbers (`01`–`10`) for a different, more identity-first document set. Per this project's own established practice — mark a document superseded, never silently destroy it (see `docs/roadmap/12-roadmap.md`'s own precedent) — this directory preserves the earlier work in full.
+
+**Reading guidance going forward:** the Design Constitution (`docs/design/01`–`10`) is the authoritative statement of what ClouDonna's design should *feel like* and *be governed by*. These archived documents remain the best available source for concrete implementation values (exact hex codes, exact type scale, exact component inventory) until Project NOVA's own implementation phase produces updated versions of that detail under the new philosophy.

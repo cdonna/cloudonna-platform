@@ -10,7 +10,7 @@ const exploreLinks = [
 const audienceLinks = [
   { label: "For Vendors", href: "/for-vendors" },
   { label: "For Partners", href: "/for-partners" },
-  { label: "Request Early Access", href: "/early-access" },
+  { label: "Become a Founding Tester", href: "/early-access" },
 ];
 
 const legalLinks = [
@@ -21,7 +21,7 @@ const legalLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-white px-6 py-14">
+    <footer className="border-t border-titanium bg-obsidian px-6 py-14">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
@@ -33,14 +33,13 @@ export default function Footer() {
                 height={36}
                 className="h-9 w-9 object-contain"
               />
-              <span className="text-lg font-semibold tracking-tight text-slate-950">
-                Clou<span className="text-violet-600">Donna</span>
+              <span className="text-lg font-semibold tracking-tight text-nova-ink">
+                Clou<span className="text-nova-accent-strong">Donna</span>
               </span>
             </Link>
 
-            <p className="mt-4 max-w-xs text-sm leading-6 text-slate-500">
-              Enterprise Decision Intelligence — evidence-based technology
-              decisions, powered by Donna AI.
+            <p className="mt-4 max-w-xs text-sm leading-6 text-nova-ink-faint">
+              Evidence over opinion. Decisions you can defend.
             </p>
           </div>
 
@@ -49,11 +48,9 @@ export default function Footer() {
           <FooterColumn title="Legal" links={legalLinks} />
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 text-sm text-slate-500 sm:flex-row">
-          <span>
-            &copy; {new Date().getFullYear()} ClouDonna. All rights reserved.
-          </span>
-          <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-violet-700">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-titanium pt-8 text-sm text-nova-ink-faint sm:flex-row">
+          <span>&copy; {new Date().getFullYear()} ClouDonna. All rights reserved.</span>
+          <span className="rounded-full border border-titanium bg-carbon px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong">
             Public Alpha
           </span>
         </div>
@@ -71,17 +68,12 @@ function FooterColumn({
 }) {
   return (
     <nav aria-label={title}>
-      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-        {title}
-      </div>
+      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-nova-ink-faint">{title}</div>
 
       <ul className="mt-4 space-y-3">
         {links.map((link) => (
           <li key={link.label}>
-            <Link
-              href={link.href}
-              className="text-sm text-slate-600 transition hover:text-violet-700"
-            >
+            <Link href={link.href} className="text-sm text-nova-ink-muted transition duration-200 hover:text-nova-accent-strong">
               {link.label}
             </Link>
           </li>

@@ -12,6 +12,12 @@ Enable organizations to make evidence-based enterprise technology decisions.
 
 ClouDonna will become the trusted operating system for enterprise software decisions.
 
+## Manifesto
+
+> LLMs are replaceable. Decision intelligence is not.
+
+ClouDonna is a System of Intelligence, System of Record, System of Trust, and System of Learning — vendor-neutral, evidence-based, deterministic at the scoring layer, provider-independent at the AI layer, and human-governed at every decision. Full manifesto: [`docs/manifesto/cloudonna-manifesto-v1.md`](docs/manifesto/cloudonna-manifesto-v1.md).
+
 ## Initial Product Scope
 
 - Enterprise software discovery

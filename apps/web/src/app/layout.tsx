@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "ClouDonna — Enterprise Decision Intelligence",
   description:
-    "ClouDonna helps organizations make evidence-based enterprise technology decisions through AI, structured market intelligence, trusted benchmarks and expert knowledge.",
+    "ClouDonna helps you make enterprise technology decisions you can defend — backed by evidence, not opinion.",
   openGraph: {
     siteName: "ClouDonna",
     type: "website",

@@ -7,7 +7,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  /* Was self-referential (var(--font-sans) inside its own definition,
+     an inherited shadcn scaffolding bug) — font-sans never actually
+     resolved to Geist despite Geist being loaded in layout.tsx. Fixed
+     as part of Project NOVA's typography pass, since every other
+     typography token in this file depends on this one actually
+     working. */
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -46,6 +52,86 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ==========================================================================
+   Project NOVA — Deep Space Material & Motion System
+   docs/design/{01-10}.md is the Design Constitution this implements;
+   docs/design/04-material-system.md and 05-color-system.md name every
+   value below. Additive only — nothing above this block is renamed,
+   removed, or overridden. Named tokens, used consistently across every
+   Nova surface, so no component reaches for a hardcoded hex value.
+   ========================================================================== */
+@theme {
+  /* Materials — surfaces */
+  --color-void: #05070d;
+  --color-obsidian: #0a0e17;
+  --color-carbon: #10141f;
+  --color-carbon-2: #1a2030;
+
+  /* Titanium — edges only, applied via border-color, never a fill */
+  --color-titanium: rgba(255, 255, 255, 0.08);
+  --color-titanium-strong: rgba(255, 255, 255, 0.14);
+
+  /* Text hierarchy on the dark register — recomposed, not inverted;
+     never pure white. */
+  --color-nova-ink: #f4f6fb;
+  --color-nova-ink-muted: #9aa4b8;
+  --color-nova-ink-faint: #6b7590;
+
+  /* Aurora — ambient light only, never a surface fill */
+  --color-aurora-primary: #7c3aed;
+  --color-aurora-secondary: #2563eb;
+  --color-nova-accent: #8b5cf6;
+  --color-nova-accent-strong: #a78bfa;
+
+  /* Evidence reliability (maps onto evidence_reliability_tier) */
+  --color-evidence-primary: #8b5cf6;
+  --color-evidence-vendor: #94a3b8;
+  --color-evidence-analyst: #38bdf8;
+  --color-evidence-community: #64748b;
+  --color-evidence-internal: #e2e8f0;
+
+  /* Confidence bands — deliberately never the Decision Score palette;
+     conflating "how good" with "how sure" is the false-precision risk
+     the Confidence Model architecture rules out. */
+  --color-confidence-high: #cbd5e1;
+  --color-confidence-medium: #f59e0b;
+  --color-confidence-low: #ef4444;
+  --color-confidence-insufficient: #64748b;
+
+  /* Risk severity */
+  --color-risk-low: #10b981;
+  --color-risk-medium: #f59e0b;
+  --color-risk-high: #ef4444;
+  --color-risk-critical: #f43f5e;
+
+  /* Semantic — kept structurally separate from the brand accent */
+  --color-nova-success: #10b981;
+  --color-nova-warning: #f59e0b;
+
+  /* Elevation — glow shadows, reserved for rare, deliberate moments,
+     never a default card treatment. */
+  --shadow-nova-resting: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-nova-raised: 0 12px 32px -12px rgb(0 0 0 / 0.55);
+  --shadow-nova-glow: 0 30px 90px -35px rgb(124 58 237 / 0.45);
+
+  /* Motion — the cinematic tier only. Hover/settle/reveal reuse
+     Tailwind's own default duration scale (duration-200/300/500)
+     deliberately, not reinvented here — see
+     docs/design/03-motion-language.md. */
+  --ease-nova-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-aurora-drift: aurora-drift 90s ease-in-out infinite;
+}
+
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(2%, -3%) scale(1.05);
+  }
 }
 
 :root {

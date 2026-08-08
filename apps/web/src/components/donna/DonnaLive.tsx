@@ -239,64 +239,63 @@ export default function DonnaLive() {
   return (
     <section
       id="donna"
-      className="relative scroll-mt-8 overflow-hidden bg-white px-6 py-24"
+      className="relative scroll-mt-8 overflow-hidden bg-obsidian px-6 py-28"
     >
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-10rem] top-20 h-96 w-96 rounded-full bg-blue-200/40 blur-[130px]" />
-        <div className="absolute right-[-8rem] top-10 h-[28rem] w-[28rem] rounded-full bg-violet-200/45 blur-[140px]" />
+      <div className="pointer-events-none absolute inset-0 motion-safe:animate-aurora-drift">
+        <div className="absolute left-[-10rem] top-20 h-96 w-96 rounded-full bg-aurora-secondary/20 blur-[130px]" />
+        <div className="absolute right-[-8rem] top-10 h-[28rem] w-[28rem] rounded-full bg-aurora-primary/25 blur-[140px]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-700 shadow-sm">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
             <Sparkles size={14} />
             Donna AI Live
           </div>
 
-          <h2 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-5xl">
+          <h2 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">
             Turn complex requirements into a clear decision
           </h2>
 
-          <p className="mt-5 text-lg leading-8 text-slate-600">
-            Describe your landscape, objectives and constraints. Donna
-            structures the decision, compares suitable platforms and creates
-            an actionable recommendation.
+          <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
+            Describe your landscape and what you&apos;re trying to do. Donna compares real alternatives against it and builds a
+            recommendation — with the reasoning attached.
           </p>
 
           <Link
             href="/donna-ai"
-            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-violet-700 transition hover:text-violet-800"
+            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-nova-accent-strong transition duration-200 hover:text-nova-ink"
           >
-            Try the full guided Donna AI assessment
+            Try the full Donna AI assessment
             <ArrowRight size={15} />
           </Link>
         </div>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-[0.72fr_1.28fr]">
-          <aside className="rounded-[2rem] border border-slate-200/80 bg-white/75 p-6 shadow-[0_30px_90px_-45px_rgba(79,70,229,0.3)] backdrop-blur-xl">
+          <aside className="rounded-[2rem] border border-titanium bg-carbon p-6 shadow-nova-resting">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 text-white shadow-lg shadow-violet-200">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-nova-accent text-white shadow-nova-glow">
                 <Bot size={21} />
               </div>
 
               <div>
-                <div className="font-semibold text-slate-950">Donna AI</div>
-                <div className="text-xs text-slate-500">
+                <div className="font-semibold text-nova-ink">Donna AI</div>
+                <div className="text-xs text-nova-ink-faint">
                   Enterprise decision architect
                 </div>
               </div>
 
-              <div className="ml-auto flex items-center gap-2 text-xs text-emerald-600">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+              <div className="ml-auto flex items-center gap-2 text-xs text-nova-success">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-nova-success" />
                 Online
               </div>
             </div>
 
-            <div className="mt-7 rounded-2xl border border-slate-200 bg-white p-4">
+            <div className="mt-7 rounded-2xl border border-titanium bg-carbon-2 p-4">
               <div className="flex items-start gap-3">
                 <Search
                   size={18}
-                  className="mt-1 shrink-0 text-violet-600"
+                  className="mt-1 shrink-0 text-nova-accent-strong"
                 />
 
                 <label htmlFor="donna-question" className="sr-only">
@@ -319,14 +318,14 @@ export default function DonnaLive() {
                   }}
                   rows={6}
                   placeholder="Describe your enterprise landscape and the decision you need to make..."
-                  className="w-full resize-none bg-transparent text-sm leading-6 text-slate-900 outline-none placeholder:text-slate-400"
+                  className="w-full resize-none bg-transparent text-sm leading-6 text-nova-ink outline-none placeholder:text-nova-ink-faint"
                 />
               </div>
 
               <Button
                 onClick={submitQuestion}
                 disabled={!question.trim() || status === "analysing"}
-                className="mt-4 h-11 w-full bg-gradient-to-r from-blue-600 to-violet-600 text-white"
+                className="mt-4 h-11 w-full bg-nova-accent text-white hover:bg-nova-accent-strong"
               >
                 {status === "analysing" ? (
                   <>
@@ -346,7 +345,7 @@ export default function DonnaLive() {
             </div>
 
             <div className="mt-6">
-              <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+              <div className="text-xs font-semibold uppercase tracking-[0.14em] text-nova-ink-faint">
                 Try an example
               </div>
 
@@ -356,12 +355,12 @@ export default function DonnaLive() {
                     key={example}
                     type="button"
                     onClick={() => setQuestion(example)}
-                    className="group flex w-full items-start justify-between gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm leading-5 text-slate-600 transition hover:border-violet-200 hover:bg-violet-50"
+                    className="group flex w-full items-start justify-between gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm leading-5 text-nova-ink-muted transition duration-200 hover:border-titanium hover:bg-carbon-2"
                   >
                     <span>{example}</span>
                     <ChevronRight
                       size={15}
-                      className="mt-1 shrink-0 text-slate-300 transition group-hover:translate-x-1 group-hover:text-violet-600"
+                      className="mt-1 shrink-0 text-nova-ink-faint transition duration-200 group-hover:translate-x-1 group-hover:text-nova-accent-strong"
                     />
                   </button>
                 ))}
@@ -369,7 +368,7 @@ export default function DonnaLive() {
             </div>
           </aside>
 
-          <div className="min-h-[38rem] overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 shadow-[0_40px_110px_-45px_rgba(79,70,229,0.4)] backdrop-blur-2xl">
+          <div className="min-h-[38rem] overflow-hidden rounded-[2rem] border border-titanium bg-obsidian shadow-nova-glow">
             {status === "idle" && (
               <EmptyDonnaState />
             )}
@@ -384,24 +383,24 @@ export default function DonnaLive() {
             {(status === "answering" ||
               status === "complete") && (
               <div>
-                <div className="border-b border-slate-200 px-6 py-5 sm:px-8">
+                <div className="border-b border-titanium px-6 py-5 sm:px-8">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-carbon-2 text-nova-accent-strong">
                       <UserRound size={19} />
                     </div>
 
                     <div>
-                      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-nova-ink-faint">
                         Your requirement
                       </div>
-                      <p className="mt-1 text-sm leading-6 text-slate-700">
+                      <p className="mt-1 text-sm leading-6 text-nova-ink-muted">
                         {submittedQuestion}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="border-b border-slate-200 px-6 py-4 sm:px-8">
+                <div className="border-b border-titanium px-6 py-4 sm:px-8">
                   <div
                     role="tablist"
                     aria-label="Donna AI result view"
@@ -422,10 +421,10 @@ export default function DonnaLive() {
                           tabIndex={selected ? 0 : -1}
                           onClick={() => setActiveView(tab.value)}
                           onKeyDown={(event) => handleTabKeyDown(event, index, selectTabByIndex)}
-                          className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+                          className={`rounded-xl px-4 py-2 text-sm font-medium transition duration-200 ${
                             selected
-                              ? "bg-slate-950 text-white shadow-md"
-                              : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                              ? "bg-nova-accent text-white shadow-md"
+                              : "text-nova-ink-muted hover:bg-carbon-2 hover:text-nova-ink"
                           }`}
                         >
                           {tab.label}
@@ -459,7 +458,7 @@ export default function DonnaLive() {
                   )}
                 </div>
 
-                <div className="border-t border-slate-200 px-6 py-5 sm:px-8">
+                <div className="border-t border-titanium px-6 py-5 sm:px-8">
                   <div className="flex flex-wrap items-center gap-3">
                     <Button
                       variant="outline"
@@ -467,8 +466,8 @@ export default function DonnaLive() {
                       onClick={handleToggleSave}
                       className={
                         saved
-                          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                          : "border-slate-200 bg-white text-slate-800"
+                          ? "border-nova-success/30 bg-nova-success/10 text-nova-success"
+                          : "border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
                       }
                     >
                       {saved ? <Check size={16} /> : <Save size={16} />}
@@ -482,8 +481,8 @@ export default function DonnaLive() {
                       onClick={handleToggleComparison}
                       className={
                         comparisonOpen
-                          ? "border-violet-300 bg-violet-50 text-violet-700"
-                          : "border-slate-200 bg-white text-slate-800"
+                          ? "border-nova-accent/40 bg-nova-accent/10 text-nova-accent-strong"
+                          : "border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
                       }
                     >
                       <GitCompareArrows size={16} />
@@ -495,8 +494,8 @@ export default function DonnaLive() {
                       onClick={handleExport}
                       className={
                         exported
-                          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                          : "border-slate-200 bg-white text-slate-800"
+                          ? "border-nova-success/30 bg-nova-success/10 text-nova-success"
+                          : "border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
                       }
                     >
                       {exported ? <Check size={16} /> : <Download size={16} />}
@@ -506,7 +505,7 @@ export default function DonnaLive() {
                     <button
                       type="button"
                       onClick={resetDonna}
-                      className="ml-auto text-sm font-medium text-violet-700"
+                      className="ml-auto text-sm font-medium text-nova-accent-strong"
                     >
                       Start new analysis
                     </button>
@@ -535,17 +534,16 @@ function EmptyDonnaState() {
   return (
     <div className="flex min-h-[38rem] items-center justify-center p-8 text-center">
       <div className="max-w-md">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-gradient-to-br from-blue-100 to-violet-100 text-violet-700 shadow-xl shadow-violet-100">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-nova-accent text-white shadow-nova-glow">
           <Bot size={34} />
         </div>
 
-        <h3 className="mt-7 text-2xl font-semibold text-slate-950">
+        <h3 className="mt-7 text-2xl font-semibold text-nova-ink">
           Your enterprise decision starts here
         </h3>
 
-        <p className="mt-4 text-sm leading-7 text-slate-500">
-          Donna will analyse requirements, existing systems, architecture,
-          security, cost, implementation complexity and strategic fit.
+        <p className="mt-4 text-sm leading-7 text-nova-ink-muted">
+          The full picture — architecture, cost, risk and fit.
         </p>
 
         <div className="mt-8 grid grid-cols-2 gap-3 text-left">
@@ -560,11 +558,11 @@ function EmptyDonnaState() {
             return (
               <div
                 key={label as string}
-                className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600"
+                className="flex items-center gap-3 rounded-xl border border-titanium bg-carbon px-4 py-3 text-sm text-nova-ink-muted"
               >
                 <ItemIcon
                   size={17}
-                  className="text-violet-600"
+                  className="text-nova-accent-strong"
                 />
                 {label as string}
               </div>
@@ -587,23 +585,23 @@ function AnalysingState({
     <div className="flex min-h-[38rem] flex-col justify-center p-8 sm:p-12">
       <div className="mx-auto w-full max-w-xl">
         <div className="flex items-center gap-4">
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 text-white">
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-nova-accent text-white">
             <Bot size={25} />
-            <span className="absolute inset-0 animate-ping rounded-2xl border border-violet-400 opacity-30" />
+            <span className="absolute inset-0 motion-safe:animate-ping rounded-2xl border border-nova-accent-strong opacity-30" />
           </div>
 
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
+            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
               Donna is thinking
             </div>
-            <div className="mt-1 font-semibold text-slate-950">
+            <div className="mt-1 font-semibold text-nova-ink">
               Analysing your technology decision
             </div>
           </div>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-          <p className="text-sm leading-6 text-slate-600">
+        <div className="mt-8 rounded-2xl border border-titanium bg-carbon-2 p-5">
+          <p className="text-sm leading-6 text-nova-ink-muted">
             “{question}”
           </p>
         </div>
@@ -616,21 +614,21 @@ function AnalysingState({
             return (
               <div
                 key={step}
-                className={`flex items-center gap-4 rounded-xl border px-4 py-4 transition ${
+                className={`flex items-center gap-4 rounded-xl border px-4 py-4 transition duration-300 ${
                   active
-                    ? "border-violet-200 bg-violet-50"
+                    ? "border-nova-accent/40 bg-nova-accent/10"
                     : completed
-                      ? "border-emerald-100 bg-emerald-50/60"
-                      : "border-slate-100 bg-white opacity-45"
+                      ? "border-nova-success/25 bg-nova-success/10"
+                      : "border-titanium bg-carbon opacity-45"
                 }`}
               >
                 <div
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
                     completed
-                      ? "bg-emerald-500 text-white"
+                      ? "bg-nova-success text-white"
                       : active
-                        ? "bg-violet-600 text-white"
-                        : "bg-slate-100 text-slate-400"
+                        ? "bg-nova-accent text-white"
+                        : "bg-carbon-2 text-nova-ink-faint"
                   }`}
                 >
                   {completed ? (
@@ -645,7 +643,7 @@ function AnalysingState({
                   )}
                 </div>
 
-                <span className="text-sm font-medium text-slate-700">
+                <span className="text-sm font-medium text-nova-ink-muted">
                   {step}
                 </span>
               </div>
@@ -672,23 +670,23 @@ function ReasoningChain({ chain }: { chain: DemoDecisionResult["reasoningChain"]
     >
       {steps.map((step, index) => (
         <li key={step.label} className="flex items-stretch gap-2">
-          <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">
+          <div className="rounded-xl border border-titanium bg-carbon-2 px-3 py-2">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-nova-ink-faint">
               {index + 1}. {step.label}
             </div>
-            <div className="mt-0.5 max-w-[14rem] text-xs font-medium text-slate-700">
+            <div className="mt-0.5 max-w-[14rem] text-xs font-medium text-nova-ink-muted">
               {step.value}
             </div>
           </div>
-          <ChevronRight size={16} aria-hidden="true" className="mt-4 shrink-0 text-slate-300" />
+          <ChevronRight size={16} aria-hidden="true" className="mt-4 shrink-0 text-nova-ink-faint" />
         </li>
       ))}
       <li className="flex items-stretch">
-        <div className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2">
-          <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-violet-500">
+        <div className="rounded-xl border border-nova-accent/30 bg-nova-accent/10 px-3 py-2">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-nova-accent-strong">
             5. Vendor recommendation
           </div>
-          <div className="mt-0.5 text-xs font-semibold text-violet-800">Illustrative shortlist below</div>
+          <div className="mt-0.5 text-xs font-semibold text-nova-accent-strong">Illustrative shortlist below</div>
         </div>
       </li>
     </ol>
@@ -713,31 +711,31 @@ function RecommendationView({
       <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
+            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
               Donna recommendation
             </span>
-            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+            <span className="rounded-full border border-titanium bg-carbon-2 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-nova-ink-faint">
               Illustrative example
             </span>
           </div>
 
-          <h3 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
+          <h3 className="mt-2 text-3xl font-semibold tracking-tight text-nova-ink">
             {recommendation.primary.name}
           </h3>
 
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-nova-ink-muted">
             {typedSummary}
             {!complete && (
-              <span className="ml-1 inline-block h-4 w-0.5 animate-pulse bg-violet-600" />
+              <span className="ml-1 inline-block h-4 w-0.5 animate-pulse bg-nova-accent-strong" />
             )}
           </p>
         </div>
 
-        <div className="rounded-2xl bg-emerald-50 px-5 py-4 text-center">
-          <div className="text-3xl font-semibold text-emerald-700">
+        <div className="rounded-2xl border border-nova-success/25 bg-nova-success/10 px-5 py-4 text-center">
+          <div className="text-3xl font-semibold text-nova-success">
             {recommendation.primary.score}%
           </div>
-          <div className="mt-1 text-xs font-medium text-emerald-600">
+          <div className="mt-1 text-xs font-medium text-nova-success">
             Illustrative fit
           </div>
         </div>
@@ -745,21 +743,21 @@ function RecommendationView({
 
       {complete && (
         <>
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
+          <div className="mt-6 rounded-2xl border border-titanium bg-carbon-2 p-4 text-xs leading-5 text-nova-ink-faint">
             {recommendation.confidenceExplanation}
           </div>
 
           <div className="mt-6 grid gap-5 lg:grid-cols-2">
-            <div className="rounded-2xl border border-slate-200 p-5">
-              <h4 className="font-semibold text-slate-950">
+            <div className="rounded-2xl border border-titanium p-5">
+              <h4 className="font-semibold text-nova-ink">
                 Why this fits the pattern above
               </h4>
 
-              <p className="mt-4 text-sm leading-6 text-slate-600">{recommendation.rationale}</p>
+              <p className="mt-4 text-sm leading-6 text-nova-ink-muted">{recommendation.rationale}</p>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 p-5">
-              <h4 className="font-semibold text-slate-950">
+            <div className="rounded-2xl border border-titanium p-5">
+              <h4 className="font-semibold text-nova-ink">
                 Risks to validate
               </h4>
 
@@ -767,16 +765,16 @@ function RecommendationView({
                 {recommendation.risks.map((risk) => (
                   <div
                     key={risk}
-                    className="flex items-start gap-3 text-sm leading-6 text-slate-600"
+                    className="flex items-start gap-3 text-sm leading-6 text-nova-ink-muted"
                   >
-                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-amber-400" />
+                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-nova-warning" />
                     {risk}
                   </div>
                 ))}
               </div>
 
-              <div className="mt-6 border-t border-slate-200 pt-5">
-                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+              <div className="mt-6 border-t border-titanium pt-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-nova-ink-faint">
                   Alternatives
                 </div>
 
@@ -786,10 +784,10 @@ function RecommendationView({
                       key={alternative.name}
                       className="flex items-center justify-between"
                     >
-                      <span className="text-sm text-slate-600">
+                      <span className="text-sm text-nova-ink-muted">
                         {alternative.name}
                       </span>
-                      <span className="text-sm font-semibold text-slate-950">
+                      <span className="text-sm font-semibold text-nova-ink">
                         {alternative.score}%
                       </span>
                     </div>
@@ -822,8 +820,8 @@ function AlternativesComparison({
   ].sort((a, b) => b.score - a.score);
 
   return (
-    <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+    <div className="mt-5 rounded-2xl border border-titanium bg-carbon-2 p-5">
+      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-nova-ink-faint">
         Score comparison
       </div>
 
@@ -834,29 +832,25 @@ function AlternativesComparison({
               <span
                 className={
                   entry.primary
-                    ? "font-semibold text-slate-950"
-                    : "text-slate-600"
+                    ? "font-semibold text-nova-ink"
+                    : "text-nova-ink-muted"
                 }
               >
                 {entry.name}
                 {entry.primary && (
-                  <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                  <span className="ml-2 rounded-full bg-nova-success/15 px-2 py-0.5 text-xs font-medium text-nova-success">
                     Recommended
                   </span>
                 )}
               </span>
-              <span className="font-semibold text-slate-950">
+              <span className="font-semibold text-nova-ink">
                 {entry.score}%
               </span>
             </div>
 
-            <div className="h-2.5 overflow-hidden rounded-full bg-slate-200">
+            <div className="h-2.5 overflow-hidden rounded-full bg-carbon">
               <div
-                className={`h-full rounded-full ${
-                  entry.primary
-                    ? "bg-gradient-to-r from-blue-500 to-violet-500"
-                    : "bg-slate-400"
-                }`}
+                className={`h-full rounded-full ${entry.primary ? "bg-nova-accent" : "bg-nova-ink-faint"}`}
                 style={{ width: `${entry.score}%` }}
               />
             </div>
@@ -872,15 +866,15 @@ function ArchitectureView({ recommendation }: { recommendation: DemoDecisionResu
 
   return (
     <div>
-      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
+      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
         Target architecture
       </div>
 
-      <h3 className="mt-2 text-2xl font-semibold text-slate-950">
+      <h3 className="mt-2 text-2xl font-semibold text-nova-ink">
         {reasoningChain.solutionPattern}
       </h3>
 
-      <div className="mt-8 overflow-x-auto rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-50 to-indigo-50/60 p-8">
+      <div className="mt-8 overflow-x-auto rounded-3xl border border-titanium bg-carbon-2 p-8">
         <div className="mx-auto min-w-[40rem] max-w-3xl">
           <ArchitectureNode
             icon={Database}
@@ -948,23 +942,19 @@ function ArchitectureNode({
 }) {
   return (
     <div
-      className={`rounded-2xl border p-4 text-center shadow-sm ${
+      className={`rounded-2xl border p-4 text-center ${
         primary
-          ? "border-violet-300 bg-gradient-to-br from-blue-600 to-violet-600 text-white"
-          : "border-slate-200 bg-white text-slate-950"
+          ? "border-nova-accent-strong/40 bg-nova-accent text-white shadow-nova-glow"
+          : "border-titanium bg-carbon text-nova-ink"
       }`}
     >
       <Icon
         size={21}
-        className={`mx-auto ${
-          primary ? "text-white" : "text-violet-600"
-        }`}
+        className={`mx-auto ${primary ? "text-white" : "text-nova-accent-strong"}`}
       />
       <div className="mt-3 text-sm font-semibold">{label}</div>
       <div
-        className={`mt-1 text-xs ${
-          primary ? "text-white/70" : "text-slate-400"
-        }`}
+        className={`mt-1 text-xs ${primary ? "text-white/70" : "text-nova-ink-faint"}`}
       >
         {subtitle}
       </div>
@@ -975,7 +965,7 @@ function ArchitectureNode({
 function ArchitectureConnection() {
   return (
     <div className="flex h-14 items-center justify-center">
-      <div className="h-full w-px bg-gradient-to-b from-violet-300 to-blue-400" />
+      <div className="h-full w-px bg-titanium-strong" />
     </div>
   );
 }
@@ -999,21 +989,21 @@ function TcoView({ recommendation }: { recommendation: DemoDecisionResult }) {
 
   return (
     <div>
-      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
+      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
         Three-year cost model
       </div>
 
       <div className="mt-3 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div>
-          <div className="text-4xl font-semibold text-slate-950">
+          <div className="text-4xl font-semibold text-nova-ink">
             CHF {(totalCost / 1_000_000).toFixed(1)}M
           </div>
-          <div className="mt-2 text-sm text-emerald-600">
+          <div className="mt-2 text-sm text-nova-success">
             Illustrative estimate, {belowReference}% below the reference scenario
           </div>
         </div>
 
-        <div className="rounded-xl bg-violet-50 px-4 py-3 text-sm font-medium text-violet-700">
+        <div className="rounded-xl border border-nova-accent/30 bg-nova-accent/10 px-4 py-3 text-sm font-medium text-nova-accent-strong">
           {confidenceLabel}
         </div>
       </div>
@@ -1022,15 +1012,15 @@ function TcoView({ recommendation }: { recommendation: DemoDecisionResult }) {
         {costs.map(([label, amount, share]) => (
           <div key={label}>
             <div className="mb-2 flex items-center justify-between text-sm">
-              <span className="text-slate-600">{label}</span>
-              <span className="font-semibold text-slate-950">
+              <span className="text-nova-ink-muted">{label}</span>
+              <span className="font-semibold text-nova-ink">
                 CHF {amount.toLocaleString("de-CH")}
               </span>
             </div>
 
-            <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-3 overflow-hidden rounded-full bg-carbon-2">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-violet-500"
+                className="h-full rounded-full bg-nova-accent"
                 style={{ width: `${share}%` }}
               />
             </div>
@@ -1046,10 +1036,10 @@ function TcoView({ recommendation }: { recommendation: DemoDecisionResult }) {
         ].map(([label, value]) => (
           <div
             key={label}
-            className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
+            className="rounded-2xl border border-titanium bg-carbon-2 p-5"
           >
-            <div className="text-xs text-slate-400">{label}</div>
-            <div className="mt-2 font-semibold text-slate-950">
+            <div className="text-xs text-nova-ink-faint">{label}</div>
+            <div className="mt-2 font-semibold text-nova-ink">
               {value}
             </div>
           </div>
