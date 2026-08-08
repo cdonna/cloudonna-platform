@@ -15,16 +15,19 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
+    console.error("[inquiries] request_body_invalid_json");
     return NextResponse.json({ error: "Request body must be valid JSON." }, { status: 400 });
   }
 
   let supabase;
   try {
     supabase = await createSupabaseServerClient();
-  } catch {
+  } catch (error) {
     // Supabase unconfigured — persistence genuinely cannot happen, so
     // this is a real failure, not something to paper over with a fake
-    // success response.
+    // success response. The error message from getSupabaseEnv() names
+    // which env var is missing, never a secret value — safe to log.
+    console.error(`[inquiries] supabase_client_unavailable ${error instanceof Error ? error.message : "unknown error"}`);
     return NextResponse.json({ error: "This inquiry could not be submitted. Please try again later." }, { status: 503 });
   }
 

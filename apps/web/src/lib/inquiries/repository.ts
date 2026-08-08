@@ -67,6 +67,14 @@ export async function createInquiry(
     .single();
 
   if (error) {
+    // The raw Postgres error (e.g. "invalid input value for enum
+    // inquiry_type") is safe to log server-side — it's a schema-level
+    // technical detail, never user content or a credential — and it's
+    // exactly the detail classifySupabaseError() strips before
+    // anything reaches the client or even this function's own caller.
+    // Logged here, at the one place it's still in scope, rather than
+    // threaded through the return type just to be logged one level up.
+    console.error(`[inquiries] database_error code=${error.code ?? "unknown"} message=${error.message}`);
     return { ok: false, reason: classifySupabaseError(error.message) };
   }
 
