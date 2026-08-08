@@ -84,7 +84,7 @@ const steps = [
 
 export default function DiscoveryPage() {
   return (
-    <div>
+    <div className="min-h-screen bg-void">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
@@ -94,14 +94,14 @@ export default function DiscoveryPage() {
             height={32}
             className="h-8 w-8 object-contain"
           />
-          <span className="text-lg font-semibold tracking-tight text-slate-950">
-            Clou<span className="text-violet-600">Donna</span>
+          <span className="text-lg font-semibold tracking-tight text-nova-ink">
+            Clou<span className="text-nova-accent-strong">Donna</span>
           </span>
         </Link>
 
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition hover:text-violet-700"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition hover:text-nova-accent-strong"
         >
           <ArrowLeft size={15} />
           Back to home
@@ -109,15 +109,15 @@ export default function DiscoveryPage() {
       </div>
 
       <div className="mx-auto max-w-3xl px-6 pb-24 pt-14">
-        <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-violet-700 shadow-sm">
+        <div className="inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
           Discovery
         </div>
 
-        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-5xl">
+        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-nova-ink sm:text-5xl">
           How ClouDonna reaches a decision
         </h1>
 
-        <p className="mt-5 text-lg leading-8 text-slate-600">
+        <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
           Every recommendation ClouDonna produces follows the same eleven-step
           path, in the same order. No product is named until the reasoning
           that leads to it has already been established.
@@ -130,20 +130,20 @@ export default function DiscoveryPage() {
             return (
               <div
                 key={step.label}
-                className="flex gap-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+                className="flex gap-5 rounded-3xl border border-titanium bg-carbon p-6 shadow-sm"
               >
                 <div className="flex flex-none flex-col items-center gap-2">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 text-xs font-semibold text-white">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-nova-accent text-xs font-semibold text-white">
                     {index + 1}
                   </span>
-                  <Icon size={18} className="text-violet-600" />
+                  <Icon size={18} className="text-nova-accent-strong" />
                 </div>
 
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-950">
+                  <h2 className="text-lg font-semibold text-nova-ink">
                     {step.label}
                   </h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                  <p className="mt-2 text-sm leading-6 text-nova-ink-muted">
                     {step.body}
                   </p>
                 </div>
@@ -152,17 +152,17 @@ export default function DiscoveryPage() {
           })}
         </div>
 
-        <div className="mt-14 rounded-3xl border border-slate-200 bg-slate-50 p-8 text-center">
-          <h2 className="text-2xl font-semibold text-slate-950">
+        <div className="mt-14 rounded-3xl border border-titanium bg-carbon-2 p-8 text-center">
+          <h2 className="text-2xl font-semibold text-nova-ink">
             See the full path in action
           </h2>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">
             Donna AI runs this exact sequence through a guided, six-step
             assessment and produces a real Executive Decision Report.
           </p>
           <Link
             href="/donna-ai"
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:opacity-90"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-nova-accent px-6 py-3 text-sm font-semibold text-white shadow-nova-glow transition hover:opacity-90"
           >
             Try Donna AI
             <ArrowRight size={16} />

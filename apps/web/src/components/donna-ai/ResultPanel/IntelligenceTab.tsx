@@ -14,15 +14,15 @@ import type { DecisionReport } from "../intelligence/types";
 export function IntelligenceTab({ report }: { report: DecisionReport }) {
   if (report.fallback.status !== "ok" || !report.enrichment) {
     return (
-      <div role="status" aria-live="polite" className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+      <div role="status" aria-live="polite" className="rounded-2xl border border-dashed border-titanium bg-carbon-2 p-8 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-carbon-2 text-nova-ink-faint">
           <AlertCircle size={22} />
         </div>
-        <h4 className="mt-4 font-semibold text-slate-950">AI enrichment unavailable</h4>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+        <h4 className="mt-4 font-semibold text-nova-ink">AI enrichment unavailable</h4>
+        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-nova-ink-faint">
           {report.fallback.reason ?? "AI enrichment was not available for this result."}
         </p>
-        <p className="mx-auto mt-4 max-w-md text-xs leading-5 text-slate-400">
+        <p className="mx-auto mt-4 max-w-md text-xs leading-5 text-nova-ink-faint">
           Your Donna Score, ranking and evidence above are complete and unaffected — they were
           computed before enrichment was attempted and do not depend on it.
         </p>
@@ -41,35 +41,35 @@ export function IntelligenceTab({ report }: { report: DecisionReport }) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-violet-700">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-nova-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-nova-accent-strong">
           <Sparkles size={13} />
           AI-enriched narrative
         </span>
-        <span className="text-xs text-slate-400">{enrichment.disclosure}</span>
+        <span className="text-xs text-nova-ink-faint">{enrichment.disclosure}</span>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 p-5">
+      <div className="rounded-2xl border border-titanium p-5">
         <SectionLabel>Executive summary</SectionLabel>
-        <p className="mt-3 text-sm leading-6 text-slate-700">{enrichment.executiveSummary}</p>
+        <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.executiveSummary}</p>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 p-5">
+        <div className="rounded-2xl border border-titanium p-5">
           <SectionLabel>Current situation</SectionLabel>
-          <p className="mt-3 text-sm leading-6 text-slate-600">{enrichment.currentSituation}</p>
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.currentSituation}</p>
         </div>
-        <div className="rounded-2xl border border-slate-200 p-5">
+        <div className="rounded-2xl border border-titanium p-5">
           <SectionLabel>Business outcomes</SectionLabel>
-          <p className="mt-3 text-sm leading-6 text-slate-600">{enrichment.businessOutcomes}</p>
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.businessOutcomes}</p>
         </div>
       </div>
 
       {enrichment.decisionDrivers.length > 0 && (
-        <div className="rounded-2xl border border-slate-200 p-5">
+        <div className="rounded-2xl border border-titanium p-5">
           <SectionLabel>Decision drivers</SectionLabel>
           <div className="mt-3 flex flex-wrap gap-2">
             {enrichment.decisionDrivers.map((driver) => (
-              <span key={driver} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+              <span key={driver} className="rounded-full bg-carbon-2 px-3 py-1 text-xs font-medium text-nova-ink-muted">
                 {driver}
               </span>
             ))}
@@ -78,22 +78,22 @@ export function IntelligenceTab({ report }: { report: DecisionReport }) {
       )}
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 p-5">
+        <div className="rounded-2xl border border-titanium p-5">
           <SectionLabel>Why this recommendation</SectionLabel>
-          <p className="mt-3 text-sm leading-6 text-slate-600">{enrichment.recommendationNarrative}</p>
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.recommendationNarrative}</p>
         </div>
-        <div className="rounded-2xl border border-slate-200 p-5">
+        <div className="rounded-2xl border border-titanium p-5">
           <SectionLabel>Why not the alternative</SectionLabel>
-          <p className="mt-3 text-sm leading-6 text-slate-600">{enrichment.alternativeNarrative}</p>
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.alternativeNarrative}</p>
         </div>
       </div>
 
       {enrichment.keyTradeOffs.length > 0 && (
-        <div className="rounded-2xl border border-slate-200 p-5">
+        <div className="rounded-2xl border border-titanium p-5">
           <SectionLabel>Key trade-offs</SectionLabel>
           <div className="mt-3 space-y-2">
             {enrichment.keyTradeOffs.map((tradeOff) => (
-              <p key={tradeOff} className="text-sm leading-6 text-slate-600">
+              <p key={tradeOff} className="text-sm leading-6 text-nova-ink-muted">
                 {tradeOff}
               </p>
             ))}
@@ -102,28 +102,28 @@ export function IntelligenceTab({ report }: { report: DecisionReport }) {
       )}
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 p-5">
+        <div className="rounded-2xl border border-titanium p-5">
           <SectionLabel>Risks, in context</SectionLabel>
-          <p className="mt-3 text-sm leading-6 text-slate-600">{enrichment.risksNarrative}</p>
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.risksNarrative}</p>
         </div>
-        <div className="rounded-2xl border border-slate-200 p-5">
+        <div className="rounded-2xl border border-titanium p-5">
           <SectionLabel>Opportunities, in context</SectionLabel>
-          <p className="mt-3 text-sm leading-6 text-slate-600">{enrichment.opportunitiesNarrative}</p>
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.opportunitiesNarrative}</p>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 p-5">
+      <div className="rounded-2xl border border-titanium p-5">
         <SectionLabel>Assumptions</SectionLabel>
-        <p className="mt-3 text-sm leading-6 text-slate-600">{enrichment.assumptionsNarrative}</p>
+        <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.assumptionsNarrative}</p>
       </div>
 
       {enrichment.missingInformation.length > 0 && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-5">
+        <div className="rounded-2xl border border-nova-warning/30 bg-nova-warning/10/60 p-5">
           <SectionLabel>What Donna doesn&apos;t know yet</SectionLabel>
           <div className="mt-3 space-y-2">
             {enrichment.missingInformation.map((gap) => (
-              <div key={gap} className="flex items-start gap-2 text-sm leading-6 text-slate-700">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+              <div key={gap} className="flex items-start gap-2 text-sm leading-6 text-nova-ink-muted">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-nova-warning/100" />
                 {gap}
               </div>
             ))}
@@ -134,14 +134,14 @@ export function IntelligenceTab({ report }: { report: DecisionReport }) {
       {(enrichment.validationQuestions.length > 0 || enrichment.challengeQuestions.length > 0) && (
         <div className="grid gap-5 lg:grid-cols-2">
           {enrichment.validationQuestions.length > 0 && (
-            <div className="rounded-2xl border border-slate-200 p-5">
+            <div className="rounded-2xl border border-titanium p-5">
               <div className="flex items-center gap-2">
-                <MessageCircleQuestion size={15} className="text-violet-600" />
+                <MessageCircleQuestion size={15} className="text-nova-accent-strong" />
                 <SectionLabel>Questions to validate</SectionLabel>
               </div>
               <ul className="mt-3 space-y-2">
                 {enrichment.validationQuestions.map((question) => (
-                  <li key={question} className="text-sm leading-6 text-slate-600">
+                  <li key={question} className="text-sm leading-6 text-nova-ink-muted">
                     {question}
                   </li>
                 ))}
@@ -149,14 +149,14 @@ export function IntelligenceTab({ report }: { report: DecisionReport }) {
             </div>
           )}
           {enrichment.challengeQuestions.length > 0 && (
-            <div className="rounded-2xl border border-slate-200 p-5">
+            <div className="rounded-2xl border border-titanium p-5">
               <div className="flex items-center gap-2">
-                <MessageCircleQuestion size={15} className="text-violet-600" />
+                <MessageCircleQuestion size={15} className="text-nova-accent-strong" />
                 <SectionLabel>Questions to challenge this</SectionLabel>
               </div>
               <ul className="mt-3 space-y-2">
                 {enrichment.challengeQuestions.map((question) => (
-                  <li key={question} className="text-sm leading-6 text-slate-600">
+                  <li key={question} className="text-sm leading-6 text-nova-ink-muted">
                     {question}
                   </li>
                 ))}
@@ -167,26 +167,26 @@ export function IntelligenceTab({ report }: { report: DecisionReport }) {
       )}
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 p-5">
+        <div className="rounded-2xl border border-titanium p-5">
           <SectionLabel>Suggested next steps</SectionLabel>
-          <p className="mt-3 text-sm leading-6 text-slate-600">{enrichment.suggestedNextStepsNarrative}</p>
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.suggestedNextStepsNarrative}</p>
         </div>
-        <div className="rounded-2xl border border-slate-200 p-5">
+        <div className="rounded-2xl border border-titanium p-5">
           <SectionLabel>Suggested workshops</SectionLabel>
-          <p className="mt-3 text-sm leading-6 text-slate-600">{enrichment.suggestedWorkshopsNarrative}</p>
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.suggestedWorkshopsNarrative}</p>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5">
+      <div className="rounded-2xl border border-dashed border-titanium bg-carbon-2 p-5">
         <div className="flex items-center gap-2">
-          <Check size={15} className="text-emerald-500" />
+          <Check size={15} className="text-nova-success" />
           <SectionLabel>Confidence explanation</SectionLabel>
         </div>
-        <p className="mt-3 text-sm leading-6 text-slate-600">{enrichment.confidenceExplanation}</p>
+        <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{enrichment.confidenceExplanation}</p>
       </div>
 
       {enrichment.evidenceReferences.length > 0 && (
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-nova-ink-faint">
           Based on evidence for: {enrichment.evidenceReferences.map((id) => platformNamesById.get(id) ?? id).join(", ")}
         </p>
       )}

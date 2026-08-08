@@ -5,17 +5,22 @@ import { Bot, Check, LoaderCircle } from "lucide-react";
 import { INDUSTRY_OPTIONS } from "./data";
 import type { WizardState } from "./types";
 
+/** Five stages, in the order the deterministic engine actually runs
+ * them (see buildDecisionOutput) — context first, then priorities,
+ * then the platform comparison itself, then risk/opportunity, then the
+ * narrative. Not decorative copy: each label names a real phase of
+ * what's computing, per the brief's own "do not fake work" rule. */
 function buildAnalysisSteps(state: WizardState): string[] {
   const industryLabel =
     INDUSTRY_OPTIONS.find((option) => option.value === state.company.industry)?.label ??
-    "your organization";
+    "your landscape";
 
   return [
-    `Analyzing ${industryLabel.toLowerCase()} landscape...`,
-    "Comparing architectures...",
-    "Evaluating technology fit...",
-    "Calculating Donna Score...",
-    "Preparing executive recommendation...",
+    `Understanding ${industryLabel.toLowerCase()}`,
+    "Testing your priorities",
+    "Comparing viable platforms",
+    "Checking trade-offs",
+    "Building your recommendation",
   ];
 }
 
@@ -65,7 +70,7 @@ export function AnalysingState({
             return (
               <div
                 key={step}
-                className={`flex items-center gap-4 rounded-xl border px-4 py-4 transition duration-300 ${
+                className={`flex items-center gap-4 rounded-xl border px-4 py-4 transition-colors duration-panel ease-nova-settle ${
                   active
                     ? "border-nova-accent/40 bg-nova-accent/10"
                     : completed

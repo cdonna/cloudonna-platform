@@ -26,56 +26,56 @@ export default async function AppDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Welcome back{user?.email ? `, ${user.email}` : ""}</h1>
-      <p className="mt-2 text-sm text-slate-500">Run a new assessment or pick up a saved decision.</p>
+      <h1 className="text-2xl font-semibold tracking-tight text-nova-ink">Welcome back{user?.email ? `, ${user.email}` : ""}</h1>
+      <p className="mt-2 text-sm text-nova-ink-faint">Run a new assessment or pick up a saved decision.</p>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2">
         <Link
           href="/donna-ai"
-          className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-violet-300 hover:shadow-md"
+          className="group flex items-center justify-between rounded-2xl border border-titanium bg-carbon p-6 shadow-sm transition hover:border-nova-accent/40 hover:shadow-md"
         >
           <div>
-            <div className="flex items-center gap-2 text-violet-700">
+            <div className="flex items-center gap-2 text-nova-accent-strong">
               <Sparkles size={16} />
               <span className="text-sm font-semibold uppercase tracking-wide">New assessment</span>
             </div>
-            <p className="mt-2 text-sm text-slate-500">Run Donna&apos;s six-step assessment and, when it&apos;s ready, save it here.</p>
+            <p className="mt-2 text-sm text-nova-ink-faint">Run Donna&apos;s six-step assessment and, when it&apos;s ready, save it here.</p>
           </div>
-          <ArrowRight size={18} className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-violet-600" />
+          <ArrowRight size={18} className="text-nova-ink-faint transition group-hover:translate-x-1 group-hover:text-nova-accent-strong" />
         </Link>
 
         <Link
           href="/app/decisions"
-          className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-violet-300 hover:shadow-md"
+          className="group flex items-center justify-between rounded-2xl border border-titanium bg-carbon p-6 shadow-sm transition hover:border-nova-accent/40 hover:shadow-md"
         >
           <div>
-            <div className="flex items-center gap-2 text-violet-700">
+            <div className="flex items-center gap-2 text-nova-accent-strong">
               <History size={16} />
               <span className="text-sm font-semibold uppercase tracking-wide">Decision history</span>
             </div>
-            <p className="mt-2 text-sm text-slate-500">Browse every decision you&apos;ve saved.</p>
+            <p className="mt-2 text-sm text-nova-ink-faint">Browse every decision you&apos;ve saved.</p>
           </div>
-          <ArrowRight size={18} className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-violet-600" />
+          <ArrowRight size={18} className="text-nova-ink-faint transition group-hover:translate-x-1 group-hover:text-nova-accent-strong" />
         </Link>
       </div>
 
       {recent.length > 0 && (
         <div className="mt-10">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Recent decisions</h2>
-          <div className="mt-3 divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-white">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-nova-ink-faint">Recent decisions</h2>
+          <div className="mt-3 divide-y divide-titanium rounded-2xl border border-titanium bg-carbon">
             {recent.map((decision) => (
               <Link
                 key={decision.id}
                 href={`/app/decisions/${decision.id}`}
-                className="flex items-center justify-between px-5 py-4 transition hover:bg-slate-50"
+                className="flex items-center justify-between px-5 py-4 transition hover:bg-carbon-2"
               >
                 <div>
-                  <p className="text-sm font-medium text-slate-900">{decision.title}</p>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-sm font-medium text-nova-ink">{decision.title}</p>
+                  <p className="text-xs text-nova-ink-faint">
                     {decision.humanReadableId} · {decision.projectName}
                   </p>
                 </div>
-                <ArrowRight size={16} className="text-slate-300" />
+                <ArrowRight size={16} className="text-nova-ink-faint" />
               </Link>
             ))}
           </div>

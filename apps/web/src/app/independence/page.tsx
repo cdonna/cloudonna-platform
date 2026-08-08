@@ -35,7 +35,7 @@ const rules = [
 
 export default function IndependencePage() {
   return (
-    <div>
+    <div className="min-h-screen bg-void">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
@@ -45,14 +45,14 @@ export default function IndependencePage() {
             height={32}
             className="h-8 w-8 object-contain"
           />
-          <span className="text-lg font-semibold tracking-tight text-slate-950">
-            Clou<span className="text-violet-600">Donna</span>
+          <span className="text-lg font-semibold tracking-tight text-nova-ink">
+            Clou<span className="text-nova-accent-strong">Donna</span>
           </span>
         </Link>
 
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition hover:text-violet-700"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition hover:text-nova-accent-strong"
         >
           <ArrowLeft size={15} />
           Back to home
@@ -60,15 +60,15 @@ export default function IndependencePage() {
       </div>
 
       <div className="mx-auto max-w-3xl px-6 pb-24 pt-14">
-        <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-violet-700 shadow-sm">
+        <div className="inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
           Independence
         </div>
 
-        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-5xl">
+        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-nova-ink sm:text-5xl">
           ClouDonna is designed for vendor-neutral analysis
         </h1>
 
-        <p className="mt-5 text-lg leading-8 text-slate-600">
+        <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
           Independence isn&apos;t a slogan on this site — it&apos;s a set of
           structural rules that shape how Donna AI is built. Here is exactly
           what that means, and what it doesn&apos;t.
@@ -81,17 +81,17 @@ export default function IndependencePage() {
             return (
               <div
                 key={rule.title}
-                className="flex gap-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+                className="flex gap-5 rounded-3xl border border-titanium bg-carbon p-6 shadow-sm"
               >
-                <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 text-white">
+                <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-nova-accent text-white">
                   <Icon size={20} />
                 </span>
 
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-950">
+                  <h2 className="text-lg font-semibold text-nova-ink">
                     {rule.title}
                   </h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                  <p className="mt-2 text-sm leading-6 text-nova-ink-muted">
                     {rule.body}
                   </p>
                 </div>
@@ -100,27 +100,27 @@ export default function IndependencePage() {
           })}
         </div>
 
-        <div className="mt-14 rounded-3xl border border-slate-200 bg-slate-50 p-8">
-          <h2 className="text-xl font-semibold text-slate-950">
+        <div className="mt-14 rounded-3xl border border-titanium bg-carbon-2 p-8">
+          <h2 className="text-xl font-semibold text-nova-ink">
             What &quot;Public Alpha&quot; means for independence
           </h2>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">
             The vendor intelligence catalog is currently curated by ClouDonna
             from public sources, not sourced from vendors directly, and is
             reviewed periodically rather than live. As verified vendor
             profiles and a public comparison catalog are built (see{" "}
-            <Link href="/for-vendors" className="font-medium text-violet-700 hover:text-violet-800">
+            <Link href="/for-vendors" className="font-medium text-nova-accent-strong hover:text-nova-ink">
               For Vendors
             </Link>
             ), the same neutrality rules above will keep applying to them.
           </p>
         </div>
 
-        <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-8">
-          <h2 className="text-xl font-semibold text-slate-950">
+        <div className="mt-8 rounded-3xl border border-titanium bg-carbon p-8">
+          <h2 className="text-xl font-semibold text-nova-ink">
             Community &amp; research
           </h2>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
+          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">
             ClouDonna is built to eventually incorporate outside expert
             review as part of how platforms are evaluated. That program
             doesn&apos;t exist yet — this page will be the place it&apos;s

@@ -3,19 +3,19 @@ import { BarChart3, Bot, Cloud, Database, Layers3, Network, ShieldCheck } from "
 export function ArchitectureTab() {
   return (
     <div>
-      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
+      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
         Target architecture
       </div>
 
-      <h3 className="mt-2 text-2xl font-semibold text-slate-950">
+      <h3 className="mt-2 text-2xl font-semibold text-nova-ink">
         Governed enterprise data and AI foundation
       </h3>
 
-      <p className="mt-2 max-w-2xl text-sm text-slate-500">
+      <p className="mt-2 max-w-2xl text-sm text-nova-ink-faint">
         Illustrative reference architecture — not yet generated per recommended platform.
       </p>
 
-      <div className="mt-8 overflow-x-auto rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-50 to-indigo-50/60 p-8">
+      <div className="mt-8 overflow-x-auto rounded-3xl border border-titanium bg-gradient-to-br from-slate-50 to-indigo-50/60 p-8">
         <div className="mx-auto min-w-[40rem] max-w-3xl">
           <ArchitectureNode icon={Database} label="Source Systems" subtitle="Systems of record" />
 
@@ -55,13 +55,13 @@ function ArchitectureNode({
     <div
       className={`rounded-2xl border p-4 text-center shadow-sm ${
         primary
-          ? "border-violet-300 bg-gradient-to-br from-blue-600 to-violet-600 text-white"
-          : "border-slate-200 bg-white text-slate-950"
+          ? "border-nova-accent/40 bg-nova-accent text-white"
+          : "border-titanium bg-carbon text-nova-ink"
       }`}
     >
-      <Icon size={21} className={`mx-auto ${primary ? "text-white" : "text-violet-600"}`} />
+      <Icon size={21} className={`mx-auto ${primary ? "text-white" : "text-nova-accent-strong"}`} />
       <div className="mt-3 text-sm font-semibold">{label}</div>
-      <div className={`mt-1 text-xs ${primary ? "text-white/70" : "text-slate-400"}`}>{subtitle}</div>
+      <div className={`mt-1 text-xs ${primary ? "text-white/70" : "text-nova-ink-faint"}`}>{subtitle}</div>
     </div>
   );
 }

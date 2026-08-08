@@ -106,8 +106,8 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
             <h1 className="mt-7 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">Your Enterprise Decision Assistant</h1>
 
             <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
-              Not a chatbot — a structured, six-step consulting process. Tell Donna about your company, landscape, goals and constraints, and
-              she&apos;ll produce an evidence-based recommendation with a full executive dashboard.
+              Context, priorities, constraints. Donna compares real alternatives against them and hands you a recommendation — with the
+              evidence attached.
             </p>
 
             <Button size="lg" onClick={() => setPhase("wizard")} className="mt-9 h-12 bg-nova-accent px-7 text-white shadow-nova-glow hover:bg-nova-accent-strong">
@@ -115,7 +115,7 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
               <ArrowRight size={17} />
             </Button>
 
-            <p className="mt-4 text-xs text-nova-ink-faint">Takes about two minutes · deterministic core, optional AI narrative, no account needed</p>
+            <p className="mt-4 text-xs text-nova-ink-faint">About a minute · deterministic core, optional AI narrative, no account needed</p>
           </div>
         )}
 
@@ -133,7 +133,9 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
         )}
 
         {phase === "results" && wizardState && report && (
-          <ResultPanel state={wizardState} report={report} onStartNew={handleStartNew} isSignedIn={isSignedIn} />
+          <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 duration-reveal ease-nova-settle">
+            <ResultPanel state={wizardState} report={report} onStartNew={handleStartNew} isSignedIn={isSignedIn} />
+          </div>
         )}
       </div>
     </section>

@@ -17,15 +17,22 @@ import { RisksOpportunitiesTab } from "./RisksOpportunitiesTab";
 import { RoadmapTab } from "./RoadmapTab";
 import { TcoTab } from "./TcoTab";
 
-const TABS = [
-  { value: "overview", label: "Overview" },
+// "Overview" carries the executive hierarchy the brief asks for —
+// Recommendation, Confidence, Why, Evidence — and is visually primary
+// below (see the tab bar markup). Everything after it is a "go deeper"
+// tab, styled and framed as secondary, not seven equal peers competing
+// for the same attention. "Trade-offs" is the brief's own term for
+// what this tab already contained as risks/opportunities.
+const PRIMARY_TAB = { value: "overview", label: "Overview" } as const;
+const SECONDARY_TABS = [
   { value: "intelligence", label: "AI Insights" },
-  { value: "alternatives", label: "Comparison" },
-  { value: "risks", label: "Risks & Opportunities" },
+  { value: "alternatives", label: "Alternatives" },
+  { value: "risks", label: "Trade-offs" },
   { value: "roadmap", label: "Roadmap" },
   { value: "architecture", label: "Architecture" },
   { value: "tco", label: "TCO analysis" },
 ] as const;
+const TABS = [PRIMARY_TAB, ...SECONDARY_TABS] as const;
 
 type TabValue = (typeof TABS)[number]["value"];
 
@@ -77,7 +84,7 @@ export function ResultPanel({
   }
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div className="motion-safe:animate-in motion-safe:fade-in duration-reveal ease-nova-settle">
       <div className="mx-auto max-w-2xl text-center">
         <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-nova-success/30 bg-nova-success/10 px-4 py-2 text-xs font-semibold tracking-[0.16em] text-nova-success uppercase">
           Analysis complete
@@ -94,33 +101,24 @@ export function ResultPanel({
 
       <div className="mt-8 overflow-hidden rounded-[2rem] border border-titanium bg-obsidian shadow-nova-glow">
         <div className="border-b border-titanium px-4 py-4 sm:px-8">
-          <div role="tablist" aria-label="Donna AI result view" className="flex flex-wrap gap-2">
-            {TABS.map((tab, index) => {
-              const selected = activeTab === tab.value;
+          <div role="tablist" aria-label="Donna AI result view" className="flex flex-wrap items-center gap-2">
+            <TabButton tab={PRIMARY_TAB} index={0} selected={activeTab === PRIMARY_TAB.value} registerTab={registerTab} onSelect={setActiveTab} onKeyDown={(e, i) => handleTabKeyDown(e, i, selectTabByIndex)} primary />
 
-              return (
-                <button
-                  key={tab.value}
-                  ref={registerTab(index)}
-                  type="button"
-                  role="tab"
-                  id={`result-tab-${tab.value}`}
-                  aria-selected={selected}
-                  aria-controls={`result-panel-${tab.value}`}
-                  tabIndex={selected ? 0 : -1}
-                  onClick={() => setActiveTab(tab.value)}
-                  onKeyDown={(event) => handleTabKeyDown(event, index, selectTabByIndex)}
-                  className={`rounded-xl px-3.5 py-2 text-sm font-medium transition duration-200 ${
-                    selected ? "bg-nova-accent text-white shadow-md" : "text-nova-ink-muted hover:bg-carbon-2 hover:text-nova-ink"
-                  }`}
-                >
-                  {tab.label}
-                  {tab.value === "intelligence" && report.fallback.status !== "ok" && (
-                    <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-nova-ink-faint" aria-hidden="true" />
-                  )}
-                </button>
-              );
-            })}
+            <span className="mx-1 hidden h-5 w-px bg-titanium sm:block" aria-hidden="true" />
+            <span className="hidden text-xs font-medium tracking-[0.08em] text-nova-ink-faint uppercase sm:inline">Go deeper</span>
+
+            {SECONDARY_TABS.map((tab, index) => (
+              <TabButton
+                key={tab.value}
+                tab={tab}
+                index={index + 1}
+                selected={activeTab === tab.value}
+                registerTab={registerTab}
+                onSelect={setActiveTab}
+                onKeyDown={(e, i) => handleTabKeyDown(e, i, selectTabByIndex)}
+                showBadge={tab.value === "intelligence" && report.fallback.status !== "ok"}
+              />
+            ))}
           </div>
         </div>
 
@@ -130,7 +128,7 @@ export function ResultPanel({
           aria-labelledby={`result-tab-${activeTab}`}
           tabIndex={0}
           key={activeTab}
-          className="animate-in fade-in duration-200 p-6 sm:p-8"
+          className="motion-safe:animate-in motion-safe:fade-in duration-panel ease-nova-settle p-6 sm:p-8"
         >
           {activeTab === "overview" && <OverviewTab output={output} />}
           {activeTab === "intelligence" && <IntelligenceTab report={report} />}
@@ -172,5 +170,49 @@ export function ResultPanel({
         <SaveDecisionDialog onClose={() => setSaveDialogOpen(false)} wizardState={state} report={report} />
       )}
     </div>
+  );
+}
+
+function TabButton({
+  tab,
+  index,
+  selected,
+  registerTab,
+  onSelect,
+  onKeyDown,
+  primary = false,
+  showBadge = false,
+}: {
+  tab: { value: TabValue; label: string };
+  index: number;
+  selected: boolean;
+  registerTab: (index: number) => (element: HTMLButtonElement | null) => void;
+  onSelect: (value: TabValue) => void;
+  onKeyDown: (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => void;
+  primary?: boolean;
+  showBadge?: boolean;
+}) {
+  return (
+    <button
+      ref={registerTab(index)}
+      type="button"
+      role="tab"
+      id={`result-tab-${tab.value}`}
+      aria-selected={selected}
+      aria-controls={`result-panel-${tab.value}`}
+      tabIndex={selected ? 0 : -1}
+      onClick={() => onSelect(tab.value)}
+      onKeyDown={(event) => onKeyDown(event, index)}
+      className={`rounded-xl font-medium transition-colors duration-control ${primary ? "px-4 py-2 text-sm" : "px-3 py-1.5 text-xs"} ${
+        selected
+          ? primary
+            ? "bg-nova-accent text-white shadow-nova-glow"
+            : "bg-carbon-2 text-nova-ink"
+          : "text-nova-ink-faint hover:bg-carbon-2 hover:text-nova-ink-muted"
+      }`}
+    >
+      {tab.label}
+      {showBadge && <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-nova-ink-faint" aria-hidden="true" />}
+    </button>
   );
 }

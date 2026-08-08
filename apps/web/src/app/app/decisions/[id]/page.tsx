@@ -108,7 +108,7 @@ export default async function DecisionDetailPage({
       )}
 
       {isHistorical && (
-        <div role="status" className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+        <div role="status" className="mt-4 rounded-xl border border-nova-warning/30 bg-nova-warning/10 px-4 py-3 text-sm text-nova-warning">
           You&apos;re viewing historical version {displayedContent.versionNumber}, saved {new Date(displayedContent.generatedAt).toLocaleString()}.
           This is the stored content exactly as it was saved — nothing was recomputed.{" "}
           <Link href={`/app/decisions/${id}?version=${currentVersionNumber}`} className="font-medium underline underline-offset-2">

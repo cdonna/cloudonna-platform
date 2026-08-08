@@ -14,7 +14,7 @@ export function RoadmapTab({ output }: { output: DecisionOutput }) {
   return (
     <div>
       <SectionLabel>Suggested roadmap</SectionLabel>
-      <h3 className="mt-2 text-2xl font-semibold text-slate-950">
+      <h3 className="mt-2 text-2xl font-semibold text-nova-ink">
         From recommendation to rollout
       </h3>
 
@@ -24,18 +24,18 @@ export function RoadmapTab({ output }: { output: DecisionOutput }) {
           if (items.length === 0) return null;
 
           return (
-            <div key={horizon} className="rounded-2xl border border-slate-200 p-5">
+            <div key={horizon} className="rounded-2xl border border-titanium p-5">
               <div className="flex items-baseline justify-between">
-                <span className="text-sm font-semibold text-slate-950">
+                <span className="text-sm font-semibold text-nova-ink">
                   {HORIZON_META[horizon].label}
                 </span>
-                <span className="text-xs text-slate-400">{HORIZON_META[horizon].window}</span>
+                <span className="text-xs text-nova-ink-faint">{HORIZON_META[horizon].window}</span>
               </div>
 
               <ul className="mt-4 space-y-3">
                 {items.map((item) => (
-                  <li key={item.text} className="flex items-start gap-2.5 text-sm leading-6 text-slate-600">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-violet-500" />
+                  <li key={item.text} className="flex items-start gap-2.5 text-sm leading-6 text-nova-ink-muted">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-nova-accent-strong" />
                     {item.text}
                   </li>
                 ))}
@@ -45,17 +45,17 @@ export function RoadmapTab({ output }: { output: DecisionOutput }) {
         })}
       </div>
 
-      <div className="mt-6 rounded-2xl border border-dashed border-violet-200 bg-violet-50/40 p-5">
+      <div className="mt-6 rounded-2xl border border-dashed border-titanium bg-nova-accent/10/40 p-5">
         <div className="flex items-center gap-2">
-          <GraduationCap size={15} className="text-violet-600" />
+          <GraduationCap size={15} className="text-nova-accent-strong" />
           <SectionLabel>Suggested workshops</SectionLabel>
         </div>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {output.workshops.map((workshop) => (
-            <div key={workshop.title} className="rounded-xl border border-violet-100 bg-white p-4">
-              <h5 className="text-sm font-semibold text-slate-950">{workshop.title}</h5>
-              <p className="mt-1.5 text-xs leading-5 text-slate-500">{workshop.description}</p>
+            <div key={workshop.title} className="rounded-xl border border-titanium bg-carbon p-4">
+              <h5 className="text-sm font-semibold text-nova-ink">{workshop.title}</h5>
+              <p className="mt-1.5 text-xs leading-5 text-nova-ink-faint">{workshop.description}</p>
             </div>
           ))}
         </div>

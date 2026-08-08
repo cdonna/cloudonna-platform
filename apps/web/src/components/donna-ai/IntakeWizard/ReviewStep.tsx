@@ -48,21 +48,17 @@ function ReviewCard({
   onEdit: () => void;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <div className="rounded-2xl border border-titanium bg-carbon-2 p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-400">
-            {title}
-          </div>
-          <p className="mt-1 text-sm text-slate-800">{summary}</p>
-          {note.trim().length > 0 && (
-            <p className="mt-1 text-sm italic text-slate-500">&ldquo;{note}&rdquo;</p>
-          )}
+          <div className="text-xs font-semibold uppercase tracking-[0.1em] text-nova-ink-faint">{title}</div>
+          <p className="mt-1 text-sm text-nova-ink">{summary}</p>
+          {note.trim().length > 0 && <p className="mt-1 text-sm italic text-nova-ink-muted">&ldquo;{note}&rdquo;</p>}
         </div>
         <button
           type="button"
           onClick={onEdit}
-          className="shrink-0 text-sm font-medium text-violet-700 hover:text-violet-800"
+          className="shrink-0 text-sm font-medium text-nova-accent-strong transition-colors duration-control hover:text-nova-ink"
         >
           Edit
         </button>
@@ -92,6 +88,9 @@ export const ReviewStep = forwardRef<
     `AI: ${labelFor(AI_PLATFORM_OPTIONS, state.landscape.aiPlatform)}`,
   ].join(" · ");
 
+  const contextSummary = `${companySummary} — ${landscapeSummary}`;
+  const contextNote = [state.company.note, state.landscape.note].filter((value) => value.trim().length > 0).join(" · ");
+
   const constraintsSummary = [
     `Budget: ${labelFor(BUDGET_OPTIONS, state.constraints.budget)}`,
     `Timeline: ${labelFor(TIMELINE_OPTIONS, state.constraints.timeline)}`,
@@ -103,38 +102,15 @@ export const ReviewStep = forwardRef<
 
   return (
     <div>
-      <p className="text-sm font-medium text-violet-700">
-        Let&apos;s make sure I&apos;ve got this right before I analyse it.
-      </p>
-      <h3 ref={ref} tabIndex={-1} className="mt-2 text-2xl font-semibold text-slate-950 outline-none">
+      <p className="text-sm font-medium text-nova-accent-strong">Let&apos;s make sure I&apos;ve got this right before I analyse it.</p>
+      <h3 ref={ref} tabIndex={-1} className="mt-2 text-2xl font-semibold text-nova-ink outline-none">
         Review your answers
       </h3>
 
       <div className="mt-6 space-y-3">
-        <ReviewCard
-          title="Company"
-          summary={companySummary}
-          note={state.company.note}
-          onEdit={() => onEditStep(0)}
-        />
-        <ReviewCard
-          title="Landscape"
-          summary={landscapeSummary}
-          note={state.landscape.note}
-          onEdit={() => onEditStep(1)}
-        />
-        <ReviewCard
-          title="Goals"
-          summary={labelsFor(GOAL_OPTIONS, state.goals.goals)}
-          note={state.goals.note}
-          onEdit={() => onEditStep(2)}
-        />
-        <ReviewCard
-          title="Constraints"
-          summary={constraintsSummary}
-          note={state.constraints.note}
-          onEdit={() => onEditStep(3)}
-        />
+        <ReviewCard title="Context" summary={contextSummary} note={contextNote} onEdit={() => onEditStep(0)} />
+        <ReviewCard title="Priorities" summary={labelsFor(GOAL_OPTIONS, state.goals.goals)} note={state.goals.note} onEdit={() => onEditStep(2)} />
+        <ReviewCard title="Constraints" summary={constraintsSummary} note={state.constraints.note} onEdit={() => onEditStep(3)} />
       </div>
     </div>
   );

@@ -116,11 +116,23 @@
   --shadow-nova-raised: 0 12px 32px -12px rgb(0 0 0 / 0.55);
   --shadow-nova-glow: 0 30px 90px -35px rgb(124 58 237 / 0.45);
 
-  /* Motion — the cinematic tier only. Hover/settle/reveal reuse
-     Tailwind's own default duration scale (duration-200/300/500)
-     deliberately, not reinvented here — see
-     docs/design/03-motion-language.md. */
+  /* Motion — one coherent system, named by what's moving rather than
+     an arbitrary number. Superseded the earlier "reuse Tailwind's raw
+     duration scale" approach (see git history) once the interface
+     needed to reason about motion consistently across dozens of
+     surfaces — a name (duration-control) survives a refactor; a bare
+     number (duration-200) has to be re-derived from scratch every
+     time. One shared easing curve everywhere: a calm decelerate, never
+     a bounce or spring — see docs/design/03-motion-language.md and the
+     experience report for the full duration-band rationale.
+     duration-* below map directly to Tailwind v4's `duration-<name>`
+     utilities via the --transition-duration-* namespace. */
   --ease-nova-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-duration-micro: 150ms; /* chip/button state changes */
+  --transition-duration-control: 190ms; /* inputs, toggles, tabs */
+  --transition-duration-panel: 270ms; /* section/card reveals */
+  --transition-duration-modal: 340ms; /* dialogs, drawers */
+  --transition-duration-reveal: 550ms; /* the recommendation itself */
   --animate-aurora-drift: aurora-drift 90s ease-in-out infinite;
 }
 

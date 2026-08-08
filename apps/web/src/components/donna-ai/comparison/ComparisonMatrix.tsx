@@ -36,27 +36,27 @@ export function ComparisonMatrix({ platforms }: { platforms: RankedPlatform[] })
   return (
     <div>
       {hasCrossCategory && (
-        <p className="mb-3 text-xs leading-5 text-slate-500">
+        <p className="mb-3 text-xs leading-5 text-nova-ink-faint">
           These platforms span more than one category — some solve different problems rather
           than compete directly. Read row-by-row, not as a single ranked list.
         </p>
       )}
 
-      <div className="overflow-x-auto rounded-2xl border border-slate-200">
+      <div className="overflow-x-auto rounded-2xl border border-titanium">
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <caption className="sr-only">
             Comparison of {compared.map((p) => p.platform.productName).join(", ")} across architecture,
             governance, security, cost, and strategic fit
           </caption>
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50">
-              <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.06em] text-slate-400">
+            <tr className="border-b border-titanium bg-carbon-2">
+              <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.06em] text-nova-ink-faint">
                 Criterion
               </th>
               {compared.map((entry) => (
                 <th key={entry.platform.id} scope="col" className="px-4 py-3 text-left">
-                  <div className="font-semibold text-slate-950">{entry.platform.productName}</div>
-                  <div className="text-[10px] font-normal uppercase tracking-[0.05em] text-slate-400">
+                  <div className="font-semibold text-nova-ink">{entry.platform.productName}</div>
+                  <div className="text-[10px] font-normal uppercase tracking-[0.05em] text-nova-ink-faint">
                     {CATEGORY_LABELS[entry.platform.category]}
                   </div>
                 </th>
@@ -99,8 +99,8 @@ function ComparisonRow({ row, platforms }: { row: Row; platforms: RankedPlatform
   }
 
   return (
-    <tr className="border-b border-slate-100 last:border-0">
-      <th scope="row" className="px-4 py-3 text-left text-sm font-medium text-slate-700">
+    <tr className="border-b border-titanium last:border-0">
+      <th scope="row" className="px-4 py-3 text-left text-sm font-medium text-nova-ink-muted">
         {row.label}
       </th>
       {platforms.map((entry) => {
@@ -109,7 +109,7 @@ function ComparisonRow({ row, platforms }: { row: Row; platforms: RankedPlatform
         if (row.kind === "score") {
           const score = entry.dimensions.find((d) => d.key === row.dimensionKey)?.score ?? 0;
           return (
-            <td key={entry.platform.id} className={`px-4 py-3 font-mono tabular-nums ${isWinner ? "font-semibold text-slate-950" : "text-slate-600"}`}>
+            <td key={entry.platform.id} className={`px-4 py-3 font-mono tabular-nums ${isWinner ? "font-semibold text-nova-ink" : "text-nova-ink-muted"}`}>
               {score}%
             </td>
           );
@@ -120,11 +120,11 @@ function ComparisonRow({ row, platforms }: { row: Row; platforms: RankedPlatform
           return (
             <td key={entry.platform.id} className="px-4 py-3">
               {has ? (
-                <span className="inline-flex items-center gap-1 text-emerald-700">
+                <span className="inline-flex items-center gap-1 text-nova-success">
                   <Check size={14} /> Yes
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-slate-300">
+                <span className="inline-flex items-center gap-1 text-nova-ink-faint">
                   <Minus size={14} /> No
                 </span>
               )}
@@ -134,7 +134,7 @@ function ComparisonRow({ row, platforms }: { row: Row; platforms: RankedPlatform
 
         const value = entry.platform[row.field];
         return (
-          <td key={entry.platform.id} className={`px-4 py-3 capitalize ${isWinner ? "font-semibold text-slate-950" : "text-slate-600"}`}>
+          <td key={entry.platform.id} className={`px-4 py-3 capitalize ${isWinner ? "font-semibold text-nova-ink" : "text-nova-ink-muted"}`}>
             {value.replace(/-/g, " ")}
           </td>
         );

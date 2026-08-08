@@ -8,7 +8,7 @@ import { getCurrentUser } from "@/lib/supabase/server";
 export const metadata: Metadata = {
   title: "Donna AI — Enterprise Decision Assistant · ClouDonna",
   description:
-    "A guided, six-step assessment that produces an evidence-based enterprise technology recommendation. Public Alpha preview.",
+    "Context, priorities, constraints. A guided assessment that produces an evidence-based enterprise technology recommendation. Public Alpha preview.",
   alternates: { canonical: "/donna-ai" },
 };
 
@@ -24,7 +24,7 @@ export default async function DonnaAIPage() {
   const user = await getCurrentUser();
 
   return (
-    <div>
+    <div className="min-h-screen bg-void">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
@@ -34,14 +34,14 @@ export default async function DonnaAIPage() {
             height={32}
             className="h-8 w-8 object-contain"
           />
-          <span className="text-lg font-semibold tracking-tight text-slate-950">
-            Clou<span className="text-violet-600">Donna</span>
+          <span className="text-lg font-semibold tracking-tight text-nova-ink">
+            Clou<span className="text-nova-accent-strong">Donna</span>
           </span>
         </Link>
 
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition hover:text-violet-700"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition hover:text-nova-accent-strong"
         >
           <ArrowLeft size={15} />
           Back to home
