@@ -89,7 +89,7 @@ export function ConversationalFieldFlow({ stageKey, fields, note, onNoteChange, 
                 key={field.legend}
                 type="button"
                 onClick={() => setActiveIndex(index)}
-                className="group inline-flex items-center gap-1.5 rounded-full border border-titanium bg-carbon-2 px-3 py-1.5 text-xs text-nova-ink-muted transition-colors duration-control hover:border-titanium-strong hover:text-nova-ink"
+                className="group inline-flex min-h-11 items-center gap-1.5 rounded-full border border-titanium bg-carbon-2 px-3 py-1.5 text-xs text-nova-ink-muted transition-colors duration-control hover:border-titanium-strong hover:text-nova-ink"
               >
                 <Check size={11} className="text-nova-success" />
                 <span className="text-nova-ink-faint">{field.legend}:</span>

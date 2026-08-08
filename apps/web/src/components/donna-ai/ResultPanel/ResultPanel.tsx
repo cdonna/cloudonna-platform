@@ -105,7 +105,7 @@ export function ResultPanel({
             <TabButton tab={PRIMARY_TAB} index={0} selected={activeTab === PRIMARY_TAB.value} registerTab={registerTab} onSelect={setActiveTab} onKeyDown={(e, i) => handleTabKeyDown(e, i, selectTabByIndex)} primary />
 
             <span className="mx-1 hidden h-5 w-px bg-titanium sm:block" aria-hidden="true" />
-            <span className="hidden text-xs font-medium tracking-[0.08em] text-nova-ink-faint uppercase sm:inline">Go deeper</span>
+            <span className="w-full text-xs font-medium tracking-[0.08em] text-nova-ink-faint uppercase sm:w-auto">Go deeper</span>
 
             {SECONDARY_TABS.map((tab, index) => (
               <TabButton
@@ -203,7 +203,7 @@ function TabButton({
       tabIndex={selected ? 0 : -1}
       onClick={() => onSelect(tab.value)}
       onKeyDown={(event) => onKeyDown(event, index)}
-      className={`rounded-xl font-medium transition-colors duration-control ${primary ? "px-4 py-2 text-sm" : "px-3 py-1.5 text-xs"} ${
+      className={`flex min-h-11 items-center rounded-xl font-medium transition-colors duration-control ${primary ? "px-4 py-2 text-sm" : "px-3 py-1.5 text-xs"} ${
         selected
           ? primary
             ? "bg-nova-accent text-white shadow-nova-glow"
