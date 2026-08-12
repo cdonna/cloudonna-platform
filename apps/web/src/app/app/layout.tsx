@@ -36,25 +36,30 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-obsidian text-nova-ink">
       <header className="sticky top-0 z-40 border-b border-titanium bg-obsidian/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/app" className="flex items-center gap-2.5">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-4">
+          <Link href="/app" className="flex shrink-0 items-center gap-2.5">
             <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={28} height={28} className="h-7 w-7 object-contain" />
             <span className="text-base font-semibold tracking-tight text-nova-ink">
               Clou<span className="text-nova-accent-strong">Donna</span>
             </span>
           </Link>
-          <nav className="flex items-center gap-6">
-            <Link href="/app/decisions" className="text-sm font-medium text-nova-ink-muted transition duration-200 hover:text-nova-ink">
+          {/* overflow-x-auto rather than wrapping or hiding items — on a
+              narrow viewport this scrolls horizontally instead of
+              breaking layout or silently dropping a nav item. */}
+          <nav className="flex flex-1 items-center gap-6 overflow-x-auto">
+            <Link href="/app/decisions" className="shrink-0 py-1 text-sm font-medium whitespace-nowrap text-nova-ink-muted transition duration-200 hover:text-nova-ink">
               Decisions
             </Link>
-            <Link href="/donna-ai" className="text-sm font-medium text-nova-ink-muted transition duration-200 hover:text-nova-ink">
+            <Link href="/donna-ai" className="shrink-0 py-1 text-sm font-medium whitespace-nowrap text-nova-ink-muted transition duration-200 hover:text-nova-ink">
               New assessment
             </Link>
-            <Link href="/app/settings/billing" className="text-sm font-medium text-nova-ink-muted transition duration-200 hover:text-nova-ink">
+            <Link href="/app/settings/billing" className="shrink-0 py-1 text-sm font-medium whitespace-nowrap text-nova-ink-muted transition duration-200 hover:text-nova-ink">
               Billing
             </Link>
-            <AccountMenu />
           </nav>
+          <div className="shrink-0">
+            <AccountMenu />
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-6 py-10">{children}</main>

@@ -15,7 +15,7 @@ export function ArchitectureTab() {
         Illustrative reference architecture — not yet generated per recommended platform.
       </p>
 
-      <div className="mt-8 overflow-x-auto rounded-3xl border border-titanium bg-gradient-to-br from-slate-50 to-indigo-50/60 p-8">
+      <div className="mt-8 overflow-x-auto rounded-3xl border border-titanium bg-gradient-to-br from-carbon to-carbon-2 p-8">
         <div className="mx-auto min-w-[40rem] max-w-3xl">
           <ArchitectureNode icon={Database} label="Source Systems" subtitle="Systems of record" />
 
@@ -69,7 +69,7 @@ function ArchitectureNode({
 function ArchitectureConnection() {
   return (
     <div className="flex h-14 items-center justify-center">
-      <div className="h-full w-px bg-gradient-to-b from-violet-300 to-blue-400" />
+      <div className="h-full w-px bg-gradient-to-b from-nova-accent-strong/70 to-aurora-secondary/50" />
     </div>
   );
 }

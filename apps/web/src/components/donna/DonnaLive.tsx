@@ -264,7 +264,7 @@ export default function DonnaLive() {
 
           <Link
             href="/donna-ai"
-            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-nova-accent-strong transition duration-200 hover:text-nova-ink"
+            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-nova-accent-strong transition duration-control hover:text-nova-ink"
           >
             Try the full Donna AI assessment
             <ArrowRight size={15} />
@@ -355,12 +355,12 @@ export default function DonnaLive() {
                     key={example}
                     type="button"
                     onClick={() => setQuestion(example)}
-                    className="group flex w-full items-start justify-between gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm leading-5 text-nova-ink-muted transition duration-200 hover:border-titanium hover:bg-carbon-2"
+                    className="group flex w-full items-start justify-between gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm leading-5 text-nova-ink-muted transition duration-control hover:border-titanium hover:bg-carbon-2"
                   >
                     <span>{example}</span>
                     <ChevronRight
                       size={15}
-                      className="mt-1 shrink-0 text-nova-ink-faint transition duration-200 group-hover:translate-x-1 group-hover:text-nova-accent-strong"
+                      className="mt-1 shrink-0 text-nova-ink-faint transition duration-control group-hover:translate-x-1 group-hover:text-nova-accent-strong"
                     />
                   </button>
                 ))}
@@ -421,7 +421,7 @@ export default function DonnaLive() {
                           tabIndex={selected ? 0 : -1}
                           onClick={() => setActiveView(tab.value)}
                           onKeyDown={(event) => handleTabKeyDown(event, index, selectTabByIndex)}
-                          className={`rounded-xl px-4 py-2 text-sm font-medium transition duration-200 ${
+                          className={`flex min-h-11 items-center rounded-xl px-4 py-2 text-sm font-medium transition duration-control ${
                             selected
                               ? "bg-nova-accent text-white shadow-md"
                               : "text-nova-ink-muted hover:bg-carbon-2 hover:text-nova-ink"
@@ -464,11 +464,11 @@ export default function DonnaLive() {
                       variant="outline"
                       aria-pressed={saved}
                       onClick={handleToggleSave}
-                      className={
+                      className={`h-11 ${
                         saved
                           ? "border-nova-success/30 bg-nova-success/10 text-nova-success"
                           : "border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
-                      }
+                      }`}
                     >
                       {saved ? <Check size={16} /> : <Save size={16} />}
                       {saved ? "Saved" : "Save decision"}
@@ -479,11 +479,11 @@ export default function DonnaLive() {
                       aria-expanded={comparisonOpen}
                       aria-controls="donna-comparison-panel"
                       onClick={handleToggleComparison}
-                      className={
+                      className={`h-11 ${
                         comparisonOpen
                           ? "border-nova-accent/40 bg-nova-accent/10 text-nova-accent-strong"
                           : "border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
-                      }
+                      }`}
                     >
                       <GitCompareArrows size={16} />
                       {comparisonOpen ? "Hide comparison" : "Compare alternatives"}
@@ -492,11 +492,11 @@ export default function DonnaLive() {
                     <Button
                       variant="outline"
                       onClick={handleExport}
-                      className={
+                      className={`h-11 ${
                         exported
                           ? "border-nova-success/30 bg-nova-success/10 text-nova-success"
                           : "border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
-                      }
+                      }`}
                     >
                       {exported ? <Check size={16} /> : <Download size={16} />}
                       {exported ? "Downloaded" : "Export report"}
@@ -505,7 +505,7 @@ export default function DonnaLive() {
                     <button
                       type="button"
                       onClick={resetDonna}
-                      className="ml-auto text-sm font-medium text-nova-accent-strong"
+                      className="ml-auto flex min-h-11 items-center px-2 text-sm font-medium text-nova-accent-strong"
                     >
                       Start new analysis
                     </button>
@@ -614,7 +614,7 @@ function AnalysingState({
             return (
               <div
                 key={step}
-                className={`flex items-center gap-4 rounded-xl border px-4 py-4 transition duration-300 ${
+                className={`flex items-center gap-4 rounded-xl border px-4 py-4 transition duration-panel ${
                   active
                     ? "border-nova-accent/40 bg-nova-accent/10"
                     : completed

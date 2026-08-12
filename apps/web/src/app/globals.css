@@ -77,7 +77,11 @@
      never pure white. */
   --color-nova-ink: #f4f6fb;
   --color-nova-ink-muted: #9aa4b8;
-  --color-nova-ink-faint: #6b7590;
+  /* #6b7590 measured ~4.0:1 on --color-carbon and ~3.5:1 on
+     --color-carbon-2 — under WCAG AA's 4.5:1 for the small/caption text
+     this token is used for almost everywhere. Lightened to clear 4.5:1
+     against carbon, carbon-2, and obsidian alike; same hue, same role. */
+  --color-nova-ink-faint: #808aa5;
 
   /* Aurora — ambient light only, never a surface fill */
   --color-aurora-primary: #7c3aed;

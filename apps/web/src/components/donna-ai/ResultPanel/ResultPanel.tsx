@@ -24,10 +24,14 @@ import { TcoTab } from "./TcoTab";
 // for the same attention. "Trade-offs" is the brief's own term for
 // what this tab already contained as risks/opportunities.
 const PRIMARY_TAB = { value: "overview", label: "Overview" } as const;
+// Ordered to match the brief's own priority: Trade-offs before
+// Alternatives (5 before 6). AI Insights, Roadmap, Architecture, and TCO
+// aren't part of that six-item list, so their relative order is
+// unconstrained by it.
 const SECONDARY_TABS = [
   { value: "intelligence", label: "AI Insights" },
-  { value: "alternatives", label: "Alternatives" },
   { value: "risks", label: "Trade-offs" },
+  { value: "alternatives", label: "Alternatives" },
   { value: "roadmap", label: "Roadmap" },
   { value: "architecture", label: "Architecture" },
   { value: "tco", label: "TCO analysis" },
@@ -141,7 +145,7 @@ export function ResultPanel({
 
         <div className="border-t border-titanium px-6 py-5 sm:px-8">
           <div className="flex flex-wrap items-center gap-3">
-            <Button variant="outline" onClick={handleSaveClick} className="border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong">
+            <Button variant="outline" onClick={handleSaveClick} className="h-11 border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong">
               <Save size={16} />
               Save decision
             </Button>
@@ -149,13 +153,17 @@ export function ResultPanel({
             <Button
               variant="outline"
               onClick={handleExport}
-              className={exported ? "border-nova-success/30 bg-nova-success/10 text-nova-success" : "border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"}
+              className={`h-11 ${exported ? "border-nova-success/30 bg-nova-success/10 text-nova-success" : "border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"}`}
             >
               {exported ? <Check size={16} /> : <Download size={16} />}
               {exported ? "Downloaded" : "Export report"}
             </Button>
 
-            <button type="button" onClick={onStartNew} className="ml-auto text-sm font-medium text-nova-accent-strong">
+            <button
+              type="button"
+              onClick={onStartNew}
+              className="ml-auto flex min-h-11 items-center px-2 text-sm font-medium text-nova-accent-strong"
+            >
               Start new analysis
             </button>
           </div>

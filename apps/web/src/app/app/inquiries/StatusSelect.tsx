@@ -48,7 +48,11 @@ export function StatusSelect({ inquiryId, initialStatus }: { inquiryId: string; 
           </option>
         ))}
       </select>
-      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-1 text-xs text-red-400">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

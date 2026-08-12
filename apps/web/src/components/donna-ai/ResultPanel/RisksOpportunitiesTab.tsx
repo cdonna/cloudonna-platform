@@ -26,7 +26,7 @@ export function RisksOpportunitiesTab({ output }: { output: DecisionOutput }) {
                 key={opportunity.text}
                 className="flex items-start gap-3 text-sm leading-6 text-nova-ink-muted"
               >
-                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-nova-success/100" />
+                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-nova-success" />
                 {opportunity.text}
               </div>
             ))}

@@ -347,7 +347,7 @@ export function IntakeWizard({
             type="button"
             onClick={handleBack}
             disabled={state.stepIndex === 0}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition-colors duration-control hover:text-nova-ink disabled:pointer-events-none disabled:opacity-0"
+            className="flex min-h-11 items-center gap-1.5 px-1 text-sm font-medium text-nova-ink-muted transition-colors duration-control hover:text-nova-ink disabled:pointer-events-none disabled:opacity-0"
           >
             <ArrowLeft size={15} />
             Back
@@ -358,7 +358,7 @@ export function IntakeWizard({
               <button
                 type="button"
                 onClick={() => dispatch({ type: "GOTO_STEP", index: REVIEW_STEP_INDEX })}
-                className="text-sm font-medium text-nova-accent-strong transition-colors duration-control hover:text-nova-ink"
+                className="flex min-h-11 items-center px-1 text-sm font-medium text-nova-accent-strong transition-colors duration-control hover:text-nova-ink"
               >
                 Back to review
               </button>

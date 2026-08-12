@@ -43,7 +43,7 @@ export function AlternativesTab({ output }: { output: DecisionOutput }) {
             <div
               key={entry.platform.id}
               className={`rounded-2xl border p-5 ${
-                isRecommended ? "border-nova-accent/40 bg-nova-accent/10/40" : "border-titanium bg-carbon"
+                isRecommended ? "border-nova-accent/40 bg-nova-accent/10" : "border-titanium bg-carbon"
               }`}
             >
               <div className="flex flex-wrap items-start justify-between gap-3">

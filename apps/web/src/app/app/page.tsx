@@ -39,7 +39,7 @@ export default async function AppDashboardPage() {
               <Sparkles size={16} />
               <span className="text-sm font-semibold uppercase tracking-wide">New assessment</span>
             </div>
-            <p className="mt-2 text-sm text-nova-ink-faint">Run Donna&apos;s six-step assessment and, when it&apos;s ready, save it here.</p>
+            <p className="mt-2 text-sm text-nova-ink-faint">Answer a few quick questions and save the recommendation here when it&apos;s ready.</p>
           </div>
           <ArrowRight size={18} className="text-nova-ink-faint transition group-hover:translate-x-1 group-hover:text-nova-accent-strong" />
         </Link>

@@ -35,8 +35,8 @@ export default async function DecisionHistoryPage() {
           </Link>
         </div>
       ) : (
-        <div className="mt-6 overflow-hidden rounded-2xl border border-titanium bg-carbon">
-          <table className="w-full text-left text-sm">
+        <div className="mt-6 overflow-x-auto rounded-2xl border border-titanium bg-carbon">
+          <table className="w-full min-w-[760px] text-left text-sm">
             <thead className="border-b border-titanium bg-carbon-2 text-xs font-semibold tracking-wide text-nova-ink-muted uppercase">
               <tr>
                 <th className="px-5 py-3">Title</th>

@@ -26,20 +26,6 @@ export function OverviewTab({ output }: { output: DecisionOutput }) {
         </div>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-titanium bg-carbon-2 p-5">
-        <SectionLabel>Current situation</SectionLabel>
-        <p className="mt-2 text-sm leading-6 text-nova-ink-muted">{output.currentSituation}</p>
-        {output.decisionDrivers.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {output.decisionDrivers.map((driver) => (
-              <span key={driver} className="rounded-full border border-titanium bg-carbon px-2.5 py-1 text-xs text-nova-ink-muted">
-                {driver}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         <div className="rounded-2xl border border-titanium p-5">
           <h4 className="font-semibold text-nova-ink">Why this recommendation?</h4>
@@ -94,6 +80,20 @@ export function OverviewTab({ output }: { output: DecisionOutput }) {
             ))}
           </div>
         </div>
+      </div>
+
+      <div className="mt-6 rounded-2xl border border-titanium bg-carbon-2 p-5">
+        <SectionLabel>Current situation</SectionLabel>
+        <p className="mt-2 text-sm leading-6 text-nova-ink-muted">{output.currentSituation}</p>
+        {output.decisionDrivers.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {output.decisionDrivers.map((driver) => (
+              <span key={driver} className="rounded-full border border-titanium bg-carbon px-2.5 py-1 text-xs text-nova-ink-muted">
+                {driver}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="mt-6 rounded-2xl border border-titanium bg-carbon-2 p-5">

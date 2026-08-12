@@ -69,8 +69,8 @@ export default async function InquiriesPage() {
             <p className="text-sm text-nova-ink-muted">No inquiries yet.</p>
           </div>
         ) : (
-          <div className="mt-4 overflow-hidden rounded-2xl border border-titanium bg-carbon">
-            <table className="w-full text-left text-sm">
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-titanium bg-carbon">
+            <table className="w-full min-w-[860px] text-left text-sm">
               <thead className="border-b border-titanium bg-carbon-2 text-xs font-semibold tracking-wide text-nova-ink-muted uppercase">
                 <tr>
                   <th className="px-5 py-3">Name / Company</th>

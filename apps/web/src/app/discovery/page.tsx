@@ -157,7 +157,7 @@ export default function DiscoveryPage() {
             See the full path in action
           </h2>
           <p className="mt-3 text-sm leading-6 text-nova-ink-muted">
-            Donna AI runs this exact sequence through a guided, six-step
+            Donna AI runs this exact sequence through a guided, conversational
             assessment and produces a real Executive Decision Report.
           </p>
           <Link

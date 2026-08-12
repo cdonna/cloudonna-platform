@@ -47,7 +47,7 @@ export function VersionControls({
         id="version-select"
         value={selected}
         onChange={(event) => setSelected(Number(event.target.value))}
-        className="h-9 rounded-lg border border-titanium bg-carbon-2 px-2.5 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+        className="h-11 rounded-lg border border-titanium bg-carbon-2 px-2.5 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
       >
         {versions.map((version) => (
           <option key={version.id} value={version.versionNumber}>
@@ -61,7 +61,7 @@ export function VersionControls({
         variant="outline"
         onClick={handleView}
         disabled={selected === displayedVersionNumber}
-        className="border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
+        className="h-11 border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
       >
         <History size={15} />
         View
@@ -72,7 +72,7 @@ export function VersionControls({
         variant="outline"
         onClick={handleDiff}
         disabled={selected === displayedVersionNumber}
-        className="border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
+        className="h-11 border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
       >
         <GitCompare size={15} />
         Diff vs. viewed version

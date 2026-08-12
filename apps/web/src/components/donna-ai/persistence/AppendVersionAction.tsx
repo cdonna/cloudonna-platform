@@ -33,7 +33,7 @@ export function AppendVersionAction({
 
   return (
     <>
-      <Button type="button" variant="outline" onClick={() => setOpen(true)} className="border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong">
+      <Button type="button" variant="outline" onClick={() => setOpen(true)} className="h-11 border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong">
         <Plus size={15} />
         Save as new version
       </Button>

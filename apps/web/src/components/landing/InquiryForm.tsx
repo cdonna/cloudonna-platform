@@ -171,44 +171,60 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
               <p className="max-w-md text-sm leading-6 text-nova-ink-muted">{copy.successBody}</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="grid gap-5 p-7 sm:grid-cols-2 sm:p-10">
-              <Field id={`${formId}-name`} name="name" label="Full name" required autoComplete="name" />
-              <Field id={`${formId}-email`} name="email" label="Work email" type="email" required autoComplete="email" />
-              <Field id={`${formId}-company`} name="company" label="Company" autoComplete="organization" />
-              <Field id={`${formId}-country`} name="country" label="Country" autoComplete="country-name" />
-
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor={`${formId}-role`} className="text-sm font-medium text-nova-ink">
-                  Role
-                </label>
-                <select
-                  id={`${formId}-role`}
-                  name="role"
-                  defaultValue=""
-                  className="h-11 rounded-xl border border-titanium bg-carbon-2 px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
-                >
-                  <option value="">Select your role</option>
-                  {roles.map((role) => (
-                    <option key={role} value={role}>
-                      {role}
-                    </option>
-                  ))}
-                </select>
+            <form onSubmit={handleSubmit} className="p-7 sm:p-10">
+              {/* Only these two fields are actually required — see
+                  createInquiryRequestSchema. Everything below is
+                  visually separated and labeled optional so the form
+                  reads as "two fields, plus a few optional details,"
+                  not seven equal-weight demands. */}
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field id={`${formId}-name`} name="name" label="Full name" required autoComplete="name" />
+                <Field id={`${formId}-email`} name="email" label="Work email" type="email" required autoComplete="email" />
               </div>
 
-              <Field id={`${formId}-phone`} name="phone" label="Phone" type="tel" optional autoComplete="tel" />
+              <div className="mt-7 border-t border-titanium pt-6">
+                <p className="text-xs font-medium tracking-[0.08em] text-nova-ink-faint uppercase">
+                  Optional — helps us tailor the follow-up
+                </p>
 
-              <div className="flex flex-col gap-1.5 sm:col-span-2">
-                <label htmlFor={`${formId}-message`} className="text-sm font-medium text-nova-ink">
-                  Message <span className="font-normal text-nova-ink-faint">(optional)</span>
-                </label>
-                <textarea
-                  id={`${formId}-message`}
-                  name="message"
-                  rows={4}
-                  placeholder="Tell us what you're trying to do..."
-                  className="resize-none rounded-xl border border-titanium bg-carbon-2 px-3 py-2.5 text-sm text-nova-ink outline-none placeholder:text-nova-ink-faint focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
-                />
+                <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                  <Field id={`${formId}-company`} name="company" label="Company" optional autoComplete="organization" />
+                  <Field id={`${formId}-country`} name="country" label="Country" optional autoComplete="country-name" />
+
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor={`${formId}-role`} className="text-sm font-medium text-nova-ink">
+                      Role <span className="font-normal text-nova-ink-faint">(optional)</span>
+                    </label>
+                    <select
+                      id={`${formId}-role`}
+                      name="role"
+                      defaultValue=""
+                      className="h-11 rounded-xl border border-titanium bg-carbon-2 px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+                    >
+                      <option value="">Select your role</option>
+                      {roles.map((role) => (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <Field id={`${formId}-phone`} name="phone" label="Phone" type="tel" optional autoComplete="tel" />
+
+                  <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <label htmlFor={`${formId}-message`} className="text-sm font-medium text-nova-ink">
+                      Message <span className="font-normal text-nova-ink-faint">(optional)</span>
+                    </label>
+                    <textarea
+                      id={`${formId}-message`}
+                      name="message"
+                      rows={4}
+                      placeholder="Tell us what you're trying to do..."
+                      className="resize-none rounded-xl border border-titanium bg-carbon-2 px-3 py-2.5 text-sm text-nova-ink outline-none placeholder:text-nova-ink-faint focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Honeypot — hidden from real visitors via CSS, not `type="hidden"`
@@ -219,12 +235,12 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
               </div>
 
               {status === "error" && errorMessage && (
-                <p role="alert" className="text-sm text-red-400 sm:col-span-2">
+                <p role="alert" className="mt-6 text-sm text-red-400">
                   {errorMessage}
                 </p>
               )}
 
-              <div className="sm:col-span-2">
+              <div className="mt-7">
                 <Button type="submit" disabled={status === "submitting"} className="h-12 w-full bg-nova-accent text-white shadow-nova-glow hover:bg-nova-accent-strong">
                   {status === "submitting" ? (
                     <>

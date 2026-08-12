@@ -121,7 +121,7 @@ export function ConversationalFieldFlow({ stageKey, fields, note, onNoteChange, 
               type="button"
               onClick={() => setActiveIndex(activeIndex + 1)}
               disabled={activeField.selected.length === 0}
-              className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-nova-accent-strong transition-colors duration-control hover:text-nova-ink disabled:pointer-events-none disabled:opacity-40"
+              className="mt-5 flex min-h-11 items-center gap-1.5 px-1 text-sm font-medium text-nova-accent-strong transition-colors duration-control hover:text-nova-ink disabled:pointer-events-none disabled:opacity-40"
             >
               Continue
               <ChevronRight size={15} />

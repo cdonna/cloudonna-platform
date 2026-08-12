@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import DonnaLive from "@/components/donna/DonnaLive";
+import DonnaSignature from "@/components/landing/DonnaSignature";
 import Ecosystem from "@/components/landing/Ecosystem";
 import EnterpriseIntelligence from "@/components/landing/EnterpriseIntelligence";
 import Hero from "@/components/landing/Hero";
 import { InquiryForm } from "@/components/landing/InquiryForm";
-import NarrativeSequence from "@/components/landing/NarrativeSequence";
 import Problem from "@/components/landing/Problem";
 import { Reveal } from "@/components/landing/Reveal";
 import TrustStrip from "@/components/landing/TrustStrip";
@@ -37,7 +37,7 @@ export default function Home() {
         <Problem />
       </Reveal>
       <Reveal>
-        <NarrativeSequence />
+        <DonnaSignature />
       </Reveal>
       <Reveal>
         <DonnaLive />

@@ -67,15 +67,18 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
 
   function handleWizardComplete(state: WizardState) {
     setWizardState(state);
+    setReport(null);
     setPhase("analysing");
+    // Started the instant analysis begins, not after the choreographed
+    // sequence finishes — AnalysingState paces its own visual steps in
+    // parallel and only calls handleAnalysisComplete once both this has
+    // resolved and its sequence has run. Total wait is max(real,
+    // choreographed), never real + choreographed on top of it.
+    requestDecision(state).then(setReport);
   }
 
   function handleAnalysisComplete() {
-    if (!wizardState) return;
-    requestDecision(wizardState).then((result) => {
-      setReport(result);
-      setPhase("results");
-    });
+    setPhase("results");
   }
 
   function handleStartNew() {
@@ -127,7 +130,7 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
               <WizardProgress stepIndex={ANALYSIS_STEP_INDEX} />
             </div>
             <div className="overflow-hidden rounded-[2rem] border border-titanium bg-obsidian shadow-nova-glow">
-              <AnalysingState state={wizardState} onComplete={handleAnalysisComplete} />
+              <AnalysingState state={wizardState} report={report} onComplete={handleAnalysisComplete} />
             </div>
           </div>
         )}

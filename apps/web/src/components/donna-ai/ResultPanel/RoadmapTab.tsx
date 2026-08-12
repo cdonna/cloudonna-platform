@@ -45,7 +45,7 @@ export function RoadmapTab({ output }: { output: DecisionOutput }) {
         })}
       </div>
 
-      <div className="mt-6 rounded-2xl border border-dashed border-titanium bg-nova-accent/10/40 p-5">
+      <div className="mt-6 rounded-2xl border border-dashed border-titanium bg-nova-accent/10 p-5">
         <div className="flex items-center gap-2">
           <GraduationCap size={15} className="text-nova-accent-strong" />
           <SectionLabel>Suggested workshops</SectionLabel>

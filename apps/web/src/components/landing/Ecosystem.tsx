@@ -27,7 +27,13 @@ const products = [
     description:
       "Compare software across capability, architecture, pricing and security.",
     icon: GitCompareArrows,
-    href: "#early-access",
+    // Not /#early-access — that section's copy is specifically "Become
+    // a Founding Tester" for Donna AI. Someone clicking "Get notified"
+    // on a different, not-yet-built product would land on copy that
+    // doesn't match what they clicked, which reads as sloppy rather
+    // than considered. General Enquiry's copy ("reaches a founder
+    // directly") is honestly accurate for this instead.
+    href: "/contact?type=general",
     status: "planned" as const,
   },
   {
@@ -38,7 +44,13 @@ const products = [
     description:
       "Vendors, implementation partners and experts — held to the same standard as every recommendation.",
     icon: Store,
-    href: "#early-access",
+    // Not /#early-access — that section's copy is specifically "Become
+    // a Founding Tester" for Donna AI. Someone clicking "Get notified"
+    // on a different, not-yet-built product would land on copy that
+    // doesn't match what they clicked, which reads as sloppy rather
+    // than considered. General Enquiry's copy ("reaches a founder
+    // directly") is honestly accurate for this instead.
+    href: "/contact?type=general",
     status: "planned" as const,
   },
   {
@@ -48,7 +60,13 @@ const products = [
     description:
       "Market data, benchmarks, expert reviews. Behind every number Donna shows you.",
     icon: BarChart3,
-    href: "#early-access",
+    // Not /#early-access — that section's copy is specifically "Become
+    // a Founding Tester" for Donna AI. Someone clicking "Get notified"
+    // on a different, not-yet-built product would land on copy that
+    // doesn't match what they clicked, which reads as sloppy rather
+    // than considered. General Enquiry's copy ("reaches a founder
+    // directly") is honestly accurate for this instead.
+    href: "/contact?type=general",
     status: "planned" as const,
   },
   {
@@ -58,7 +76,13 @@ const products = [
     description:
       "One shared place to track decisions, architecture and reports.",
     icon: LayoutGrid,
-    href: "#early-access",
+    // Not /#early-access — that section's copy is specifically "Become
+    // a Founding Tester" for Donna AI. Someone clicking "Get notified"
+    // on a different, not-yet-built product would land on copy that
+    // doesn't match what they clicked, which reads as sloppy rather
+    // than considered. General Enquiry's copy ("reaches a founder
+    // directly") is honestly accurate for this instead.
+    href: "/contact?type=general",
     status: "planned" as const,
   },
 ];

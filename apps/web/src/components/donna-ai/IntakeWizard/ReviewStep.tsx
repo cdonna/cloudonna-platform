@@ -58,7 +58,7 @@ function ReviewCard({
         <button
           type="button"
           onClick={onEdit}
-          className="shrink-0 text-sm font-medium text-nova-accent-strong transition-colors duration-control hover:text-nova-ink"
+          className="flex min-h-11 shrink-0 items-center px-1 text-sm font-medium text-nova-accent-strong transition-colors duration-control hover:text-nova-ink"
         >
           Edit
         </button>

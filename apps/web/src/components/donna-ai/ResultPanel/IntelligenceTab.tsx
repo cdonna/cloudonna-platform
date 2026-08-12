@@ -118,12 +118,12 @@ export function IntelligenceTab({ report }: { report: DecisionReport }) {
       </div>
 
       {enrichment.missingInformation.length > 0 && (
-        <div className="rounded-2xl border border-nova-warning/30 bg-nova-warning/10/60 p-5">
+        <div className="rounded-2xl border border-nova-warning/30 bg-nova-warning/10 p-5">
           <SectionLabel>What Donna doesn&apos;t know yet</SectionLabel>
           <div className="mt-3 space-y-2">
             {enrichment.missingInformation.map((gap) => (
               <div key={gap} className="flex items-start gap-2 text-sm leading-6 text-nova-ink-muted">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-nova-warning/100" />
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-nova-warning" />
                 {gap}
               </div>
             ))}
