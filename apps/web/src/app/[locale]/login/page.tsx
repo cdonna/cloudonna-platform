@@ -22,7 +22,7 @@ export default function LoginPage({ params }: { params: Promise<{ locale: string
   const [magicLinkSent, setMagicLinkSent] = useState(false);
 
   return (
-    <div className="mx-auto min-h-screen max-w-md bg-void px-6 py-16">
+    <div className="mx-auto min-h-dvh max-w-md bg-void px-6 py-16">
       <div className="flex items-center justify-between">
         <Link href={`/${locale}`} className="flex items-center gap-2.5">
           <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={36} height={36} className="brand-mark h-9 w-9 object-contain" />

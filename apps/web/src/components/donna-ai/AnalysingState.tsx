@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { AlertTriangle, Bot, Check, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,6 +59,27 @@ export function AnalysingState({
   const [steps] = useState(() => buildAnalysisSteps(state));
   const [machine, dispatch] = useReducer(analysisMachineReducer, undefined, createInitialAnalysisMachineState);
 
+  // This is the fix for the Founder's real-iPhone report: "meaningful
+  // Donna results appear too far below the visible viewport." Every
+  // phase transition in DonnaAIExperience (wizard -> analysing ->
+  // results) renders as a conditional sibling inside one never-moving
+  // container, so nothing ever tells the browser to bring newly-
+  // mounted, taller content into view — the page stays scrolled to
+  // wherever the last question happened to leave it. AdaptiveIntake
+  // already solves this for its own internal question-to-question
+  // transitions via headingRef.focus() (native focus() scrolls the
+  // focused element into view); this component and ResultPanel are
+  // the two places that pattern was never extended to, which is the
+  // actual root cause, not a missing scrollIntoView() sprinkle. Fires
+  // on mount (entering "analysing") and again the moment the machine
+  // transitions to "error" (a real state change, not a re-render), so
+  // a retry failure is brought into view exactly like the first one.
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const isError = machine.status === "error";
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, [isError]);
+
   // Deterministic and synchronous — the real recommendation, score, and
   // confidence are already known without waiting on anything, used for
   // the mid-choreography reveal below. Guarded: a malformed WizardState
@@ -110,15 +131,15 @@ export function AnalysingState({
   }, [machine.status, onComplete]);
 
   const ready = machine.status === "result_ready";
-  const failed = machine.status === "error";
+  const failed = isError;
 
   if (failed) {
     return (
-      <div className="flex min-h-[38rem] flex-col items-center justify-center p-8 text-center sm:p-12">
+      <div className="flex min-h-[32rem] flex-col items-center justify-center p-8 text-center sm:min-h-[38rem] sm:p-12">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-nova-warning/15 text-nova-warning">
           <AlertTriangle size={25} />
         </div>
-        <h2 className="mt-6 text-xl font-semibold text-nova-ink">Donna couldn&apos;t finish this analysis</h2>
+        <h2 ref={headingRef} tabIndex={-1} className="mt-6 text-xl font-semibold text-nova-ink outline-none">Donna couldn&apos;t finish this analysis</h2>
         <p className="mt-2 max-w-md text-sm leading-6 text-nova-ink-faint">
           {machine.errorMessage ?? "Something went wrong building your recommendation."}
         </p>
@@ -147,8 +168,8 @@ export function AnalysingState({
   }
 
   return (
-    <div className="flex min-h-[38rem] flex-col justify-center p-8 sm:p-12">
-      <div className="mx-auto w-full max-w-xl">
+    <div className="flex min-h-[32rem] flex-col justify-center p-8 sm:min-h-[38rem] sm:p-12">
+      <div ref={headingRef} tabIndex={-1} className="mx-auto w-full max-w-xl outline-none">
         <div className="flex items-center gap-4">
           <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-nova-accent text-white">
             {ready ? <Check size={25} /> : <Bot size={25} />}

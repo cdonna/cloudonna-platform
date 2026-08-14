@@ -28,7 +28,7 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
   const t = dict.legal.terms;
 
   return (
-    <div className="min-h-screen bg-obsidian">
+    <div className="min-h-dvh bg-obsidian">
       <div className="mx-auto max-w-3xl px-6 py-16">
         <div className="flex items-center justify-between">
           <Link href={`/${locale}`} className="flex items-center gap-2.5">

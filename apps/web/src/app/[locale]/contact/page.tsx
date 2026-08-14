@@ -59,7 +59,7 @@ export default async function ContactPage({
   ];
 
   return (
-    <div className="min-h-screen bg-void">
+    <div className="min-h-dvh bg-void">
       <ContactViewedTracker />
 
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">

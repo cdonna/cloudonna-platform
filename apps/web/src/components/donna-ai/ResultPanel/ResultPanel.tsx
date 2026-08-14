@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Download, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,19 @@ export function ResultPanel({
   const [liveMessage, setLiveMessage] = useState("");
   const { registerTab, handleTabKeyDown } = useRovingTabs(TABS.length);
 
+  // Same fix, same reason as AnalysingState.tsx: this is the single
+  // most important heading in the product ("Your recommendation is
+  // ready") and previously had no mechanism bringing it into view when
+  // this component mounts after analysis completes — the actual root
+  // cause of the Founder's "results appear too far below the viewport"
+  // report. Native focus() scrolls the element into view; ResultPanel
+  // never remounts after this (tab switches only swap the tabpanel
+  // below), so a mount-only effect is correct here.
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
+
   useEffect(() => {
     if (!exported) return;
     const timer = window.setTimeout(() => setExported(false), 1800);
@@ -93,7 +106,7 @@ export function ResultPanel({
         <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-nova-success/30 bg-nova-success/10 px-4 py-2 text-xs font-semibold tracking-[0.16em] text-nova-success uppercase">
           Analysis complete
         </div>
-        <h2 className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-nova-ink sm:text-4xl">Your recommendation is ready</h2>
+        <h2 ref={headingRef} tabIndex={-1} className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-nova-ink outline-none sm:text-4xl">Your recommendation is ready</h2>
         <p className="mx-auto mt-4 max-w-xl text-xs leading-5 text-nova-ink-faint">
           Illustrative alpha output based on curated mock data. No live market data was used
           {report.fallback.status === "ok"

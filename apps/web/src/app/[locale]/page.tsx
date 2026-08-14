@@ -48,7 +48,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const dict = await getDictionary(locale);
 
   return (
-    <main className="min-h-screen bg-obsidian">
+    <main className="min-h-dvh bg-obsidian">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationJsonLd(locale, dict.seo.home.description)) }}

@@ -37,7 +37,7 @@ export default async function DonnaAIPage({ params }: { params: Promise<{ locale
   const [user, dict] = await Promise.all([getCurrentUser(), getDictionary(locale)]);
 
   return (
-    <div className="min-h-screen bg-void">
+    <div className="min-h-dvh bg-void">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
         <Link href={`/${locale}`} className="flex items-center gap-2.5">
           <Image
