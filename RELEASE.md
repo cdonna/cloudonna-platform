@@ -1,3 +1,56 @@
+# v0.3.2-alpha — Localization Gap Closure + Confirmed Production Inquiry P0 Finding
+
+**Date:** 2026-08-15
+**Deployed commit:** `7f7fcb0` (tag `v0.3.2-alpha`)
+**Branch:** fast-forwarded onto `main` (no merge commit, no history rewrite)
+**Status:** Code pushed and tagged. **Vercel deployment status not independently re-verified for this exact commit from this environment** (no CLI/API access) — the Founder confirmed the prior release READY via the dashboard; this commit should deploy the same way if Git integration is active on `main`.
+
+## Production Inquiry P0 — CONFIRMED BROKEN (not merely unverified)
+
+Every prior release report described this as "unresolved" or "unverified." This pass changes that assessment to something more specific and more serious.
+
+After a full read-only audit of the existing inquiry system (schema, migrations, RLS policies, API route, Zod validation, repository, honeypot, rate limiting, Founder inbox, notification provider — all found correctly built; no second system created, no existing inquiry code changed), this pass performed the exact safe, explicitly-authorized real Production test requested: one POST to `https://www.cdonna.com/api/inquiries` with unmistakable test content (`name: "Test Founder"`, `company: "ClouDonna Test"`, a `.invalid`-TLD email guaranteed never to deliver anywhere, and a message self-identifying as an authorized automated verification record).
+
+**Result: HTTP 503, `{"error":"This inquiry could not be submitted. Please try again later."}`.**
+
+This is not a generic failure — it is the *exact, specific* message `apps/web/src/app/api/inquiries/route.ts` returns from exactly one code path: `createSupabaseServerClient()` throwing inside the route's own try/catch, logged server-side as `supabase_client_unavailable`. It is textually distinct from every other failure message in the system (the repository's sanitized database-error fallback reads "...try again." — no "later"; the rate-limit message reads "Please wait a little..."). This precision is what makes the finding a diagnosis, not a guess.
+
+**Conclusion: `NEXT_PUBLIC_SUPABASE_URL` and/or `NEXT_PUBLIC_SUPABASE_ANON_KEY` are missing or invalid in the Vercel Production environment for this project right now.** Every real visitor attempting to submit any inquiry (Founding Tester, Enterprise Pilot, Partner, Vendor, General) on the live site is receiving this same failure. No inquiry has been persisted by this test — the write never reached Supabase.
+
+**No fake success was returned to complete this test. No mock was substituted. No code changed to work around it**, per this task's own explicit instruction. This repository has no legitimate way to set Vercel Production environment variables.
+
+### Exact Founder action required
+
+1. In the Vercel dashboard, open this project's **Production** environment variables.
+2. Confirm `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are present and correct (matching the real Supabase project this app should write to). Also confirm `RESEND_API_KEY` and `FOUNDER_CONTACT_EMAIL` if real email notifications (rather than the `ConsoleNotificationProvider` server-log fallback) are wanted.
+3. Redeploy (or trigger a new deployment) so Production picks up the corrected environment.
+4. Re-run this exact safe test — a real POST with equally unmistakable test content to `/api/inquiries` — and confirm a `200` response with a real inquiry id, that the row appears in `/app/inquiries`, and that a notification is received if configured.
+5. Only then does `PRODUCTION INQUIRY P0 = RESOLVED` become a claim this repository's own evidence can support.
+
+One consequence worth naming honestly: **the diagnostic SQL script referenced in every prior release (`supabase/tests/production_diagnostic_p0.sql`) cannot even run yet** — it needs a working Supabase connection from someone with dashboard SQL Editor access, which is a separate concern from the env-var gap found here, and still needs to happen afterward to confirm the *schema* (not just the connection) is correct in Production.
+
+## Release summary (code changes)
+
+Closes three localization gaps disclosed in the prior release's "Known limitations": `og:locale` was hardcoded `en_US` on every page except home (Next.js doesn't deep-merge a child route's `openGraph` into the parent layout's, so any page that didn't set its own inherited the static root value regardless of actual locale) — fixed via a new `localizedOpenGraph()` helper applied to all 9 server-rendered localized pages, correct `xx_XX` format verified live for all 5 locales. Homepage `<title>` was the identical English brand tagline in every locale — now translated per language (description was already correct). Scoring-dimension labels ("Architecture Fit" etc — a fixed 10-value enum) now localized at the UI boundary via `dimension-labels.ts`, without touching `scoring/engine.ts`'s output shape — same pattern as the existing `option-labels.ts`. The larger body of dynamically-composed narrative text (evidence sentences, executive summary, trade-offs) remains English-only, deliberately not attempted this pass: closing it would require restructuring `DecisionOutput` to carry a key alongside each pre-composed sentence, a real shape change to a heavily-tested core module — disclosed rather than rushed.
+
+Added inquiry-system regression coverage that wasn't already there: oversized-message rejection (>4000 chars), `source_page`/`utm_source` actually captured in the persisted insert payload, canonical `inquiry_type` enum storage proven independent of any localized label, and a properly-forced (module-mocked, not just asserted) notification-failure-after-successful-persistence case.
+
+## Build summary
+
+- 19 files changed, +249/−33, one commit
+- `npx tsc --noEmit`: clean
+- `npm run lint`: clean
+- `npx vitest run`: 39 test files, 341 passed, 1 skipped, 0 failed (+14 from this pass)
+- `npm run build`: succeeds, 72 pages, unchanged route structure
+- Fresh `next start` re-verified: full 55-route matrix (5 locales × 11 pages), `og:locale` correct per locale on a non-home page (previously always `en_US`), homepage `<title>` correct per locale, `robots.txt`/`sitemap.xml`/`opengraph-image`/`favicon.ico`/404/unsupported-locale all confirmed
+- Local dry-run of `/api/inquiries` (Supabase unconfigured in this environment, as always): honest `503`, no fake success — confirms the code's own failure-handling is correct even though it can't prove real persistence locally
+
+## Known limitations
+
+Everything from `v0.3.0-alpha`'s "Known limitations" below still applies, **except** the `og:locale` and homepage `<title>` items, which are resolved this pass. New: the larger body of Donna's dynamically-composed narrative text (evidence sentences, executive summary) remains English-only (see above); login/signup pages cannot export their own `generateMetadata` at all (they're Client Components — a Next.js restriction, not a bug) and so always show the root layout's static English title regardless of locale, a pre-existing structural gap not fixed this pass.
+
+---
+
 # v0.3.1-alpha — Founder Release Gate Verification Pass
 
 **Date:** 2026-08-14
@@ -91,6 +144,9 @@ No `vercel` CLI or credentials exist in this environment — the actual Producti
 ---
 
 ## Release history
+
+### v0.3.1-alpha — Founder Release Gate Verification Pass (`9344b8a`, 2026-08-14)
+No product behavior change. Independent adversarial audit of `v0.3.0-alpha`: repo health check, explicit Accept-Language fallback matrix, full route-matrix re-verification, and a Donna cross-language regression check that chased down and correctly root-caused an apparent confidence-score discrepancy to its own test-methodology artifact rather than a product bug. Also performed real, live verification against the actual `https://www.cdonna.com` Production domain for the first time (55/55 routes, hreflang, sitemap, one safe Donna API call).
 
 ### v0.3.0-alpha — Founder Walkthrough Hardening + EN/DE/FR/ES/IT Localization (`df2e00f`, 2026-08-14)
 Multi-select auto-advance, browser Back destroying assessments, silently-degraded high-fidelity facts, lost multi-system landscape context, misleading confirmation pills, post-readiness question pressure, three unguarded `/app/*` pages, and `ResultPanel` hierarchy all fixed. Real locale-prefixed routing and compile-time-checked dictionaries for EN/DE/FR/ES/IT across the twelve Founder-journey pages; language switching reuses the Back-button fix's session persistence with no new logic; deterministic extractor gained multi-language alias patterns across all thirteen domain categories, including a Unicode word-boundary fix.
