@@ -1,3 +1,39 @@
+# v0.3.1-alpha — Founder Release Gate Verification Pass
+
+**Date:** 2026-08-14
+**Deployed commit:** `9344b8a` (tag `v0.3.1-alpha`)
+**Branch:** fast-forwarded onto `main` (no merge commit, no history rewrite)
+**Status:** On `main`, tagged, pushed. **Production deployment not verified from this environment** — no Vercel CLI or credentials exist here; see "Deployment" below.
+
+## Release summary
+
+No product behavior change. An independent, adversarial release-gate audit of `v0.3.0-alpha` — repository health check (no secrets, no debug leakage, no dead imports, no duplicate locale-detection mechanisms), an explicit `Accept-Language` fallback matrix (`en-US`/`en-GB` → `en`, `de-DE`/`de-CH` → `de`, `fr-FR`/`fr-CH` → `fr`, `es-ES` → `es`, `it-IT`/`it-CH` → `it`, each asserted individually and added as `resolve-locale.test.ts` cases), the full 5-locale × 12-route matrix re-verified against a fresh production build, redirect/error/unsupported-locale behavior (`/xx` → 404, unknown route under a valid locale → 404, `/en/early-access` → 307 with the correct locale-prefixed target), and the Donna cross-language recommendation pipeline.
+
+**One finding worth recording, not a product defect:** re-verifying the Donna smoke test found the live API returning a different `confidenceScore` (67) than the value recorded in the prior release's own report (71) for what looked like the same input. Investigated rather than dismissed: the discrepancy was in this audit's own hand-typed test payload, which had fabricated plausible-looking `revenue`/`itOrgSize` values that were never actually present in the source Founder statement (the real extractor correctly leaves both `null`, since neither statement mentions company revenue or IT org size). Re-running with the exact real extractor output — `revenue: null, itOrgSize: null` — reproduced the original 81/71/"Business Data Cloud" result exactly, and did so identically across 5 repeated calls. Scoring is confirmed deterministic; the earlier gap was a test-methodology artifact in this session, not a code issue.
+
+## Build summary
+
+- 1 file changed, +21 lines (test-only)
+- `npx tsc --noEmit`: clean
+- `npm run lint`: clean
+- `npm test -- --run`: 37 test files, 327 passed, 1 skipped, 0 failed (+9 from the new fallback-matrix cases)
+- `npm run build`: succeeds, 72 pages, unchanged from v0.3.0-alpha
+- Fresh `next start` re-verified: full 60-request route/redirect matrix (5 locales × 9 static pages + 2 dynamic pages + 5 early-access redirects), `robots.txt`/`sitemap.xml`/`opengraph-image`/404/unsupported-locale, and a live `/api/donna-ai/decision` call against the exact real German-extracted `WizardState`
+
+## Deployment
+
+No `vercel` CLI or credentials exist in this environment — the actual Production deploy could not be triggered or verified here, same disclosed limitation as every prior release this project. `main` is pushed at `9344b8a`, tagged `v0.3.1-alpha`. If this repo's Vercel project has Git integration configured for `main`, a Production deployment should have started automatically. **Production URL, deployment ID, and build status need to be confirmed from the Vercel dashboard.**
+
+## Production Inquiry P0
+
+Unchanged, still unresolved — this pass did not touch the inquiry-persistence path or Supabase Production configuration. See `v0.3.0-alpha`'s entry below.
+
+## Known limitations
+
+Everything from `v0.3.0-alpha`'s "Known limitations" (below) still applies unchanged — this pass added verification, not new code.
+
+---
+
 # v0.3.0-alpha — Founder Walkthrough Hardening + EN/DE/FR/ES/IT Localization
 
 **Date:** 2026-08-14
@@ -47,6 +83,9 @@ No `vercel` CLI or credentials exist in this environment — the actual Producti
 ---
 
 ## Release history
+
+### v0.3.0-alpha — Founder Walkthrough Hardening + EN/DE/FR/ES/IT Localization (`df2e00f`, 2026-08-14)
+Multi-select auto-advance, browser Back destroying assessments, silently-degraded high-fidelity facts, lost multi-system landscape context, misleading confirmation pills, post-readiness question pressure, three unguarded `/app/*` pages, and `ResultPanel` hierarchy all fixed. Real locale-prefixed routing and compile-time-checked dictionaries for EN/DE/FR/ES/IT across the twelve Founder-journey pages; language switching reuses the Back-button fix's session persistence with no new logic; deterministic extractor gained multi-language alias patterns across all thirteen domain categories, including a Unicode word-boundary fix.
 
 ### v0.2.4-alpha — Production Observability + Donna AI Mobile Fixes (`6e79bfa`, 2026-08-08)
 Structured, single-line logging across every stage of `POST /api/inquiries` (never message content or credentials); a read-only diagnostic script for a human with real Supabase access to confirm whether the `inquiry_type` taxonomy migration reached Production (unconfirmed, unresolved as of this writing). Mobile/accessibility fixes: `Chip` and `ResultPanel`'s secondary tabs brought up to the 44px touch-target minimum; the "Go deeper" tab-hierarchy label no longer hidden below `sm`.
