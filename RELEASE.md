@@ -1,9 +1,9 @@
 # v0.3.1-alpha — Founder Release Gate Verification Pass
 
 **Date:** 2026-08-14
-**Deployed commit:** `9344b8a` (tag `v0.3.1-alpha`)
+**Deployed commit:** `9344b8a` (tag `v0.3.1-alpha`); `main` is now at `838e72d` (one further docs-only commit)
 **Branch:** fast-forwarded onto `main` (no merge commit, no history rewrite)
-**Status:** On `main`, tagged, pushed. **Production deployment not verified from this environment** — no Vercel CLI or credentials exist here; see "Deployment" below.
+**Status:** On `main`, tagged, pushed. **Production deployment confirmed READY by the Founder via the Vercel dashboard** (deployed release commit `e037efd`, functionally identical to everything after it — only test coverage and documentation changed since, no application source) and independently smoke-tested against the real `https://www.cdonna.com` domain from this environment; see "Production verification" below.
 
 ## Release summary
 
@@ -24,13 +24,21 @@ No product behavior change. An independent, adversarial release-gate audit of `v
 
 No `vercel` CLI or credentials exist in this environment — the actual Production deploy could not be triggered or verified here, same disclosed limitation as every prior release this project. `main` is pushed at `9344b8a`, tagged `v0.3.1-alpha`. If this repo's Vercel project has Git integration configured for `main`, a Production deployment should have started automatically. **Production URL, deployment ID, and build status need to be confirmed from the Vercel dashboard.**
 
-## Production Inquiry P0
+## Production verification
 
-Unchanged, still unresolved — this pass did not touch the inquiry-persistence path or Supabase Production configuration. See `v0.3.0-alpha`'s entry below.
+Performed against the real `https://www.cdonna.com` domain (confirmed genuine via the `server: Vercel` and `x-vercel-id` response headers, not a local build) — real network access was available from this environment for this task specifically. Read-only GET requests only; `/api/inquiries` was deliberately never called, to avoid creating any real inquiry record.
+
+- All 55 direct routes (5 locales × 9 static + 5 locales × 2 dynamic) return 200; bare root/page paths correctly 307 to the resolved locale; `/early-access` correctly 307s per locale to `/contact?type=founding_tester`; `/xx` and unknown routes correctly 404; `robots.txt`/`sitemap.xml`/`opengraph-image`/`favicon.ico` all 200.
+- Localized content confirmed genuinely served (not English fallback) for all 5 languages via each locale's real hero string; canonical and the full hreflang set (`x-default` + 5 locales) confirmed correct on a live page.
+- `sitemap.xml` confirmed live with all 46 entries and per-entry hreflang alternates, matching the local build exactly.
+- Donna AI page loads live; one safe `/api/donna-ai/decision` call with a representative SAP S/4HANA + SAP BW + Snowflake + Power BI + Azure landscape returned a real, correctly-computed recommendation (Fabric/Microsoft, Donna Score 79) with no error — no data persisted, no fake customer record created.
+- **Two new, minor findings, not release-blocking:** (1) the homepage `<title>` is "ClouDonna — Enterprise Decision Intelligence" in all 5 locales by deliberate, consistent design (verified identical across all 5 dictionary source files — a brand tagline choice, not a bug); the meta description *is* correctly localized. Every other page's title (contact, privacy, etc.) localizes correctly. (2) `og:locale` is hardcoded to `en_US` in the root layout regardless of actual locale. Neither was fixed this pass, per "only fix an actual release-blocking Production defect" — both added to Known limitations below.
+- Language switcher: trigger button and its localized `aria-label` confirmed present in production HTML; the dropdown's option list is correctly absent from initial HTML (collapsed by default, client-rendered on open — expected behavior, not a defect). Target-URL correctness verified via source code (`pathWithLocale()`) and its unit tests, not by clicking in a live browser — no browser automation tool available.
+- **Production Inquiry P0: UNVERIFIED.** `/api/inquiries` was deliberately not called (would create a real record); no Supabase Production access exists in this environment to check persistence, Founder-side access, or notification delivery. Not claimed resolved.
 
 ## Known limitations
 
-Everything from `v0.3.0-alpha`'s "Known limitations" (below) still applies unchanged — this pass added verification, not new code.
+Everything from `v0.3.0-alpha`'s "Known limitations" (below) still applies, plus two new findings from live Production verification: the homepage `<title>` is an intentional English brand tagline in every locale (description is localized); `og:locale` is hardcoded to `en_US` in every locale.
 
 ---
 
