@@ -437,7 +437,7 @@ const it: Dictionary = {
   },
 
   seo: {
-    home: { title: "ClouDonna — Enterprise Decision Intelligence", description: "ClouDonna ti aiuta a prendere decisioni tecnologiche aziendali che puoi difendere — basate su evidenze, non su opinioni." },
+    home: { title: "ClouDonna — Decisioni aziendali basate su evidenze", description: "ClouDonna ti aiuta a prendere decisioni tecnologiche aziendali che puoi difendere — basate su evidenze, non su opinioni." },
     contact: { title: "Contatti", description: "Diventa Founding Tester, richiedi un colloquio Enterprise, o contatta ClouDonna come partner o fornitore." },
   },
 };

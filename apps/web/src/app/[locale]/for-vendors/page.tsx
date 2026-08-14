@@ -5,16 +5,19 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, BadgeCheck, Scale, ShieldAlert } from "lucide-react";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
-import { localizedAlternates } from "@/i18n/seo";
+import { localizedAlternates, localizedOpenGraph } from "@/i18n/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isSupportedLocale(locale)) return {};
   const dict = await getDictionary(locale);
+  const title = `${dict.forVendors.metaTitle} — ClouDonna`;
+  const description = dict.forVendors.metaDescription;
   return {
-    title: `${dict.forVendors.metaTitle} — ClouDonna`,
-    description: dict.forVendors.metaDescription,
+    title,
+    description,
     alternates: localizedAlternates(locale, "/for-vendors"),
+    openGraph: localizedOpenGraph(locale, title, description),
   };
 }
 

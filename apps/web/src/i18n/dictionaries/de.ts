@@ -441,7 +441,7 @@ const de: Dictionary = {
   },
 
   seo: {
-    home: { title: "ClouDonna — Enterprise Decision Intelligence", description: "ClouDonna hilft Ihnen, Enterprise-Technologieentscheidungen zu treffen, die Sie vertreten können — gestützt auf Evidenz, nicht auf Meinung." },
+    home: { title: "ClouDonna — Evidenzbasierte Enterprise-Entscheidungen", description: "ClouDonna hilft Ihnen, Enterprise-Technologieentscheidungen zu treffen, die Sie vertreten können — gestützt auf Evidenz, nicht auf Meinung." },
     contact: { title: "Kontakt", description: "Werden Sie Founding Tester, fragen Sie ein Enterprise-Gespräch an, oder erreichen Sie ClouDonna als Partner oder Anbieter." },
   },
 };

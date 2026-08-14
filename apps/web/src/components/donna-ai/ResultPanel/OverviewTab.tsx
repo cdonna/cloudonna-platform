@@ -1,4 +1,5 @@
 import { AlertTriangle, Check, Scale } from "lucide-react";
+import { localizedDimensionLabel } from "@/i18n/dimension-labels";
 import { interpolate } from "@/i18n/interpolate";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ScoreRing, SectionLabel } from "../shared";
@@ -6,7 +7,7 @@ import type { DecisionOutput } from "../types";
 import { assessResultCredibility } from "./result-credibility";
 
 export function OverviewTab({ output }: { output: DecisionOutput }) {
-  const { dict } = useLocale();
+  const { dict, locale } = useLocale();
   const allRanked = [output.recommendation, ...output.alternatives];
   const topScore = allRanked[0]?.overallScore ?? 1;
   const { scoreGap, isNarrowMargin, decisionHinges } = assessResultCredibility(output);
@@ -138,7 +139,7 @@ export function OverviewTab({ output }: { output: DecisionOutput }) {
           {output.dimensions.map((dimension) => (
             <div key={dimension.key}>
               <div className="mb-2 flex items-center justify-between text-sm">
-                <span className="text-nova-ink-muted">{dimension.label}</span>
+                <span className="text-nova-ink-muted">{localizedDimensionLabel(dimension.key, dimension.label, locale)}</span>
                 <span className="font-mono font-semibold tabular-nums text-nova-ink">{dimension.score}%</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-carbon-2">

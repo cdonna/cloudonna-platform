@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { handleCreateInquiryRequest } from "../handler";
 
@@ -140,5 +140,69 @@ describe("handleCreateInquiryRequest", () => {
     const result = await handleCreateInquiryRequest({ ...VALID_BODY, inquiryType, sourcePage }, supabase);
 
     expect(result.status).toBe(200);
+  });
+
+  it("rejects a message over the 4000-character storage limit", async () => {
+    const supabase = mockSupabase();
+
+    const result = await handleCreateInquiryRequest({ ...VALID_BODY, message: "x".repeat(4001) }, supabase);
+
+    expect(result.status).toBe(400);
+    expect(supabase.from).not.toHaveBeenCalled();
+  });
+
+  it("captures source_page and utm_source in the persisted row, unchanged from the request", async () => {
+    const insert = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({ single: vi.fn().mockResolvedValue({ data: { id: "inquiry-utm" }, error: null }) }),
+    });
+    const supabase = {
+      rpc: vi.fn().mockResolvedValue({ data: 0, error: null }),
+      from: vi.fn().mockReturnValue({ insert }),
+    } as unknown as SupabaseClient;
+
+    await handleCreateInquiryRequest({ ...VALID_BODY, sourcePage: "/for-vendors", utmSource: "linkedin" }, supabase);
+
+    expect(insert).toHaveBeenCalledWith(expect.objectContaining({ source_page: "/for-vendors", utm_source: "linkedin" }));
+  });
+
+  it("only ever stores the canonical English inquiry_type enum value — never a localized label", async () => {
+    // InquiryForm never sends a translated string for inquiryType (only
+    // its dictionary-driven *display* label is localized — see
+    // dict.contact.entryPoints / dict.inquiryForm.copyByType); this
+    // confirms the schema itself has no room for one to slip through
+    // even if a caller tried, since it's a closed 5-value enum.
+    const supabase = mockSupabase();
+    const localizedLookingValue = "Founding Tester werden"; // a real DE label string, not a value the schema accepts
+
+    const result = await handleCreateInquiryRequest({ ...VALID_BODY, inquiryType: localizedLookingValue }, supabase);
+
+    expect(result.status).toBe(400);
+    expect(supabase.from).not.toHaveBeenCalled();
+  });
+
+  describe("notification failure after successful persistence", () => {
+    afterEach(() => {
+      vi.doUnmock("../../notifications/config");
+      vi.resetModules();
+    });
+
+    it("still returns 200 with the real inquiry id when the notification provider throws", async () => {
+      vi.resetModules();
+      vi.doMock("../../notifications/config", () => ({
+        getNotificationProvider: () => ({
+          providerId: "failing-test-provider",
+          isConfigured: () => true,
+          notifyNewInquiry: vi.fn().mockRejectedValue(new Error("Resend responded with 500")),
+        }),
+      }));
+      const { handleCreateInquiryRequest: handleWithFailingNotifier } = await import("../handler");
+      const supabase = mockSupabase({ insertId: "inquiry-notify-fail" });
+
+      const result = await handleWithFailingNotifier(VALID_BODY, supabase);
+
+      // Persistence is the system of record — a notification outage
+      // must never look like, or cause, a failed submission.
+      expect(result).toEqual({ status: 200, body: { id: "inquiry-notify-fail" } });
+    });
   });
 });

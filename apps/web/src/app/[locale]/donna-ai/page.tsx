@@ -6,17 +6,20 @@ import { ArrowLeft } from "lucide-react";
 import { DonnaAIExperience } from "@/components/donna-ai/DonnaAIExperience";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
-import { localizedAlternates } from "@/i18n/seo";
+import { localizedAlternates, localizedOpenGraph } from "@/i18n/seo";
 import { getCurrentUser } from "@/lib/supabase/server";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isSupportedLocale(locale)) return {};
   const dict = await getDictionary(locale);
+  const title = `${dict.donnaAiPage.metaTitle} · ClouDonna`;
+  const description = dict.donnaAiPage.metaDescription;
   return {
-    title: `${dict.donnaAiPage.metaTitle} · ClouDonna`,
-    description: dict.donnaAiPage.metaDescription,
+    title,
+    description,
     alternates: localizedAlternates(locale, "/donna-ai"),
+    openGraph: localizedOpenGraph(locale, title, description),
   };
 }
 

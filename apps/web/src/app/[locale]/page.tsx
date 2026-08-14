@@ -10,7 +10,7 @@ import { Reveal } from "@/components/landing/Reveal";
 import TrustStrip from "@/components/landing/TrustStrip";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale, type Locale } from "@/i18n/locales";
-import { localizedAlternates } from "@/i18n/seo";
+import { localizedAlternates, localizedOpenGraph } from "@/i18n/seo";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: dict.seo.home.title,
     description: dict.seo.home.description,
     alternates: localizedAlternates(locale, ""),
-    openGraph: { locale, title: dict.seo.home.title, description: dict.seo.home.description },
+    openGraph: localizedOpenGraph(locale, dict.seo.home.title, dict.seo.home.description),
   };
 }
 

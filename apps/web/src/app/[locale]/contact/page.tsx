@@ -7,17 +7,20 @@ import { InquiryForm } from "@/components/landing/InquiryForm";
 import { ContactViewedTracker } from "@/components/landing/ContactViewedTracker";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
-import { localizedAlternates } from "@/i18n/seo";
+import { localizedAlternates, localizedOpenGraph } from "@/i18n/seo";
 import { inquiryTypeSchema, type InquiryType } from "@/lib/inquiries/schema";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isSupportedLocale(locale)) return {};
   const dict = await getDictionary(locale);
+  const title = `${dict.seo.contact.title} — ClouDonna`;
+  const description = dict.seo.contact.description;
   return {
-    title: `${dict.seo.contact.title} — ClouDonna`,
-    description: dict.seo.contact.description,
+    title,
+    description,
     alternates: localizedAlternates(locale, "/contact"),
+    openGraph: localizedOpenGraph(locale, title, description),
   };
 }
 
