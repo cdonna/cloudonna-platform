@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
+import type { Dictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 
-export default function TrustStrip() {
+export default function TrustStrip({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   return (
     <section className="border-y border-titanium bg-obsidian px-6 py-10">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
@@ -10,16 +12,15 @@ export default function TrustStrip() {
             <ShieldCheck size={20} />
           </span>
           <p className="max-w-xl text-sm leading-6 text-nova-ink-muted">
-            <span className="font-semibold text-nova-ink">ClouDonna evaluates every vendor the same way.</span> Same criteria, every
-            time. No vendor can pay for a better score, or a better position.
+            <span className="font-semibold text-nova-ink">{dict.trustStrip.boldPart}</span> {dict.trustStrip.rest}
           </p>
         </div>
 
         <Link
-          href="/independence"
+          href={`/${locale}/independence`}
           className="flex-none text-sm font-semibold text-nova-accent-strong transition duration-200 hover:text-nova-ink"
         >
-          Read our independence statement →
+          {dict.trustStrip.linkText}
         </Link>
       </div>
     </section>

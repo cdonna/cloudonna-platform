@@ -38,7 +38,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-titanium bg-obsidian/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-4">
           <Link href="/app" className="flex shrink-0 items-center gap-2.5">
-            <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={28} height={28} className="h-7 w-7 object-contain" />
+            <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={32} height={32} className="brand-mark h-8 w-8 object-contain" />
             <span className="text-base font-semibold tracking-tight text-nova-ink">
               Clou<span className="text-nova-accent-strong">Donna</span>
             </span>

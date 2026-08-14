@@ -5,18 +5,24 @@ import Image from "next/image";
 import { ArrowRight, Menu, Play, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-
-const navLinks = [
-  { label: "Discovery", href: "/discovery" },
-  { label: "Donna AI", href: "/donna-ai" },
-  { label: "Independence", href: "/independence" },
-  { label: "For Vendors", href: "/for-vendors" },
-  { label: "For Partners", href: "/for-partners" },
-  { label: "Contact", href: "/contact" },
-];
+import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 export default function Hero() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { locale, dict } = useLocale();
+
+  // /discovery is deliberately not part of the localized route tree
+  // (see the localization report's "KNOWN LIMITATIONS") — it stays
+  // unprefixed even from a localized nav.
+  const navLinks = [
+    { label: dict.nav.links.discovery, href: "/discovery" },
+    { label: dict.nav.links.donnaAi, href: `/${locale}/donna-ai` },
+    { label: dict.nav.links.independence, href: `/${locale}/independence` },
+    { label: dict.nav.links.forVendors, href: `/${locale}/for-vendors` },
+    { label: dict.nav.links.forPartners, href: `/${locale}/for-partners` },
+    { label: dict.nav.links.contact, href: `/${locale}/contact` },
+  ];
 
   return (
     <section className="relative overflow-hidden bg-void">
@@ -31,8 +37,8 @@ export default function Hero() {
         {/* Minimal navigation */}
         <nav className="rounded-2xl border border-titanium bg-obsidian/70 px-5 py-3 backdrop-blur-xl">
           <div className="flex items-center justify-between">
-            <a href="#" className="flex items-center gap-3">
-              <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={40} height={40} className="h-9 w-9 object-contain" priority />
+            <a href={`/${locale}`} className="flex items-center gap-3">
+              <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={44} height={44} className="brand-mark h-10 w-10 object-contain" priority />
               <div className="text-lg font-semibold tracking-tight text-nova-ink">
                 Clou<span className="text-nova-accent-strong">Donna</span>
               </div>
@@ -47,14 +53,18 @@ export default function Hero() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button className="hidden bg-nova-accent text-white hover:bg-nova-accent-strong sm:inline-flex" render={<a href="/early-access" />}>
-                Become a Founding Tester
+              <div className="hidden lg:block">
+                <LanguageSwitcher />
+              </div>
+
+              <Button className="hidden bg-nova-accent text-white hover:bg-nova-accent-strong sm:inline-flex" render={<a href={`/${locale}/early-access`} />}>
+                {dict.nav.ctaDesktop}
               </Button>
 
               <Button
                 variant="outline"
                 size="icon"
-                aria-label={menuOpen ? "Close menu" : "Open menu"}
+                aria-label={menuOpen ? dict.nav.closeMenu : dict.nav.openMenu}
                 aria-expanded={menuOpen}
                 aria-controls="mobile-nav"
                 className="h-11 w-11 border-titanium bg-carbon text-nova-ink lg:hidden"
@@ -78,9 +88,13 @@ export default function Hero() {
                 </a>
               ))}
 
+              <div className="mt-3 px-1">
+                <LanguageSwitcher variant="inline" />
+              </div>
+
               <div className="mt-2 flex flex-col gap-2 px-1">
-                <Button className="bg-nova-accent text-white hover:bg-nova-accent-strong" render={<a href="/early-access" />} onClick={() => setMenuOpen(false)}>
-                  Request Early Access
+                <Button className="bg-nova-accent text-white hover:bg-nova-accent-strong" render={<a href={`/${locale}/early-access`} />} onClick={() => setMenuOpen(false)}>
+                  {dict.nav.ctaMobile}
                 </Button>
               </div>
             </div>
@@ -90,28 +104,28 @@ export default function Hero() {
         {/* Hero — one sentence, one line, one action. */}
         <div className="mx-auto mt-24 max-w-3xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold tracking-[0.14em] text-nova-accent-strong uppercase">
-            Independent Enterprise Decision Intelligence
+            {dict.hero.badge}
           </div>
 
           <h1 className="mt-8 text-5xl font-semibold tracking-[-0.035em] text-balance text-nova-ink sm:text-6xl lg:text-7xl">
-            Enterprise Decision Intelligence.
+            {dict.hero.h1}
           </h1>
 
-          <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-nova-ink-muted">Make every enterprise decision with confidence.</p>
+          <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-nova-ink-muted">{dict.hero.sub}</p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button size="lg" className="h-12 bg-nova-accent px-7 text-white shadow-nova-glow hover:bg-nova-accent-strong" render={<a href="/early-access" />}>
-              Become a Founding Tester
+            <Button size="lg" className="h-12 bg-nova-accent px-7 text-white shadow-nova-glow hover:bg-nova-accent-strong" render={<a href={`/${locale}/early-access`} />}>
+              {dict.hero.ctaPrimary}
               <ArrowRight size={17} />
             </Button>
 
             <Button size="lg" variant="outline" className="h-12 border-titanium bg-transparent px-7 text-nova-ink hover:border-titanium-strong" render={<a href="#donna" />}>
               <Play size={16} />
-              Explore Donna
+              {dict.hero.ctaSecondary}
             </Button>
           </div>
 
-          <p className="mt-8 text-xs tracking-wide text-nova-ink-faint uppercase">Vendor-neutral · Evidence-based · Public Alpha</p>
+          <p className="mt-8 text-xs tracking-wide text-nova-ink-faint uppercase">{dict.hero.tagline}</p>
         </div>
       </div>
     </section>

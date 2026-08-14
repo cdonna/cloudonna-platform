@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Bot, Check, LoaderCircle } from "lucide-react";
+import { useEffect, useMemo, useReducer, useState } from "react";
+import { AlertTriangle, Bot, Check, LoaderCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  analysisMachineReducer,
+  createInitialAnalysisMachineState,
+} from "./analysis-state-machine";
 import { INDUSTRY_OPTIONS } from "./data";
 import { buildDecisionOutput } from "./engine";
+import type { DecisionOutput } from "./types";
 import type { DecisionReport } from "./intelligence/types";
 import { ScoreRing } from "./shared";
 import type { WizardState } from "./types";
@@ -33,44 +39,112 @@ function buildAnalysisSteps(state: WizardState): string[] {
 export function AnalysingState({
   state,
   report,
+  error,
   onComplete,
+  onRetry,
 }: {
   state: WizardState;
   /** The real, possibly-AI-enriched report — requested by the parent
    * the instant this phase began, in parallel with the choreography
    * below, not after it. Null until it resolves. */
   report: DecisionReport | null;
+  /** A sanitized, user-safe failure message — set only when neither
+   * the network request nor the local deterministic fallback could
+   * produce a result (see request-decision.ts). Never both `report`
+   * and `error` at once; the parent guarantees that. */
+  error: string | null;
   onComplete: () => void;
+  onRetry: () => void;
 }) {
   const [steps] = useState(() => buildAnalysisSteps(state));
-  const [currentStep, setCurrentStep] = useState(0);
+  const [machine, dispatch] = useReducer(analysisMachineReducer, undefined, createInitialAnalysisMachineState);
+
   // Deterministic and synchronous — the real recommendation, score, and
-  // confidence are already known without waiting on anything. Used for
-  // the reveal below so it's never showing fabricated numbers, only
-  // real ones revealed slightly ahead of the full result panel.
-  const localOutput = useMemo(() => buildDecisionOutput(state), [state]);
+  // confidence are already known without waiting on anything, used for
+  // the mid-choreography reveal below. Guarded: a malformed WizardState
+  // could in principle make buildDecisionOutput throw during render,
+  // which useMemo would otherwise let crash the whole tree — instead
+  // it's treated as the same "error" the request path already models.
+  const localOutput = useMemo<DecisionOutput | null>(() => {
+    try {
+      return buildDecisionOutput(state);
+    } catch (err) {
+      console.error("[donna-ai] local_output_failed:", err instanceof Error ? err.message : err);
+      return null;
+    }
+  }, [state]);
 
-  const choreographyDone = currentStep >= steps.length - 1;
-  const ready = choreographyDone && report !== null;
-
-  // Advances through the choreographed steps at a calm, even cadence,
-  // but deliberately never marks the last one done on its own — that
-  // only happens once `report` has actually arrived. If the real
-  // request (started by the parent the instant this phase began) is
-  // still pending once the sequence catches up, the last step stays
-  // visibly active (spinner, not checkmark) rather than claiming a
-  // recommendation is ready before it is.
   useEffect(() => {
-    if (choreographyDone) return;
-    const timer = window.setTimeout(() => setCurrentStep((current) => current + 1), STEP_DELAY_MS);
+    if (localOutput === null) {
+      dispatch({ type: "REQUEST_FAILED", message: "Donna couldn't build a recommendation from this assessment. Nothing was lost — you can retry with the same answers." });
+    }
+  }, [localOutput]);
+
+  useEffect(() => {
+    if (report) dispatch({ type: "REQUEST_SUCCEEDED" });
+  }, [report]);
+
+  useEffect(() => {
+    if (error) dispatch({ type: "REQUEST_FAILED", message: error });
+  }, [error]);
+
+  // The root-cause fix: this effect depends on machine.currentStep
+  // directly, so React re-evaluates it on every real step change and
+  // schedules exactly one new timer each time. The bug this replaces
+  // depended on a derived `choreographyDone` boolean instead — a value
+  // that stayed `false` across several consecutive renders, so the
+  // effect never re-ran after the very first advance and playback
+  // froze on step 1 ("Testing your priorities") forever, regardless of
+  // whether the real request had already succeeded.
+  useEffect(() => {
+    if (machine.status !== "analysing") return;
+    if (machine.currentStep >= steps.length - 1) return;
+    const timer = window.setTimeout(() => dispatch({ type: "STEP_ADVANCE", totalSteps: steps.length }), STEP_DELAY_MS);
     return () => window.clearTimeout(timer);
-  }, [choreographyDone]);
+  }, [machine.status, machine.currentStep, steps.length]);
 
   useEffect(() => {
-    if (!ready) return;
+    if (machine.status !== "result_ready") return;
     const timer = window.setTimeout(onComplete, REVEAL_HOLD_MS);
     return () => window.clearTimeout(timer);
-  }, [ready, onComplete]);
+  }, [machine.status, onComplete]);
+
+  const ready = machine.status === "result_ready";
+  const failed = machine.status === "error";
+
+  if (failed) {
+    return (
+      <div className="flex min-h-[38rem] flex-col items-center justify-center p-8 text-center sm:p-12">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-nova-warning/15 text-nova-warning">
+          <AlertTriangle size={25} />
+        </div>
+        <h2 className="mt-6 text-xl font-semibold text-nova-ink">Donna couldn&apos;t finish this analysis</h2>
+        <p className="mt-2 max-w-md text-sm leading-6 text-nova-ink-faint">
+          {machine.errorMessage ?? "Something went wrong building your recommendation."}
+        </p>
+        <p className="mt-1 text-xs text-nova-ink-faint">Your answers are still here — nothing was lost.</p>
+        <Button
+          onClick={() => {
+            // Resets the local machine back to "analysing" before the
+            // parent's retry request is even sent — otherwise a
+            // genuinely successful retry would still be discarded by
+            // the reducer's own "ignore REQUEST_SUCCEEDED once in
+            // error" guard (see analysis-state-machine.ts), which
+            // exists specifically to drop a *stale* success from a
+            // different attempt, not a fresh one this click just started.
+            dispatch({ type: "RETRY" });
+            onRetry();
+          }}
+          className="mt-6 h-11 bg-nova-accent px-6 text-white shadow-nova-glow hover:bg-nova-accent-strong"
+        >
+          Try again
+        </Button>
+        <div role="alert" className="sr-only">
+          {machine.errorMessage ?? "Analysis failed."}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-[38rem] flex-col justify-center p-8 sm:p-12">
@@ -91,8 +165,14 @@ export function AnalysingState({
 
         <div className="mt-8 space-y-4">
           {steps.map((step, index) => {
-            const completed = index < currentStep || (index === steps.length - 1 && ready);
-            const active = index === currentStep && !completed;
+            // Once ready, every step renders complete regardless of how
+            // far currentStep had actually reached — a fast response
+            // must be able to complete the transition gracefully (see
+            // the bug report's Section 5) rather than leaving early
+            // steps looking stuck while the recommendation is already
+            // shown below them.
+            const completed = ready || index < machine.currentStep;
+            const active = index === machine.currentStep && !completed;
 
             return (
               <div
@@ -124,7 +204,7 @@ export function AnalysingState({
             computed, not a placeholder. No fake search or reasoning
             copy, just the true result arriving a beat ahead of the full
             panel, which is about to take its place. */}
-        {ready && (
+        {ready && localOutput && (
           <div className="mt-6 flex items-center gap-4 rounded-2xl border border-nova-success/25 bg-nova-success/10 p-5 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-panel ease-nova-settle">
             <div className="min-w-0 flex-1">
               <div className="text-xs font-semibold tracking-[0.1em] text-nova-success uppercase">Evidence assembled · trade-offs weighed</div>
@@ -138,9 +218,9 @@ export function AnalysingState({
         )}
 
         <div role="status" aria-live="polite" className="sr-only">
-          {ready
+          {ready && localOutput
             ? `Recommendation ready: ${localOutput.recommendation.platform.productName}, ${localOutput.confidenceScore}% confidence.`
-            : steps[currentStep]}
+            : steps[machine.currentStep]}
         </div>
       </div>
     </div>

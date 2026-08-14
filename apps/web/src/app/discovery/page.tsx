@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import Footer from "@/components/landing/Footer";
 import {
   ArrowLeft,
   ArrowRight,
@@ -84,15 +85,19 @@ const steps = [
 
 export default function DiscoveryPage() {
   return (
+    // Not part of the localized route tree (see the localization
+    // report's "KNOWN LIMITATIONS") — stays English-only. Renders its
+    // own Footer explicitly now that the root layout no longer renders
+    // one globally for every route (see src/app/layout.tsx).
     <div className="min-h-screen bg-void">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
             src="/cloudonna-favicon-512.png"
             alt="ClouDonna"
-            width={32}
-            height={32}
-            className="h-8 w-8 object-contain"
+            width={36}
+            height={36}
+            className="brand-mark h-9 w-9 object-contain"
           />
           <span className="text-lg font-semibold tracking-tight text-nova-ink">
             Clou<span className="text-nova-accent-strong">Donna</span>
@@ -169,6 +174,7 @@ export default function DiscoveryPage() {
           </Link>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

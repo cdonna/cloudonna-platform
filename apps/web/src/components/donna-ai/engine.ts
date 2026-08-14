@@ -129,6 +129,9 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
     case "RESET":
       return { ...EMPTY_WIZARD_STATE };
 
+    case "RESTORE":
+      return action.state;
+
     default:
       return state;
   }

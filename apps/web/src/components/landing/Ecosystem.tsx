@@ -6,88 +6,34 @@ import {
   Sparkles,
   Store,
 } from "lucide-react";
+import type { Dictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 
-const products = [
-  {
-    id: "donna-ai",
-    name: "Donna AI",
-    tagline: "Decision architect",
-    description:
-      "Turns your requirements into a recommendation — with the evidence attached.",
-    icon: Bot,
-    href: "/donna-ai",
-    featured: true,
-    status: "live" as const,
-  },
-  {
-    id: "compare",
-    anchorId: "compare",
-    name: "Donna Compare",
-    tagline: "Side-by-side evaluation",
-    description:
-      "Compare software across capability, architecture, pricing and security.",
-    icon: GitCompareArrows,
-    // Not /#early-access — that section's copy is specifically "Become
-    // a Founding Tester" for Donna AI. Someone clicking "Get notified"
-    // on a different, not-yet-built product would land on copy that
-    // doesn't match what they clicked, which reads as sloppy rather
-    // than considered. General Enquiry's copy ("reaches a founder
-    // directly") is honestly accurate for this instead.
-    href: "/contact?type=general",
-    status: "planned" as const,
-  },
-  {
-    id: "marketplace",
-    anchorId: "marketplace",
-    name: "Donna Marketplace",
-    tagline: "Vendors & experts",
-    description:
-      "Vendors, implementation partners and experts — held to the same standard as every recommendation.",
-    icon: Store,
-    // Not /#early-access — that section's copy is specifically "Become
-    // a Founding Tester" for Donna AI. Someone clicking "Get notified"
-    // on a different, not-yet-built product would land on copy that
-    // doesn't match what they clicked, which reads as sloppy rather
-    // than considered. General Enquiry's copy ("reaches a founder
-    // directly") is honestly accurate for this instead.
-    href: "/contact?type=general",
-    status: "planned" as const,
-  },
-  {
-    id: "intelligence",
-    name: "Donna Intelligence",
-    tagline: "Market & cost data",
-    description:
-      "Market data, benchmarks, expert reviews. Behind every number Donna shows you.",
-    icon: BarChart3,
-    // Not /#early-access — that section's copy is specifically "Become
-    // a Founding Tester" for Donna AI. Someone clicking "Get notified"
-    // on a different, not-yet-built product would land on copy that
-    // doesn't match what they clicked, which reads as sloppy rather
-    // than considered. General Enquiry's copy ("reaches a founder
-    // directly") is honestly accurate for this instead.
-    href: "/contact?type=general",
-    status: "planned" as const,
-  },
-  {
-    id: "workspace",
-    name: "Donna Workspace",
-    tagline: "Collaborative tracking",
-    description:
-      "One shared place to track decisions, architecture and reports.",
-    icon: LayoutGrid,
-    // Not /#early-access — that section's copy is specifically "Become
-    // a Founding Tester" for Donna AI. Someone clicking "Get notified"
-    // on a different, not-yet-built product would land on copy that
-    // doesn't match what they clicked, which reads as sloppy rather
-    // than considered. General Enquiry's copy ("reaches a founder
-    // directly") is honestly accurate for this instead.
-    href: "/contact?type=general",
-    status: "planned" as const,
-  },
+// Product names (Donna AI, Donna Compare, ...) are ClouDonna's own
+// brand names, kept identical across locales the same way a company
+// name would be — only the tagline/description are translated, via
+// dict.ecosystem.products. Not /{locale}/early-access — that section's
+// copy is specifically "Become a Founding Tester" for Donna AI.
+// Someone clicking "Get notified" on a different, not-yet-built
+// product would land on copy that doesn't match what they clicked,
+// which reads as sloppy rather than considered. General Enquiry's
+// copy ("reaches a founder directly") is honestly accurate instead.
+const PRODUCT_META = [
+  { id: "donnaAi" as const, name: "Donna AI", icon: Bot, anchorId: undefined, href: (locale: Locale) => `/${locale}/donna-ai`, featured: true, status: "live" as const },
+  { id: "compare" as const, name: "Donna Compare", icon: GitCompareArrows, anchorId: "compare", href: (locale: Locale) => `/${locale}/contact?type=general`, featured: false, status: "planned" as const },
+  { id: "marketplace" as const, name: "Donna Marketplace", icon: Store, anchorId: "marketplace", href: (locale: Locale) => `/${locale}/contact?type=general`, featured: false, status: "planned" as const },
+  { id: "intelligence" as const, name: "Donna Intelligence", icon: BarChart3, anchorId: undefined, href: (locale: Locale) => `/${locale}/contact?type=general`, featured: false, status: "planned" as const },
+  { id: "workspace" as const, name: "Donna Workspace", icon: LayoutGrid, anchorId: undefined, href: (locale: Locale) => `/${locale}/contact?type=general`, featured: false, status: "planned" as const },
 ];
 
-export default function Ecosystem() {
+export default function Ecosystem({ dict, locale }: { dict: Dictionary; locale: Locale }) {
+  const products = PRODUCT_META.map((meta) => ({
+    ...meta,
+    href: meta.href(locale),
+    tagline: dict.ecosystem.products[meta.id].tagline,
+    description: dict.ecosystem.products[meta.id].description,
+  }));
+
   return (
     <section
       id="products"
@@ -97,16 +43,14 @@ export default function Ecosystem() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
             <Sparkles size={14} />
-            Use Cases
+            {dict.ecosystem.badge}
           </div>
 
           <h2 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">
-            One platform. Five ways to decide.
+            {dict.ecosystem.h2}
           </h2>
 
-          <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
-            Donna AI is live today. The rest is next — built on the same evidence.
-          </p>
+          <p className="mt-5 text-lg leading-8 text-nova-ink-muted">{dict.ecosystem.sub}</p>
         </div>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">
@@ -129,7 +73,7 @@ export default function Ecosystem() {
 
                   {product.status === "planned" && (
                     <span className="rounded-full border border-titanium bg-carbon-2 px-2.5 py-1 text-[10px] font-semibold tracking-[0.08em] text-nova-ink-faint uppercase">
-                      Planned
+                      {dict.ecosystem.plannedBadge}
                     </span>
                   )}
                 </div>
@@ -142,7 +86,7 @@ export default function Ecosystem() {
                 <p className="mt-3 max-w-md text-sm leading-6 text-nova-ink-muted">{product.description}</p>
 
                 <span className="mt-6 inline-flex items-center text-sm font-medium text-nova-accent-strong transition duration-200 group-hover:translate-x-1">
-                  {product.status === "live" ? "Try it now →" : "Get notified →"}
+                  {product.status === "live" ? dict.ecosystem.tryNow : dict.ecosystem.getNotified}
                 </span>
               </a>
             );

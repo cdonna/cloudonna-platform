@@ -18,6 +18,7 @@ import { VersionDiffPanel } from "@/components/donna-ai/persistence/VersionDiffP
 import { OverviewTab } from "@/components/donna-ai/ResultPanel/OverviewTab";
 import { IntelligenceTab } from "@/components/donna-ai/ResultPanel/IntelligenceTab";
 import { SectionLabel } from "@/components/donna-ai/shared";
+import { PageLoadError } from "@/components/ui/page-load-error";
 
 export default async function DecisionDetailPage({
   params,
@@ -28,6 +29,26 @@ export default async function DecisionDetailPage({
 }) {
   const { id } = await params;
   const sp = await searchParams;
+
+  try {
+    return await renderDecisionDetail(id, sp);
+  } catch (error) {
+    console.error("[app/decisions/[id]] page_load_failed:", error instanceof Error ? error.message : error);
+    return (
+      <div>
+        <Link href="/app/decisions" className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition duration-200 hover:text-nova-ink">
+          <ArrowLeft size={15} />
+          Back to decision history
+        </Link>
+        <div className="mt-6">
+          <PageLoadError />
+        </div>
+      </div>
+    );
+  }
+}
+
+async function renderDecisionDetail(id: string, sp: { version?: string | string[]; compare?: string | string[] }) {
   const supabase = await createSupabaseServerClient();
   const result = await getDecisionDetail(supabase, id);
 

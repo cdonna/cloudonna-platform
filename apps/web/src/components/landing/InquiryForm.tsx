@@ -13,6 +13,7 @@ import { useEffect, useId, useState } from "react";
 import { ArrowRight, CheckCircle2, LoaderCircle, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/i18n/LocaleProvider";
 import { getAnalyticsProvider } from "@/lib/analytics/config";
 import type { InquiryType } from "@/lib/inquiries/schema";
 
@@ -22,57 +23,13 @@ const SUBMITTED_EVENT_BY_TYPE: Partial<Record<InquiryType, string>> = {
   vendor: "vendor_inquiry_submitted",
 };
 
-const copyByType: Record<InquiryType, { eyebrow: string; heading: string; body: string; submitLabel: string; successBody: string }> = {
-  founding_tester: {
-    eyebrow: "Founding Testers · Public Alpha",
-    heading: "Become a Founding Tester",
-    body: "ClouDonna is opening access to Donna AI's assessment in waves. Tell us a bit about your landscape and we'll reach out.",
-    submitLabel: "Become a Founding Tester",
-    successBody: "Application received. We'll review it and follow up if it's a fit for this wave.",
-  },
-  enterprise: {
-    eyebrow: "Enterprise Conversation",
-    heading: "Request an Enterprise Conversation",
-    body: "There's no self-service pilot program yet — this reaches a founder directly, who'll follow up to scope what working with your organization would look like.",
-    submitLabel: "Request a conversation",
-    successBody: "Received. A founder will follow up directly — this doesn't go into a queue.",
-  },
-  partner: {
-    eyebrow: "Partners",
-    heading: "Partner with ClouDonna",
-    body: "The partner directory and matching flow aren't live yet. Tell us about your practice and we'll follow up when partner profiles open.",
-    submitLabel: "Apply as a partner",
-    successBody: "Received. We'll follow up when partner profiles open.",
-  },
-  vendor: {
-    eyebrow: "Vendors",
-    heading: "Vendor / Product Information",
-    body: "There's no self-service vendor submission flow yet. Tell us about your product and we'll follow up — this never affects any product's score or ranking.",
-    submitLabel: "Send vendor information",
-    successBody: "Received. Note: nothing submitted here affects any recommendation, score, or ranking.",
-  },
-  general: {
-    eyebrow: "General Enquiry",
-    heading: "Get in touch",
-    body: "Anything that doesn't fit the other categories — this reaches a founder directly.",
-    submitLabel: "Send message",
-    successBody: "Received. We typically reply within a few business days.",
-  },
-};
-
-const roles = [
-  "IT / Enterprise Architecture",
-  "Procurement",
-  "Executive Leadership",
-  "Consulting / Implementation Partner",
-  "Other",
-];
-
 export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryType; sectionId?: string }) {
+  const { dict } = useLocale();
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const formId = useId();
-  const copy = copyByType[inquiryType];
+  const copy = dict.inquiryForm.copyByType[inquiryType];
+  const roles = dict.inquiryForm.roles;
 
   useEffect(() => {
     getAnalyticsProvider().trackEvent({ name: "inquiry_started", properties: { inquiryType } });
@@ -124,7 +81,7 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
       if (!response.ok) {
         const data: { error?: string } = await response.json().catch(() => ({}));
         setStatus("error");
-        setErrorMessage(data.error ?? "This inquiry could not be submitted. Please try again.");
+        setErrorMessage(data.error ?? dict.inquiryForm.genericError);
         return;
       }
 
@@ -137,7 +94,7 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
       }
     } catch {
       setStatus("error");
-      setErrorMessage("This inquiry could not be submitted. Check your connection and try again.");
+      setErrorMessage(dict.inquiryForm.networkError);
     }
   }
 
@@ -166,7 +123,7 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
                 <CheckCircle2 size={28} />
               </span>
 
-              <h3 className="text-2xl font-semibold text-nova-ink">Thanks — we&apos;ve got it</h3>
+              <h3 className="text-2xl font-semibold text-nova-ink">{dict.inquiryForm.thanksHeading}</h3>
 
               <p className="max-w-md text-sm leading-6 text-nova-ink-muted">{copy.successBody}</p>
             </div>
@@ -178,22 +135,22 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
                   reads as "two fields, plus a few optional details,"
                   not seven equal-weight demands. */}
               <div className="grid gap-5 sm:grid-cols-2">
-                <Field id={`${formId}-name`} name="name" label="Full name" required autoComplete="name" />
-                <Field id={`${formId}-email`} name="email" label="Work email" type="email" required autoComplete="email" />
+                <Field id={`${formId}-name`} name="name" label={dict.inquiryForm.fields.fullName} required autoComplete="name" />
+                <Field id={`${formId}-email`} name="email" label={dict.inquiryForm.fields.workEmail} type="email" required autoComplete="email" />
               </div>
 
               <div className="mt-7 border-t border-titanium pt-6">
                 <p className="text-xs font-medium tracking-[0.08em] text-nova-ink-faint uppercase">
-                  Optional — helps us tailor the follow-up
+                  {dict.inquiryForm.optionalHint}
                 </p>
 
                 <div className="mt-4 grid gap-5 sm:grid-cols-2">
-                  <Field id={`${formId}-company`} name="company" label="Company" optional autoComplete="organization" />
-                  <Field id={`${formId}-country`} name="country" label="Country" optional autoComplete="country-name" />
+                  <Field id={`${formId}-company`} name="company" label={dict.inquiryForm.fields.company} optional optionalLabel={dict.inquiryForm.fields.optional} autoComplete="organization" />
+                  <Field id={`${formId}-country`} name="country" label={dict.inquiryForm.fields.country} optional optionalLabel={dict.inquiryForm.fields.optional} autoComplete="country-name" />
 
                   <div className="flex flex-col gap-1.5">
                     <label htmlFor={`${formId}-role`} className="text-sm font-medium text-nova-ink">
-                      Role <span className="font-normal text-nova-ink-faint">(optional)</span>
+                      {dict.inquiryForm.fields.role} <span className="font-normal text-nova-ink-faint">{dict.inquiryForm.fields.optional}</span>
                     </label>
                     <select
                       id={`${formId}-role`}
@@ -201,7 +158,7 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
                       defaultValue=""
                       className="h-11 rounded-xl border border-titanium bg-carbon-2 px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
                     >
-                      <option value="">Select your role</option>
+                      <option value="">{dict.inquiryForm.fields.selectRole}</option>
                       {roles.map((role) => (
                         <option key={role} value={role}>
                           {role}
@@ -210,17 +167,17 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
                     </select>
                   </div>
 
-                  <Field id={`${formId}-phone`} name="phone" label="Phone" type="tel" optional autoComplete="tel" />
+                  <Field id={`${formId}-phone`} name="phone" label={dict.inquiryForm.fields.phone} type="tel" optional optionalLabel={dict.inquiryForm.fields.optional} autoComplete="tel" />
 
                   <div className="flex flex-col gap-1.5 sm:col-span-2">
                     <label htmlFor={`${formId}-message`} className="text-sm font-medium text-nova-ink">
-                      Message <span className="font-normal text-nova-ink-faint">(optional)</span>
+                      {dict.inquiryForm.fields.message} <span className="font-normal text-nova-ink-faint">{dict.inquiryForm.fields.optional}</span>
                     </label>
                     <textarea
                       id={`${formId}-message`}
                       name="message"
                       rows={4}
-                      placeholder="Tell us what you're trying to do..."
+                      placeholder={dict.inquiryForm.fields.messagePlaceholder}
                       className="resize-none rounded-xl border border-titanium bg-carbon-2 px-3 py-2.5 text-sm text-nova-ink outline-none placeholder:text-nova-ink-faint focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
                     />
                   </div>
@@ -230,7 +187,7 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
               {/* Honeypot — hidden from real visitors via CSS, not `type="hidden"`
                   (some bots skip those). Never focusable, never announced. */}
               <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
-                <label htmlFor={`${formId}-website`}>Website</label>
+                <label htmlFor={`${formId}-website`}>{dict.inquiryForm.fields.website}</label>
                 <input id={`${formId}-website`} name="website" type="text" tabIndex={-1} autoComplete="off" />
               </div>
 
@@ -245,7 +202,7 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
                   {status === "submitting" ? (
                     <>
                       <LoaderCircle size={16} className="animate-spin" />
-                      Submitting
+                      {dict.inquiryForm.submitting}
                     </>
                   ) : (
                     <>
@@ -270,6 +227,7 @@ function Field({
   type = "text",
   required = false,
   optional = false,
+  optionalLabel = "(optional)",
   autoComplete,
 }: {
   id: string;
@@ -278,13 +236,14 @@ function Field({
   type?: string;
   required?: boolean;
   optional?: boolean;
+  optionalLabel?: string;
   autoComplete?: string;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={id} className="text-sm font-medium text-nova-ink">
         {label} {required && <span className="text-nova-accent-strong">*</span>}
-        {optional && <span className="font-normal text-nova-ink-faint">(optional)</span>}
+        {optional && <span className="font-normal text-nova-ink-faint">{optionalLabel}</span>}
       </label>
       <input
         id={id}

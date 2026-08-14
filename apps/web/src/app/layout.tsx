@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Footer from "@/components/landing/Footer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -38,6 +37,22 @@ const organizationJsonLd = {
   logo: `${SITE_URL}/cloudonna-favicon-512.png`,
 };
 
+/**
+ * The one true root layout — the only place `<html>`/`<body>` are
+ * defined, so it has to serve every route, localized and not
+ * (/app/*, /api/*, /auth/*, /discovery stay English-only and render
+ * directly through here; see src/i18n/locales.ts's
+ * LOCALIZED_PATH_PREFIXES for what's in scope). `lang="en"` is the
+ * correct static default for those routes and for the pre-hydration
+ * paint of a localized one; src/app/[locale]/layout.tsx corrects
+ * `document.documentElement.lang` client-side for de/fr/es requests
+ * immediately on mount — see the localization report's "ACCESSIBILITY
+ * STATUS" section for the honest disclosure on what that does and
+ * doesn't cover. Footer is rendered per-branch (translated inside
+ * [locale]/layout.tsx, English here) rather than globally, since a
+ * global Footer here would have no locale to translate into for the
+ * /app/* dashboard case anyway.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -51,8 +66,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
-        <div className="flex-1">{children}</div>
-        <Footer />
+        {children}
       </body>
     </html>
   );

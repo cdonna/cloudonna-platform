@@ -145,7 +145,14 @@ export type WizardAction =
   | { type: "BACK" }
   | { type: "GOTO_STEP"; index: number }
   | { type: "LOAD_SAMPLE" }
-  | { type: "RESET" };
+  | { type: "RESET" }
+  /** Replaces the whole state at once — the same "load a complete,
+   * already-valid WizardState" shape LOAD_SAMPLE uses, but for a state
+   * built at runtime (adaptive intake's extraction-confirmation merge)
+   * rather than a fixed constant. Never partial — callers build the
+   * full next state themselves (see intake/apply-candidates.ts) so this
+   * reducer never has to guess how to merge a partial one. */
+  | { type: "RESTORE"; state: WizardState };
 
 export interface RiskItem {
   text: string;

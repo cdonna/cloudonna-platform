@@ -2,13 +2,17 @@ import { REVIEW_STEP_INDEX } from "../types";
 
 const STAGE_LABELS = ["Context", "Priorities", "Constraints", "Review"];
 
-/** Maps the wizard's real internal stepIndex (0=company, 1=landscape,
- * 2=goals, 3=constraints, 4=review, 5=analysis) onto the four stages
- * shown to the user — company and landscape render as one merged
- * "Context" stage in the UI (see IntakeWizard.tsx), so the underlying
- * state/reducer contract stays exactly as it was. Index 5 (analysis)
- * reads as "Review" complete, since AnalysingState is its own distinct
- * screen immediately after. */
+/** Maps WizardState's stepIndex (0=company, 1=landscape, 2=goals,
+ * 3=constraints, 4=review, 5=analysis) onto the four display stages —
+ * a mapping the underlying state/reducer contract has always used,
+ * regardless of which intake UI drives it. Since AdaptiveIntake
+ * replaced the manual step-by-step wizard, this component is only ever
+ * rendered with stepIndex 5 (see DonnaAIExperience's "analysing"
+ * phase), reading as "Review" complete, 100% filled, with "Analysing"
+ * as the active label — the stepIndex 0–4 branches below are dead
+ * code in practice but harmless to keep, since they still describe a
+ * real, valid WizardState shape if anything renders this with a
+ * variable stepIndex again. */
 function stageIndexFor(stepIndex: number): number {
   if (stepIndex <= 1) return 0;
   if (stepIndex === 2) return 1;

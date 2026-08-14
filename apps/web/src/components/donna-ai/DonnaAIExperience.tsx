@@ -1,90 +1,150 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Bot, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/i18n/LocaleProvider";
 import { AnalysingState } from "./AnalysingState";
-import { buildDecisionOutput } from "./engine";
-import type { DecisionReport } from "./intelligence/types";
-import { IntakeWizard } from "./IntakeWizard/IntakeWizard";
+import { AdaptiveIntake } from "./intake/AdaptiveIntake";
 import { WizardProgress } from "./IntakeWizard/WizardProgress";
+import type { DecisionReport } from "./intelligence/types";
+import { requestDecision } from "./request-decision";
 import { ResultPanel } from "./ResultPanel/ResultPanel";
+import {
+  clearSessionStorage,
+  persistToSessionStorage,
+  pushDonnaHistoryState,
+  readCurrentDonnaHistoryState,
+  readDonnaHistoryState,
+  restoreFromSessionStorage,
+} from "./session-history";
 import { ANALYSIS_STEP_INDEX, type WizardState } from "./types";
 
 type Phase = "intro" | "wizard" | "analysing" | "results";
 
-/**
- * Used only if the API route itself is unreachable (not if AI enrichment
- * merely fails or is unconfigured — the route already returns a complete,
- * valid DecisionReport in every one of those cases). This is the last
- * line of defense: even a total network failure still produces a
- * complete deterministic result, computed locally with the same engine
- * the server would have called first. See
- * docs/intelligence/fallback-and-failure-model.md, "Client-side fallback".
- */
-function buildLocalFallbackReport(state: WizardState): DecisionReport {
-  return {
-    output: buildDecisionOutput(state),
-    enrichment: null,
-    provider: { providerId: "local-fallback", model: null },
-    fallback: {
-      status: "unavailable",
-      reason: "Could not reach the Donna AI service — showing a locally-computed deterministic result only.",
-    },
-    generatedAt: new Date().toISOString(),
-  };
+interface ExperienceSnapshot {
+  phase: Phase;
+  wizardState: WizardState | null;
+  report: DecisionReport | null;
 }
 
-async function requestDecision(state: WizardState): Promise<DecisionReport> {
-  try {
-    const response = await fetch("/api/donna-ai/decision", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ wizardState: state }),
-    });
+const HISTORY_NAMESPACE = "donna-experience";
+const SESSION_KEY = "donna-experience-session";
 
-    if (!response.ok) {
-      return buildLocalFallbackReport(state);
-    }
-
-    const data: unknown = await response.json();
-    if (typeof data !== "object" || data === null || !("report" in data)) {
-      return buildLocalFallbackReport(state);
-    }
-
-    return (data as { report: DecisionReport }).report;
-  } catch {
-    // Network entirely unreachable, request aborted, JSON parse failure —
-    // all land here. Never thrown further; the UI always gets a report.
-    return buildLocalFallbackReport(state);
-  }
+function loadInitialSnapshot(): ExperienceSnapshot {
+  const fromHistory = readCurrentDonnaHistoryState<ExperienceSnapshot>(HISTORY_NAMESPACE);
+  const fromSession = fromHistory ?? restoreFromSessionStorage<ExperienceSnapshot>(SESSION_KEY);
+  return fromSession ?? { phase: "intro", wizardState: null, report: null };
 }
 
 export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
-  const [phase, setPhase] = useState<Phase>("intro");
-  const [wizardState, setWizardState] = useState<WizardState | null>(null);
-  const [report, setReport] = useState<DecisionReport | null>(null);
+  const { dict } = useLocale();
+  const [{ phase, wizardState, report }, setSnapshot] = useState<ExperienceSnapshot>(loadInitialSnapshot);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  // Bumped on every new analysis attempt (including retry) so a
+  // response from a superseded attempt can never overwrite fresher
+  // state — the guard against the "React state race" / "stale
+  // closure" failure classes: nothing here ever unmounts between
+  // phases (DonnaAIExperience is one long-lived component instance
+  // throughout intro -> wizard -> analysing -> results), so a stray
+  // late response from an earlier attempt is a real, reachable case,
+  // not a hypothetical one.
+  const requestGenerationRef = useRef(0);
+  const hasRestoredRef = useRef(false);
+
+  /** The one place phase/wizardState/report actually change — every
+   * caller below goes through this so persistence (sessionStorage, for
+   * "reload during/after the assessment") and history (pushState, for
+   * Back/Forward) never drift out of sync with what's on screen.
+   * `recordHistory: false` is used only when *responding* to a
+   * popstate event, so restoring from Back/Forward never pushes a new,
+   * redundant entry on top of itself. */
+  function applySnapshot(next: ExperienceSnapshot, options: { recordHistory?: boolean } = {}) {
+    const { recordHistory = true } = options;
+    setSnapshot(next);
+    persistToSessionStorage(SESSION_KEY, next);
+    if (recordHistory) pushDonnaHistoryState(HISTORY_NAMESPACE, next);
+  }
+
+  // The actual request — shared by every caller below. Deliberately
+  // does not touch `analysisError` itself; callers that might be
+  // superseding a *visible* error reset it explicitly (see
+  // handleRetryAnalysis), and the mount-time recovery effect below
+  // fires this against a fresh `analysisError` (already null by its
+  // own useState default) rather than resetting it — resetting an
+  // already-null value synchronously inside that effect is exactly the
+  // "adjust state in an effect" anti-pattern this was rewritten to avoid.
+  function fireAnalysisRequest(state: WizardState) {
+    const generation = ++requestGenerationRef.current;
+    requestDecision(state).then((result) => {
+      if (requestGenerationRef.current !== generation) return; // superseded — ignore
+      if (result.ok) applySnapshot({ phase: "analysing", wizardState: state, report: result.report }, { recordHistory: false });
+      else setAnalysisError(result.message);
+    });
+  }
+
+  function runAnalysis(state: WizardState) {
+    setAnalysisError(null);
+    fireAnalysisRequest(state);
+  }
+
+  // Runs once, only to cover the one gap persistence alone can't: a
+  // reload (or a Back landing) that restores into "analysing" with no
+  // report and no error yet — meaning a real request was genuinely
+  // in-flight when the page was left, and nothing will ever complete
+  // it unless it's re-fired here.
+  useEffect(() => {
+    if (hasRestoredRef.current) return;
+    hasRestoredRef.current = true;
+    if (phase === "analysing" && wizardState && !report) {
+      fireAnalysisRequest(wizardState);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    function handlePopState(event: PopStateEvent) {
+      const restored = readDonnaHistoryState<ExperienceSnapshot>(event, HISTORY_NAMESPACE);
+      if (!restored) return; // a different namespace, or before Donna's own history began
+      applySnapshot(restored, { recordHistory: false });
+      if (restored.phase === "analysing" && restored.wizardState && !restored.report) {
+        runAnalysis(restored.wizardState);
+      }
+    }
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleWizardComplete(state: WizardState) {
-    setWizardState(state);
-    setReport(null);
-    setPhase("analysing");
     // Started the instant analysis begins, not after the choreographed
     // sequence finishes — AnalysingState paces its own visual steps in
     // parallel and only calls handleAnalysisComplete once both this has
     // resolved and its sequence has run. Total wait is max(real,
     // choreographed), never real + choreographed on top of it.
-    requestDecision(state).then(setReport);
+    applySnapshot({ phase: "analysing", wizardState: state, report: null });
+    runAnalysis(state);
   }
 
   function handleAnalysisComplete() {
-    setPhase("results");
+    applySnapshot({ phase: "results", wizardState, report }, { recordHistory: false });
+  }
+
+  function handleRetryAnalysis() {
+    // Preserves wizardState exactly as answered — retry re-runs the
+    // same request, it never sends the user back through intake.
+    if (!wizardState) return;
+    runAnalysis(wizardState);
   }
 
   function handleStartNew() {
-    setWizardState(null);
-    setReport(null);
-    setPhase("intro");
+    clearSessionStorage(SESSION_KEY);
+    setAnalysisError(null);
+    applySnapshot({ phase: "intro", wizardState: null, report: null });
+  }
+
+  function handleStartAssessment() {
+    applySnapshot({ phase: "wizard", wizardState: null, report: null });
   }
 
   return (
@@ -99,30 +159,27 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
           <div className="mx-auto max-w-2xl text-center">
             <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold tracking-[0.16em] text-nova-accent-strong uppercase">
               <Sparkles size={14} />
-              Donna AI · Public Alpha
+              {dict.donnaExperience.introBadge}
             </div>
 
             <div className="mx-auto mt-8 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-nova-accent text-white shadow-nova-glow">
               <Bot size={34} />
             </div>
 
-            <h1 className="mt-7 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">Your Enterprise Decision Assistant</h1>
+            <h1 className="mt-7 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">{dict.donnaExperience.h1}</h1>
 
-            <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
-              Context, priorities, constraints. Donna compares real alternatives against them and hands you a recommendation — with the
-              evidence attached.
-            </p>
+            <p className="mt-5 text-lg leading-8 text-nova-ink-muted">{dict.donnaExperience.sub}</p>
 
-            <Button size="lg" onClick={() => setPhase("wizard")} className="mt-9 h-12 bg-nova-accent px-7 text-white shadow-nova-glow hover:bg-nova-accent-strong">
-              Start your assessment
+            <Button size="lg" onClick={handleStartAssessment} className="mt-9 h-12 bg-nova-accent px-7 text-white shadow-nova-glow hover:bg-nova-accent-strong">
+              {dict.donnaExperience.startCta}
               <ArrowRight size={17} />
             </Button>
 
-            <p className="mt-4 text-xs text-nova-ink-faint">About a minute · deterministic core, optional AI narrative, no account needed</p>
+            <p className="mt-4 text-xs text-nova-ink-faint">{dict.donnaExperience.aboutMinute}</p>
           </div>
         )}
 
-        {phase === "wizard" && wizardState === null && <IntakeWizard onComplete={handleWizardComplete} />}
+        {phase === "wizard" && wizardState === null && <AdaptiveIntake onComplete={handleWizardComplete} />}
 
         {phase === "analysing" && wizardState && (
           <div className="mx-auto max-w-3xl">
@@ -130,7 +187,13 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
               <WizardProgress stepIndex={ANALYSIS_STEP_INDEX} />
             </div>
             <div className="overflow-hidden rounded-[2rem] border border-titanium bg-obsidian shadow-nova-glow">
-              <AnalysingState state={wizardState} report={report} onComplete={handleAnalysisComplete} />
+              <AnalysingState
+                state={wizardState}
+                report={report}
+                error={analysisError}
+                onComplete={handleAnalysisComplete}
+                onRetry={handleRetryAnalysis}
+              />
             </div>
           </div>
         )}

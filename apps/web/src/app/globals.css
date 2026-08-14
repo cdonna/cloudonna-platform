@@ -249,6 +249,23 @@
   }
 }
 
+/* Brand mark (cloudonna-favicon-512.png) — its dark-navy "C" half
+   measures RGB(9,26,55), which computes to roughly a 1.12:1 luminance
+   contrast ratio against --color-obsidian (RGB(10,14,23)), the actual
+   surface every header places it on — functionally invisible, not a
+   perception issue. Recoloring the asset would be a redesign; this is
+   a tight rim-light that follows the PNG's own alpha silhouette
+   (drop-shadow, not a bounding box, so no badge/circle artifact),
+   restoring the mark's outer edge as a legible boundary against a
+   dark surface without touching the asset itself. Both colors are
+   pulled from the existing token palette (nova-ink, nova-accent), not
+   arbitrary, so the lift reads as brand-specific, not a generic glow. */
+.brand-mark {
+  filter:
+    drop-shadow(0 0 1px rgba(244, 246, 251, 0.4))
+    drop-shadow(0 0 5px rgba(139, 92, 246, 0.3));
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

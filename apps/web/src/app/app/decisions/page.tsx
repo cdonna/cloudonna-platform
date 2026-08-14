@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { listDecisionsForCurrentUser } from "@/components/donna-ai/persistence/decisions-repository";
+import { listDecisionsForCurrentUser, type DecisionListItem } from "@/components/donna-ai/persistence/decisions-repository";
+import { PageLoadError } from "@/components/ui/page-load-error";
 
 export const metadata: Metadata = {
   title: "Decision history — ClouDonna",
@@ -14,18 +15,39 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export default async function DecisionHistoryPage() {
-  const supabase = await createSupabaseServerClient();
-  const result = await listDecisionsForCurrentUser(supabase);
-  const decisions = result.ok ? result.data : [];
+  let decisions: DecisionListItem[] = [];
+  let repositoryError: string | null = null;
+  let loadError = false;
+
+  try {
+    const supabase = await createSupabaseServerClient();
+    const result = await listDecisionsForCurrentUser(supabase);
+    if (result.ok) decisions = result.data;
+    else repositoryError = result.reason;
+  } catch (error) {
+    console.error("[app/decisions] page_load_failed:", error instanceof Error ? error.message : error);
+    loadError = true;
+  }
+
+  if (loadError) {
+    return (
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-nova-ink">Decision history</h1>
+        <div className="mt-8">
+          <PageLoadError />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <h1 className="text-2xl font-semibold tracking-tight text-nova-ink">Decision history</h1>
       <p className="mt-2 text-sm text-nova-ink-muted">Every decision you&apos;ve explicitly saved, across your organizations.</p>
 
-      {!result.ok ? (
+      {repositoryError ? (
         <p role="alert" className="mt-6 text-sm text-red-400">
-          {result.reason}
+          {repositoryError}
         </p>
       ) : decisions.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-dashed border-titanium bg-carbon p-10 text-center">

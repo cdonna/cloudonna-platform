@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getBillingSummaryForOrganization, getPrimaryOrganizationForCurrentUser } from "@/lib/billing/billing-repository";
 import { getEntitlementsForOrganization } from "@/lib/entitlements/resolver";
 import type { BooleanEntitlementKey } from "@/lib/entitlements/types";
+import { PageLoadError } from "@/components/ui/page-load-error";
 
 export const metadata: Metadata = {
   title: "Billing — ClouDonna",
@@ -31,11 +32,52 @@ const BOOLEAN_ENTITLEMENT_KEYS = Object.keys(ENTITLEMENT_LABELS) as BooleanEntit
  * Activation Gate for exactly what has to happen before this page can
  * show a real "Upgrade" button.
  */
-export default async function BillingSettingsPage() {
-  const supabase = await createSupabaseServerClient();
-  const organization = await getPrimaryOrganizationForCurrentUser(supabase);
+type BillingPageData =
+  | { status: "loaded"; organization: NonNullable<Awaited<ReturnType<typeof getPrimaryOrganizationForCurrentUser>>>; billing: Awaited<ReturnType<typeof getBillingSummaryForOrganization>>; entitlements: Awaited<ReturnType<typeof getEntitlementsForOrganization>> }
+  | { status: "no-organization" }
+  | { status: "error" };
 
-  if (!organization) {
+/** All data fetching lives here, and only here — no JSX is ever
+ * constructed inside this try/catch. That's not a style preference:
+ * ESLint's react-hooks/error-boundaries rule flags JSX-in-try/catch
+ * because React doesn't render synchronously, so a try/catch around
+ * JSX never actually catches the render-time errors it looks like it
+ * would. The real exception this page needed to guard against
+ * (createSupabaseServerClient() throwing when unconfigured) is a plain
+ * awaited call, not a render — this still catches it correctly. */
+async function loadBillingPageData(): Promise<BillingPageData> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const organization = await getPrimaryOrganizationForCurrentUser(supabase);
+    if (!organization) return { status: "no-organization" };
+
+    const [billing, entitlements] = await Promise.all([
+      getBillingSummaryForOrganization(supabase, organization.organizationId),
+      getEntitlementsForOrganization(supabase, organization.organizationId),
+    ]);
+
+    return { status: "loaded", organization, billing, entitlements };
+  } catch (error) {
+    console.error("[app/settings/billing] page_load_failed:", error instanceof Error ? error.message : error);
+    return { status: "error" };
+  }
+}
+
+export default async function BillingSettingsPage() {
+  const data = await loadBillingPageData();
+
+  if (data.status === "error") {
+    return (
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-nova-ink">Billing</h1>
+        <div className="mt-8">
+          <PageLoadError />
+        </div>
+      </div>
+    );
+  }
+
+  if (data.status === "no-organization") {
     return (
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-nova-ink">Billing</h1>
@@ -44,11 +86,7 @@ export default async function BillingSettingsPage() {
     );
   }
 
-  const [billing, entitlements] = await Promise.all([
-    getBillingSummaryForOrganization(supabase, organization.organizationId),
-    getEntitlementsForOrganization(supabase, organization.organizationId),
-  ]);
-
+  const { organization, billing, entitlements } = data;
   const isAdmin = organization.role === "owner" || organization.role === "admin";
 
   return (
