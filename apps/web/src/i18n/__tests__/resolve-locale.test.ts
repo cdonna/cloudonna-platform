@@ -27,6 +27,27 @@ describe("parseAcceptLanguage", () => {
     expect(parseAcceptLanguage(null)).toBeNull();
     expect(parseAcceptLanguage("")).toBeNull();
   });
+
+  /**
+   * The Founder Release Gate's explicit fallback matrix — every
+   * region-tagged browser locale a real user's Accept-Language header
+   * could plausibly send, each asserted individually rather than
+   * trusting the general "falls back to base language" test above to
+   * cover every case implicitly.
+   */
+  it.each([
+    ["en-US", "en"],
+    ["en-GB", "en"],
+    ["de-DE", "de"],
+    ["de-CH", "de"],
+    ["fr-FR", "fr"],
+    ["fr-CH", "fr"],
+    ["es-ES", "es"],
+    ["it-IT", "it"],
+    ["it-CH", "it"],
+  ])("%s resolves to %s", (tag, expected) => {
+    expect(parseAcceptLanguage(tag)).toBe(expected);
+  });
 });
 
 describe("resolveLocale", () => {
