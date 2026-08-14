@@ -1,3 +1,46 @@
+# v0.3.3-alpha — Mobile Hotfix: Result Transition & iOS Viewport Hardening
+
+**Date:** 2026-08-15
+**Deployed commit:** `bfe4f57` (tag `v0.3.3-alpha`)
+**Branch:** fast-forwarded onto `main` (no merge commit, no history rewrite)
+**Status:** Founder-approved on real hardware before this commit was even made (see below), then pushed and tagged.
+
+## Founder real-device approval — the basis for this release
+
+Unlike every prior release in this project's history, this one was **manually verified on a real iPhone by the Founder before being committed**, not verified by code reading or automated tests alone.
+
+**Device:** real iPhone
+**Browsers tested:** Safari — PASS; Chrome — PASS
+**Founder verdict:** PASS ("sieht gut aus")
+
+This is recorded honestly as what it is: a Founder-performed real-device test, not something this environment independently verified. No browser automation or device tooling exists here — every claim about the mobile fix's correctness prior to Founder approval was structural (component/scroll-architecture tracing) and HTTP-level (route/status checks), never a rendered-pixel or touch-interaction observation.
+
+## The fix
+
+**Root cause of "meaningful Donna results appear too far below the visible viewport"** (the Founder's original real-iPhone report): `DonnaAIExperience`'s four phases (intro/wizard/analysing/results) render as conditional siblings inside one container that never remounts, so a phase change never moves the viewport — new, taller content simply appears wherever the page's scroll position was already left. `AdaptiveIntake` already solved this for its own internal question-to-question transitions via a `headingRef.focus()` pattern (native `.focus()` scrolls the target into view); that pattern had never been extended to the two components that actually own the transitions the Founder hit.
+
+- **`AnalysingState.tsx`**: `headingRef` + focus on mount (entering "analysing") and again on the transition into/out of the error state, so a retry failure gets the same treatment as the first attempt. Also reduces its `min-h-[38rem]` to `min-h-[32rem]` on mobile only (`sm:` and up unchanged) — real vertical-waste reduction without reintroducing layout jump.
+- **`ResultPanel.tsx`**: `headingRef` + focus on mount, on "Your recommendation is ready" — the single most important heading in the product.
+- **11 page wrappers**: `min-h-screen` → `min-h-dvh`, hardening against iOS Safari's dynamic address bar (which makes `100vh`-based `min-height` taller than the real visible viewport).
+
+Reuses native focus-driven scrolling rather than a bespoke `scrollIntoView` call, so it transparently also fixes the same gap for browser Back/Forward through the synthetic Donna history entries, and gives assistive technology a standard way to discover new content when it appears.
+
+## Build summary
+
+- 13 files changed, +53/−19, one commit
+- `npx tsc --noEmit`: clean
+- `npm run lint`: clean (one real warning found and fixed during development — `react-hooks/exhaustive-deps` on a computed dependency — not suppressed)
+- `npx vitest run`: 39 test files, 341 passed, 1 skipped, 0 failed — unchanged from the prior release, confirming no regression
+- `npm run build`: succeeds, 72 pages, unchanged route structure
+- Fresh `next start`: full 55-route matrix (5 locales × 11 pages) 200, `robots.txt`/`sitemap.xml`/`opengraph-image`/`favicon.ico` 200, `/xx` and unknown routes 404
+- The specific fix (DOM `.focus()`-triggered scroll behavior) has no automated regression test — not unit-testable in this environment (no component-rendering harness; Node-only Vitest, disclosed consistently throughout this project). Verified by the Founder on real hardware instead, which is a stronger signal than a unit test could provide for this particular defect class.
+
+## Known limitations
+
+Everything from `v0.3.2-alpha`'s "Known limitations" below still applies unchanged — this release did not touch localization or the inquiry system. New: real layout-pressure testing across all 5 languages on real mobile viewports (clipped labels, chip wrapping, overflow) was not independently performed by this environment beyond the Founder's own spot-check; keyboard-open/close behavior, Core Web Vitals, and device-matrix viewport testing (320/360/375/390/393/412/430/768px) remain unverified beyond structural code review.
+
+---
+
 # v0.3.2-alpha — Localization Gap Closure + Confirmed Production Inquiry P0 Finding
 
 **Date:** 2026-08-15
@@ -144,6 +187,9 @@ No `vercel` CLI or credentials exist in this environment — the actual Producti
 ---
 
 ## Release history
+
+### v0.3.2-alpha — Localization Gap Closure + Confirmed Production Inquiry P0 Finding (`7f7fcb0`, 2026-08-15)
+Fixed `og:locale` (was hardcoded `en_US` on every page except home), homepage `<title>` (was the identical English tagline in all 5 locales), and scoring-dimension labels (now localized at the UI boundary without touching the scoring engine). Added inquiry-system regression tests. Critically: a real, authorized test submission to the live `/api/inquiries` confirmed Production Inquiry P0 as **actively broken** (Supabase environment variables missing/invalid in Vercel Production), not merely unverified — exact Founder action documented.
 
 ### v0.3.1-alpha — Founder Release Gate Verification Pass (`9344b8a`, 2026-08-14)
 No product behavior change. Independent adversarial audit of `v0.3.0-alpha`: repo health check, explicit Accept-Language fallback matrix, full route-matrix re-verification, and a Donna cross-language regression check that chased down and correctly root-caused an apparent confidence-score discrepancy to its own test-methodology artifact rather than a product bug. Also performed real, live verification against the actual `https://www.cdonna.com` Production domain for the first time (55/55 routes, hreflang, sitemap, one safe Donna API call).
