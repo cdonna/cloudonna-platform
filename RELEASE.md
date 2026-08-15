@@ -1,3 +1,44 @@
+# v0.3.4-alpha — Locale Metadata Patch: Server-Correct `<html lang>` + `og:locale`
+
+**Date:** 2026-08-15
+**Deployed commit:** *(this commit, pending)* (tag `v0.3.4-alpha`)
+**Branch:** fast-forwarded onto `main` (no merge commit, no history rewrite)
+**Status:** Code pushed and tagged this pass, per explicit Founder authorization. Not a feature sprint — scoring, Donna decision logic, and Production Inquiry P0 were not touched.
+
+## The two defects fixed
+
+1. **Server-rendered `<html lang>` was still `"en"` for localized routes**, corrected only client-side after hydration by `LangSync.tsx` — a real SEO/accessibility gap (screen readers and crawlers that read the raw HTTP response, not the post-hydration DOM, saw the wrong language on every non-English page).
+2. **`og:locale` was still effectively `en_US`** on any localized page that didn't explicitly set its own OpenGraph metadata, because Next.js does not deep-merge a child route's `openGraph` into a parent layout's — `/login` and `/signup` specifically (Client Components, which cannot export `generateMetadata` at all) always fell back to the root layout's static English value regardless of visited locale.
+
+## The fix
+
+Next.js allows exactly one `<html>` tag per response tree, so no layout nested under a single existing root can ever make `<html lang>` genuinely vary by locale — the only clean, officially-supported solution is splitting into independent root layouts via route groups. Restructured `apps/web/src/app`:
+
+- **`(localized)/[locale]/layout.tsx`** — its own root layout (`<html lang={locale}>`, fonts, JSON-LD, `LocaleProvider`), covering all 11 localized public pages (home, donna-ai, contact, early-access, for-partners, for-vendors, imprint, independence, privacy, terms, login, signup).
+- **`(default)/layout.tsx`** — sibling independent root, static `<html lang="en">`, covering `/app` (dashboard) and `/discovery` — deliberately unlocalized, unchanged from before.
+- **`not-found.tsx`** — new top-level fallback with its own `<html>`/`<body>`/`metadata` (including `metadataBase`, fixing a real build warning), required by Next.js whenever multiple root layouts are used, for any path matching neither group.
+- **`LangSync.tsx` deleted** — genuinely redundant now that `<html lang>` is correct on first byte from the server; no more client-side correction needed.
+- `/api/*` and `/auth/*` were **not** moved — Route Handlers aren't wrapped by the React layout tree at all, so they don't need to live under either group (confirmed via `find`: `auth` has no `page.tsx`, only `actions.ts`/`callback/route.ts`).
+
+For `og:locale`, `login` and `signup` were each split into a thin Server Component `page.tsx` (owns `generateMetadata`, calls the existing canonical `localizedOpenGraph()` helper — the same one already used by the other 9 pages since v0.3.2-alpha, no new mapping logic duplicated) wrapping the renamed `LoginForm.tsx`/`SignupForm.tsx` Client Components, which now receive a plain resolved `locale: string` prop instead of the `params` Promise. The metadata logic itself lives in pure `login/metadata.ts`/`signup/metadata.ts` modules (no `next/navigation` import) specifically so it's directly unit-testable — same extraction pattern used earlier in this project for `pathWithLocale`, reused rather than reinvented, since importing `page.tsx` itself into a Vitest test breaks (`next/navigation` doesn't initialize outside a real Next.js render).
+
+11 new tests (`login-signup-metadata.test.ts`) assert `og:locale` and canonical URL for all 5 locales on both pages, plus the unsupported-locale case returning empty metadata rather than fabricating one.
+
+## Build summary
+
+- 31 files changed (route-group restructuring, 2 new page/metadata splits, 1 new test file, `not-found.tsx` added, `LangSync.tsx` + old root `layout.tsx` deleted), one commit
+- `npx tsc --noEmit`: clean
+- `npm run lint`: clean
+- `npx vitest run`: 40 test files, 352 passed, 1 skipped, 0 failed (+11 from this pass)
+- `npm run build`: succeeds, 72 pages, unchanged route structure
+- Fresh `next start`: full 55-route matrix (5 locales × 11 pages) 200; **true SSR-correct `<html lang>` confirmed on raw first-byte HTTP GET for all 5 locales** (not just post-hydration); `og:locale` confirmed correct on every localized page including `login`/`signup` (previously the last gap); non-localized routes (`/discovery`, `/app`) confirmed still `en`; `robots.txt`/`sitemap.xml`/`opengraph-image`/`favicon.ico` 200; 404/unsupported-locale paths correct including the new top-level `not-found.tsx` edge case; one local Donna API smoke test unchanged (Business Data Cloud, Donna Score 81), confirming the metadata patch didn't disturb application behavior
+
+## Known limitations
+
+Everything from `v0.3.2-alpha`'s "Known limitations" still applies **except** the login/signup `generateMetadata` gap, which is resolved this pass. `og:locale`/`<html lang>` were the only two defects in scope this pass — the larger body of Donna's dynamically-composed narrative text remains English-only (unchanged, not attempted). **Production Inquiry P0 was not touched this pass and remains exactly as documented in `v0.3.2-alpha`: OPEN, root-caused to missing/invalid Supabase environment variables in Vercel Production, exact Founder remediation steps unchanged.**
+
+---
+
 # v0.3.3-alpha — Mobile Hotfix: Result Transition & iOS Viewport Hardening
 
 **Date:** 2026-08-15
@@ -187,6 +228,9 @@ No `vercel` CLI or credentials exist in this environment — the actual Producti
 ---
 
 ## Release history
+
+### v0.3.3-alpha — Mobile Hotfix: Result Transition & iOS Viewport Hardening (`bfe4f57`, 2026-08-15)
+Founder-approved on a real iPhone (Safari + Chrome, "sieht gut aus") before this commit was made. Root cause of "meaningful Donna results appear too far below the visible viewport": phase transitions in `DonnaAIExperience` never moved scroll position. Extended the existing `headingRef.focus()` scroll-into-view pattern to `AnalysingState` and `ResultPanel`; hardened 11 page wrappers from `min-h-screen` to `min-h-dvh` for iOS Safari's dynamic viewport chrome.
 
 ### v0.3.2-alpha — Localization Gap Closure + Confirmed Production Inquiry P0 Finding (`7f7fcb0`, 2026-08-15)
 Fixed `og:locale` (was hardcoded `en_US` on every page except home), homepage `<title>` (was the identical English tagline in all 5 locales), and scoring-dimension labels (now localized at the UI boundary without touching the scoring engine). Added inquiry-system regression tests. Critically: a real, authorized test submission to the live `/api/inquiries` confirmed Production Inquiry P0 as **actively broken** (Supabase environment variables missing/invalid in Vercel Production), not merely unverified — exact Founder action documented.

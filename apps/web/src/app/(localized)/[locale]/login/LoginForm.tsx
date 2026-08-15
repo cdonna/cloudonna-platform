@@ -1,20 +1,16 @@
 "use client";
 
-import { use, useActionState, useState } from "react";
+import { useActionState, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, LoaderCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { signInWithMagicLink, signInWithPassword, type AuthActionState } from "../../auth/actions";
+import { signInWithMagicLink, signInWithPassword, type AuthActionState } from "../../../auth/actions";
 
 const INITIAL_STATE: AuthActionState = { error: null };
 
-export default function LoginPage({ params }: { params: Promise<{ locale: string }> }) {
-  // The [locale] segment is only ever reached with a validated locale
-  // (see ../layout.tsx's notFound() guard) — this page doesn't need to
-  // re-validate, just read the value for building same-locale links.
-  const { locale } = use(params);
+export function LoginForm({ locale }: { locale: string }) {
   const { dict } = useLocale();
   const [usePassword, setUsePassword] = useState(false);
   const [magicLinkState, magicLinkAction, magicLinkPending] = useActionState(signInWithMagicLink, INITIAL_STATE);

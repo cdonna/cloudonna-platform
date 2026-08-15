@@ -1,17 +1,16 @@
 "use client";
 
-import { use, useActionState } from "react";
+import { useActionState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { signUp, type AuthActionState } from "../../auth/actions";
+import { signUp, type AuthActionState } from "../../../auth/actions";
 
 const INITIAL_STATE: AuthActionState = { error: null };
 
-export default function SignupPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = use(params);
+export function SignupForm({ locale }: { locale: string }) {
   const { dict } = useLocale();
   const [state, action, pending] = useActionState(signUp, INITIAL_STATE);
 

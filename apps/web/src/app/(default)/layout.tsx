@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,22 +38,17 @@ const organizationJsonLd = {
 };
 
 /**
- * The one true root layout — the only place `<html>`/`<body>` are
- * defined, so it has to serve every route, localized and not
- * (/app/*, /api/*, /auth/*, /discovery stay English-only and render
- * directly through here; see src/i18n/locales.ts's
- * LOCALIZED_PATH_PREFIXES for what's in scope). `lang="en"` is the
- * correct static default for those routes and for the pre-hydration
- * paint of a localized one; src/app/[locale]/layout.tsx corrects
- * `document.documentElement.lang` client-side for de/fr/es requests
- * immediately on mount — see the localization report's "ACCESSIBILITY
- * STATUS" section for the honest disclosure on what that does and
- * doesn't cover. Footer is rendered per-branch (translated inside
- * [locale]/layout.tsx, English here) rather than globally, since a
- * global Footer here would have no locale to translate into for the
- * /app/* dashboard case anyway.
+ * The other independent root layout — see (localized)/[locale]/
+ * layout.tsx's comment for why two roots exist at all (Next.js allows
+ * exactly one `<html>` per response, so per-locale `lang` requires a
+ * true root layout of its own; this group is the static-English
+ * counterpart for everything that was never in scope for
+ * localization: /app/* (the authenticated dashboard), /discovery, and
+ * — via not needing any layout at all, since Route Handlers aren't
+ * wrapped by the layout tree — /api/* and /auth/* stay siblings of
+ * both groups, unaffected by this split).
  */
-export default function RootLayout({
+export default function DefaultRootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
