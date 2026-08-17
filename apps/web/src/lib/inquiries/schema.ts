@@ -1,4 +1,8 @@
 import { z } from "zod";
+// Relative, not "@/..." — no path-alias resolution is configured in
+// vitest.config.mts, and this module needs to be importable directly
+// from a plain Vitest test (same reasoning as login/metadata.ts).
+import { SUPPORTED_LOCALES } from "../../i18n/locales";
 
 /** Matches the `inquiry_type` Postgres enum after
  * supabase/migrations/20260809120000_inquiries_taxonomy_refinement.sql
@@ -12,8 +16,27 @@ export type InquiryType = z.infer<typeof inquiryTypeSchema>;
 /** The known set of pages allowed to submit an inquiry — "supported
  * source page" validation from Phase 3 of the brief. An arbitrary
  * string here would just be uncontrolled free text in a field the
- * Founder Dashboard displays; a closed set keeps it meaningful. */
-export const sourcePageSchema = z.enum(["/", "/contact", "/early-access", "/for-vendors", "/for-partners"]);
+ * Founder Dashboard displays; a closed set keeps it meaningful.
+ *
+ * Every page InquiryForm renders on now lives under the locale-prefixed
+ * route group (src/app/(localized)/[locale]/), so the browser's real
+ * pathname is always locale-prefixed (e.g. "/en/contact", never bare
+ * "/contact") — InquiryForm.tsx correctly sends whatever
+ * window.location.pathname actually is; this schema previously only
+ * accepted the pre-localization unprefixed shape, silently rejecting
+ * every real Production submission. Generated from SUPPORTED_LOCALES
+ * (the single source of truth for supported locales) rather than a
+ * second hardcoded list, so it can't drift out of sync the same way
+ * again if a locale is ever added or removed. Bare, unprefixed values
+ * are kept too — harmless, and matches what a direct API caller or a
+ * locale-less environment could still send. */
+const INQUIRY_SOURCE_PAGES = ["/", "/contact", "/early-access", "/for-vendors", "/for-partners"] as const;
+
+const LOCALIZED_INQUIRY_SOURCE_PAGES = SUPPORTED_LOCALES.flatMap((locale) =>
+  INQUIRY_SOURCE_PAGES.map((page) => (page === "/" ? `/${locale}` : `/${locale}${page}`)),
+);
+
+export const sourcePageSchema = z.enum([...INQUIRY_SOURCE_PAGES, ...LOCALIZED_INQUIRY_SOURCE_PAGES] as [string, ...string[]]);
 
 /** The full POST /api/inquiries request body. Every field beyond the
  * required minimum (type, name, email) is optional — a general contact

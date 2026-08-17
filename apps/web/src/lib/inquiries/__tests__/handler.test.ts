@@ -142,6 +142,23 @@ describe("handleCreateInquiryRequest", () => {
     expect(result.status).toBe(200);
   });
 
+  it.each([
+    ["/en", "founding_tester"],
+    ["/de/contact", "enterprise"],
+    ["/fr/early-access", "founding_tester"],
+    ["/es/for-vendors", "vendor"],
+    ["/it/for-partners", "partner"],
+  ])(
+    "persists a submission from the real, locale-prefixed sourcePage %s (the exact shape InquiryForm sends in Production)",
+    async (sourcePage, inquiryType) => {
+      const supabase = mockSupabase();
+
+      const result = await handleCreateInquiryRequest({ ...VALID_BODY, inquiryType, sourcePage }, supabase);
+
+      expect(result.status).toBe(200);
+    },
+  );
+
   it("rejects a message over the 4000-character storage limit", async () => {
     const supabase = mockSupabase();
 
