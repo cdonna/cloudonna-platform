@@ -24,7 +24,11 @@ import { getNotificationProvider } from "../notifications/config";
 
 export interface CreateInquiryHandlerResult {
   status: number;
-  body: { id: string } | { error: string };
+  // No `id` — createInquiry() can no longer read the inserted row back
+  // (see repository.ts). InquiryForm.tsx never read the success body
+  // anyway (confirmed by reading it — it only parses JSON on the error
+  // branch), so this loses nothing the client actually used.
+  body: { ok: true } | { error: string };
 }
 
 const RATE_LIMIT_MAX_PER_HOUR = 3;
@@ -57,7 +61,7 @@ export async function handleCreateInquiryRequest(
   // storing nothing either.
   if (request.website) {
     log("honeypot_triggered");
-    return { status: 200, body: { id: "00000000-0000-0000-0000-000000000000" } };
+    return { status: 200, body: { ok: true } };
   }
 
   // Simple, DB-backed rate limit — no new infrastructure, just the one
@@ -86,17 +90,17 @@ export async function handleCreateInquiryRequest(
     log("database_insert_failed", { reason: result.reason });
     return { status: 400, body: { error: result.reason } };
   }
-  log("database_insert_succeeded", { inquiryId: result.data.id });
+  log("database_insert_succeeded");
 
   try {
     await getNotificationProvider().notifyNewInquiry({
-      inquiryId: result.data.id,
+      inquiryId: null,
       inquiryType: request.inquiryType,
       name: request.name,
       businessEmail: request.businessEmail,
       company: request.company ?? null,
     });
-    log("notification_succeeded", { inquiryId: result.data.id });
+    log("notification_succeeded");
   } catch (error) {
     // Deliberately swallowed as far as the HTTP response goes —
     // persistence already succeeded, which is the part that actually
@@ -105,9 +109,9 @@ export async function handleCreateInquiryRequest(
     // that a notification failure is non-fatal. Still logged, so a
     // silent notification outage is visible without breaking anyone's
     // submission.
-    log("notification_failed", { inquiryId: result.data.id, error: error instanceof Error ? error.message : "unknown" });
+    log("notification_failed", { error: error instanceof Error ? error.message : "unknown" });
   }
 
   log("response_sent", { status: 200 });
-  return { status: 200, body: { id: result.data.id } };
+  return { status: 200, body: { ok: true } };
 }

@@ -10,15 +10,23 @@ const VALID_BODY = {
   sourcePage: "/contact",
 };
 
-function mockSupabase({ recentCount = 0, insertId = "inquiry-1", insertError = null as { message: string } | null } = {}) {
+/** `insert()` resolves directly to `{ error }` — no `.select()`/`.single()`
+ * chained on its return value. This is deliberate, not just a
+ * convenience: a plain INSERT ... RETURNING id, run as the anon/
+ * authenticated role a public submitter connects as, is subject to
+ * inquiries_select_staff (RLS governs RETURNING output, not just a
+ * separate SELECT statement) — staff-only — so it always failed with
+ * 42501 for exactly the visitors this endpoint exists for (confirmed
+ * against the real Production error). If createInquiry() ever chains
+ * `.select()` on this mock's return value again, it throws a
+ * TypeError (`.select is not a function`) immediately, failing every
+ * test below — the regression is structurally impossible to reintroduce
+ * silently, not just asserted after the fact. */
+function mockSupabase({ recentCount = 0, insertError = null as { message: string } | null } = {}) {
   return {
     rpc: vi.fn().mockResolvedValue({ data: recentCount, error: null }),
     from: vi.fn().mockReturnValue({
-      insert: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          single: vi.fn().mockResolvedValue(insertError ? { data: null, error: insertError } : { data: { id: insertId }, error: null }),
-        }),
-      }),
+      insert: vi.fn().mockResolvedValue({ error: insertError }),
     }),
   } as unknown as SupabaseClient;
 }
@@ -66,16 +74,18 @@ describe("handleCreateInquiryRequest", () => {
     expect(result.status).toBe(400);
   });
 
-  it("persists a valid inquiry and returns its id", async () => {
-    const supabase = mockSupabase({ insertId: "inquiry-42" });
+  it("persists a valid inquiry via INSERT only — no id in the response, no RETURNING chained", async () => {
+    const supabase = mockSupabase();
 
     const result = await handleCreateInquiryRequest(VALID_BODY, supabase);
 
-    expect(result).toEqual({ status: 200, body: { id: "inquiry-42" } });
+    expect(result).toEqual({ status: 200, body: { ok: true } });
+    const insertMock = (supabase.from as ReturnType<typeof vi.fn>).mock.results[0].value.insert;
+    expect(insertMock).toHaveBeenCalledTimes(1);
   });
 
   it("still succeeds even if the notification step throws (persistence is what matters)", async () => {
-    const supabase = mockSupabase({ insertId: "inquiry-99" });
+    const supabase = mockSupabase();
 
     const result = await handleCreateInquiryRequest(VALID_BODY, supabase);
 
@@ -93,12 +103,23 @@ describe("handleCreateInquiryRequest", () => {
     }
   });
 
+  it("classifies the exact 42501 permission-denied error observed in Production as a safe, generic reason", async () => {
+    const supabase = mockSupabase({ insertError: { message: 'permission denied for table "inquiries"' } });
+
+    const result = await handleCreateInquiryRequest(VALID_BODY, supabase);
+
+    expect(result.status).toBe(400);
+    if ("error" in result.body) {
+      expect(result.body.error).toBe("This inquiry could not be submitted.");
+    }
+  });
+
   it("accepts a honeypot-filled request without persisting anything (silent fake success)", async () => {
     const supabase = mockSupabase();
 
     const result = await handleCreateInquiryRequest({ ...VALID_BODY, website: "http://spam.example" }, supabase);
 
-    expect(result.status).toBe(200);
+    expect(result).toEqual({ status: 200, body: { ok: true } });
     expect(supabase.from).not.toHaveBeenCalled();
   });
 
@@ -115,11 +136,7 @@ describe("handleCreateInquiryRequest", () => {
     const supabase = {
       rpc: vi.fn().mockResolvedValue({ data: null, error: { message: "function not found" } }),
       from: vi.fn().mockReturnValue({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({ data: { id: "inquiry-open" }, error: null }),
-          }),
-        }),
+        insert: vi.fn().mockResolvedValue({ error: null }),
       }),
     } as unknown as SupabaseClient;
 
@@ -169,9 +186,7 @@ describe("handleCreateInquiryRequest", () => {
   });
 
   it("captures source_page and utm_source in the persisted row, unchanged from the request", async () => {
-    const insert = vi.fn().mockReturnValue({
-      select: vi.fn().mockReturnValue({ single: vi.fn().mockResolvedValue({ data: { id: "inquiry-utm" }, error: null }) }),
-    });
+    const insert = vi.fn().mockResolvedValue({ error: null });
     const supabase = {
       rpc: vi.fn().mockResolvedValue({ data: 0, error: null }),
       from: vi.fn().mockReturnValue({ insert }),
@@ -197,13 +212,30 @@ describe("handleCreateInquiryRequest", () => {
     expect(supabase.from).not.toHaveBeenCalled();
   });
 
+  it("never attempts to read the inquiries table back — no anonymous read capability exists in this path", async () => {
+    // A structural, not just behavioral, guarantee: the only Supabase
+    // client method this whole handler ever calls on the "inquiries"
+    // table is insert(). rpc() is called once, for the narrow
+    // count-only rate-limit function — never a general read.
+    const supabase = mockSupabase();
+
+    await handleCreateInquiryRequest(VALID_BODY, supabase);
+
+    const fromMock = supabase.from as ReturnType<typeof vi.fn>;
+    expect(fromMock).toHaveBeenCalledWith("inquiries");
+    const tableMock = fromMock.mock.results[0].value;
+    expect(Object.keys(tableMock)).toEqual(["insert"]);
+    expect(supabase.rpc).toHaveBeenCalledWith("count_recent_inquiries_by_email", expect.any(Object));
+    expect(supabase.rpc).toHaveBeenCalledTimes(1);
+  });
+
   describe("notification failure after successful persistence", () => {
     afterEach(() => {
       vi.doUnmock("../../notifications/config");
       vi.resetModules();
     });
 
-    it("still returns 200 with the real inquiry id when the notification provider throws", async () => {
+    it("still returns 200 with no id when the notification provider throws", async () => {
       vi.resetModules();
       vi.doMock("../../notifications/config", () => ({
         getNotificationProvider: () => ({
@@ -213,13 +245,31 @@ describe("handleCreateInquiryRequest", () => {
         }),
       }));
       const { handleCreateInquiryRequest: handleWithFailingNotifier } = await import("../handler");
-      const supabase = mockSupabase({ insertId: "inquiry-notify-fail" });
+      const supabase = mockSupabase();
 
       const result = await handleWithFailingNotifier(VALID_BODY, supabase);
 
       // Persistence is the system of record — a notification outage
       // must never look like, or cause, a failed submission.
-      expect(result).toEqual({ status: 200, body: { id: "inquiry-notify-fail" } });
+      expect(result).toEqual({ status: 200, body: { ok: true } });
+    });
+
+    it("passes inquiryId: null to the notification provider (there is no id to pass)", async () => {
+      vi.resetModules();
+      const notifyNewInquiry = vi.fn().mockResolvedValue(undefined);
+      vi.doMock("../../notifications/config", () => ({
+        getNotificationProvider: () => ({
+          providerId: "spy-test-provider",
+          isConfigured: () => true,
+          notifyNewInquiry,
+        }),
+      }));
+      const { handleCreateInquiryRequest: handleWithSpyNotifier } = await import("../handler");
+      const supabase = mockSupabase();
+
+      await handleWithSpyNotifier(VALID_BODY, supabase);
+
+      expect(notifyNewInquiry).toHaveBeenCalledWith(expect.objectContaining({ inquiryId: null }));
     });
   });
 });

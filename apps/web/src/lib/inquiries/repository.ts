@@ -38,33 +38,38 @@ export async function countRecentInquiriesByEmail(supabase: SupabaseClient, busi
   return data;
 }
 
-export interface CreateInquiryResult {
-  id: string;
-}
-
+/** Deliberately no `.select().single()` after the insert — a plain
+ * INSERT ... RETURNING id, run as the anon/authenticated role a public
+ * submitter connects as, is subject to inquiries_select_staff (RLS
+ * still governs RETURNING output, not just a separate SELECT
+ * statement), which is staff-only. inquiries_insert_public grants the
+ * INSERT itself, but a non-staff inserter can never see the row it
+ * just created — so asking Postgres to hand the id back always failed
+ * with 42501 for exactly the visitors this endpoint exists for. There
+ * is no id to return without either granting anon a SELECT policy on
+ * inquiries (ruled out — see docs/operations/05-inquiry-system-v2.md)
+ * or a service-role bypass (ruled out — no service-role client exists
+ * in this domain). Persistence success/failure is the only thing this
+ * function can honestly report. */
 export async function createInquiry(
   supabase: SupabaseClient,
   request: CreateInquiryRequest,
-): Promise<RepositoryResult<CreateInquiryResult>> {
-  const { data, error } = await supabase
-    .from("inquiries")
-    .insert({
-      inquiry_type: request.inquiryType,
-      name: request.name,
-      business_email: request.businessEmail,
-      company: request.company ?? null,
-      role: request.role ?? null,
-      country: request.country ?? null,
-      phone: request.phone ?? null,
-      message: request.message ?? null,
-      source_page: request.sourcePage,
-      utm_source: request.utmSource ?? null,
-      utm_medium: request.utmMedium ?? null,
-      utm_campaign: request.utmCampaign ?? null,
-      referrer: request.referrer ?? null,
-    })
-    .select("id")
-    .single();
+): Promise<{ ok: true } | { ok: false; reason: string }> {
+  const { error } = await supabase.from("inquiries").insert({
+    inquiry_type: request.inquiryType,
+    name: request.name,
+    business_email: request.businessEmail,
+    company: request.company ?? null,
+    role: request.role ?? null,
+    country: request.country ?? null,
+    phone: request.phone ?? null,
+    message: request.message ?? null,
+    source_page: request.sourcePage,
+    utm_source: request.utmSource ?? null,
+    utm_medium: request.utmMedium ?? null,
+    utm_campaign: request.utmCampaign ?? null,
+    referrer: request.referrer ?? null,
+  });
 
   if (error) {
     // The raw Postgres error (e.g. "invalid input value for enum
@@ -78,7 +83,7 @@ export async function createInquiry(
     return { ok: false, reason: classifySupabaseError(error.message) };
   }
 
-  return { ok: true, data: { id: data.id } };
+  return { ok: true };
 }
 
 export interface InquirySummary {
