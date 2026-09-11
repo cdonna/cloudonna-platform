@@ -21,15 +21,15 @@
  * deferred by one round trip for the one-time redirect case.
  */
 import { NextResponse, type NextRequest } from "next/server";
-import { LOCALE_COOKIE_NAME, SUPPORTED_LOCALES, isLocalizedPath, isSupportedLocale } from "./src/i18n/locales";
-import { resolveLocale } from "./src/i18n/resolve-locale";
-import { refreshSupabaseSession } from "./src/lib/supabase/middleware";
+import { LOCALE_COOKIE_NAME, SUPPORTED_LOCALES, isLocalizedPath, isSupportedLocale } from "./i18n/locales";
+import { resolveLocale } from "./i18n/resolve-locale";
+import { refreshSupabaseSession } from "./lib/supabase/middleware";
 
 function startsWithLocalePrefix(pathname: string): boolean {
   return SUPPORTED_LOCALES.some((locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`));
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   if (isLocalizedPath(pathname) && !startsWithLocalePrefix(pathname)) {
