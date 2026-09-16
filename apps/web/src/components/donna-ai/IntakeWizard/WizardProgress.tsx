@@ -1,23 +1,24 @@
 import { REVIEW_STEP_INDEX } from "../types";
 
-const STAGE_LABELS = ["Context", "Priorities", "Constraints", "Review"];
+const STAGE_LABELS = ["Context", "Priorities", "Decision"];
 
 /** Maps WizardState's stepIndex (0=company, 1=landscape, 2=goals,
- * 3=constraints, 4=review, 5=analysis) onto the four display stages —
- * a mapping the underlying state/reducer contract has always used,
- * regardless of which intake UI drives it. Since AdaptiveIntake
- * replaced the manual step-by-step wizard, this component is only ever
- * rendered with stepIndex 5 (see DonnaAIExperience's "analysing"
- * phase), reading as "Review" complete, 100% filled, with "Analysing"
- * as the active label — the stepIndex 0–4 branches below are dead
- * code in practice but harmless to keep, since they still describe a
- * real, valid WizardState shape if anything renders this with a
- * variable stepIndex again. */
+ * 3=constraints, 4=review, 5=analysis) onto three broad display
+ * stages, not five internal steps — a visitor sees "Context,
+ * Priorities, Decision," never a numbered pipeline. This mapping the
+ * underlying state/reducer contract has always used, regardless of
+ * which intake UI drives it. Since AdaptiveIntake replaced the manual
+ * step-by-step wizard, this component is only ever rendered with
+ * stepIndex 5 (see DonnaAIExperience's "analysing" phase), reading as
+ * "Decision" complete, 100% filled, with "Analysing" as the active
+ * label — the stepIndex 0–4 branches below are dead code in practice
+ * but harmless to keep, since they still describe a real, valid
+ * WizardState shape if anything renders this with a variable
+ * stepIndex again. */
 function stageIndexFor(stepIndex: number): number {
   if (stepIndex <= 1) return 0;
-  if (stepIndex === 2) return 1;
-  if (stepIndex === 3) return 2;
-  return 3;
+  if (stepIndex <= 3) return 1;
+  return 2;
 }
 
 export function WizardProgress({ stepIndex }: { stepIndex: number }) {
@@ -36,7 +37,7 @@ export function WizardProgress({ stepIndex }: { stepIndex: number }) {
 
       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-carbon-2">
         <div
-          className="h-full rounded-full bg-nova-accent transition-[width] duration-500 ease-nova-settle"
+          className="h-full rounded-full bg-gradient-to-r from-nova-accent to-sunset-coral transition-[width] duration-500 ease-nova-settle"
           style={{ width: `${percent}%` }}
         />
       </div>

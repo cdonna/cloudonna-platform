@@ -16,7 +16,7 @@ export function AlternativesTab({ output }: { output: DecisionOutput }) {
       </h3>
       <p className="mt-2 max-w-2xl text-sm text-nova-ink-faint">
         Every score below comes directly from the same scoring engine that produced your Donna
-        Score — nothing here is a separate or fabricated rating.
+        Score. Nothing here is a separate or fabricated rating.
       </p>
 
       <div className="mt-6">
@@ -29,7 +29,7 @@ export function AlternativesTab({ output }: { output: DecisionOutput }) {
 
       {hasCrossCategoryComparison && (
         <p className="mt-2 max-w-2xl text-xs leading-5 text-nova-ink-faint">
-          Note: these platforms span more than one category — some solve different problems
+          Note: these platforms span more than one category. Some solve different problems
           rather than competing directly. Category is shown on each card so you can read the
           comparison accordingly.
         </p>

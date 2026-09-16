@@ -23,7 +23,7 @@ export function IntelligenceTab({ report }: { report: DecisionReport }) {
           {report.fallback.reason ?? "AI enrichment was not available for this result."}
         </p>
         <p className="mx-auto mt-4 max-w-md text-xs leading-5 text-nova-ink-faint">
-          Your Donna Score, ranking and evidence above are complete and unaffected — they were
+          Your Donna Score, ranking and evidence above are complete and unaffected. They were
           computed before enrichment was attempted and do not depend on it.
         </p>
       </div>

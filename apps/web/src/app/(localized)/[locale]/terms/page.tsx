@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
 import { localizedAlternates, localizedOpenGraph } from "@/i18n/seo";
@@ -11,7 +9,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isSupportedLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  const title = `${dict.legal.terms.metaTitle} — ClouDonna`;
+  const title = `${dict.legal.terms.metaTitle}: ClouDonna`;
   const description = dict.legal.terms.metaDescription;
   return {
     title,
@@ -30,19 +28,6 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
   return (
     <div className="min-h-dvh bg-obsidian">
       <div className="mx-auto max-w-3xl px-6 py-16">
-        <div className="flex items-center justify-between">
-          <Link href={`/${locale}`} className="flex items-center gap-2.5">
-            <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={36} height={36} className="brand-mark h-9 w-9 object-contain" />
-            <span className="text-lg font-semibold tracking-tight text-nova-ink">
-              Clou<span className="text-nova-accent-strong">Donna</span>
-            </span>
-          </Link>
-
-          <Link href={`/${locale}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition duration-200 hover:text-nova-ink">
-            <ArrowLeft size={15} />
-            {dict.common.backToHome}
-          </Link>
-        </div>
 
         <div className="mt-12">
           <div className="inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold tracking-[0.14em] text-nova-accent-strong uppercase">

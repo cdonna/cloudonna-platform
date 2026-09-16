@@ -9,7 +9,7 @@ export async function generateSignupMetadata({ params }: { params: Promise<{ loc
   const { locale } = await params;
   if (!isSupportedLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  const title = `${dict.signup.h1} — ClouDonna`;
+  const title = `${dict.signup.h1}: ClouDonna`;
   const description = dict.signup.sub;
   return {
     title,

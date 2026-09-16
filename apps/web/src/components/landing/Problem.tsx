@@ -6,6 +6,14 @@ const ICONS = [Clock3, Eye, ShieldAlert];
 export default function Problem({ dict }: { dict: Dictionary }) {
   return (
     <section className="relative overflow-hidden bg-obsidian px-6 py-28 sm:py-32">
+      {/* One quiet ambient glow, deep purple leaning cyan — keeps this
+          section from reading as a flat block between Hero's and
+          DonnaSignature's own atmosphere, without becoming a second
+          light source competing with either. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden motion-safe:animate-aurora-drift">
+        <div className="absolute -bottom-32 right-[-6rem] h-[26rem] w-[26rem] rounded-full bg-deep-purple/20 blur-[130px]" />
+      </div>
+
       <div className="relative mx-auto max-w-5xl text-center">
         <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">
           {dict.problem.badge}

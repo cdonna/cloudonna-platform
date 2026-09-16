@@ -2,15 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Download, Save } from "lucide-react";
+import { Check, Download, FileText, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRovingTabs } from "@/hooks/use-roving-tabs";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { classifyDecisionSkills } from "../decision-skills";
+import { buildStrategicFraming, findRecommendationLevers } from "../decision-insights";
 import { downloadReport } from "../engine";
 import type { DecisionReport } from "../intelligence/types";
 import { SaveDecisionDialog } from "../persistence/SaveDecisionDialog";
 import type { WizardState } from "../types";
 import { AlternativesTab } from "./AlternativesTab";
 import { ArchitectureTab } from "./ArchitectureTab";
+import { ExecutiveBrief } from "./ExecutiveBrief";
 import { IntelligenceTab } from "./IntelligenceTab";
 import { OverviewTab } from "./OverviewTab";
 import { RisksOpportunitiesTab } from "./RisksOpportunitiesTab";
@@ -52,9 +56,14 @@ export function ResultPanel({
   isSignedIn: boolean;
 }) {
   const output = report.output;
+  const decisionSkills = classifyDecisionSkills(state);
+  const levers = findRecommendationLevers(output);
+  const framing = buildStrategicFraming(state, output);
+  const { dict } = useLocale();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabValue>("overview");
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [briefOpen, setBriefOpen] = useState(false);
   const [exported, setExported] = useState(false);
   const [liveMessage, setLiveMessage] = useState("");
   const { registerTab, handleTabKeyDown } = useRovingTabs(TABS.length);
@@ -108,7 +117,8 @@ export function ResultPanel({
         </div>
         <h2 ref={headingRef} tabIndex={-1} className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-nova-ink outline-none sm:text-4xl">Your recommendation is ready</h2>
         <p className="mx-auto mt-4 max-w-xl text-xs leading-5 text-nova-ink-faint">
-          Illustrative alpha output based on curated mock data. No live market data was used
+          Scored deterministically against ClouDonna&apos;s curated platform intelligence, last
+          reviewed {output.recommendation.platform.lastReviewedDate}
           {report.fallback.status === "ok"
             ? ", and the AI Insights tab below is an AI-enriched narrative that did not affect any score"
             : ", no AI model was called for this result"}
@@ -147,13 +157,15 @@ export function ResultPanel({
           key={activeTab}
           className="motion-safe:animate-in motion-safe:fade-in duration-panel ease-nova-settle p-6 sm:p-8"
         >
-          {activeTab === "overview" && <OverviewTab output={output} />}
+          {activeTab === "overview" && (
+            <OverviewTab output={output} decisionSkills={decisionSkills} levers={levers} framing={framing} industry={state.company.industry} />
+          )}
           {activeTab === "intelligence" && <IntelligenceTab report={report} />}
           {activeTab === "alternatives" && <AlternativesTab output={output} />}
           {activeTab === "risks" && <RisksOpportunitiesTab output={output} />}
           {activeTab === "roadmap" && <RoadmapTab output={output} />}
-          {activeTab === "architecture" && <ArchitectureTab />}
-          {activeTab === "tco" && <TcoTab />}
+          {activeTab === "architecture" && <ArchitectureTab output={output} />}
+          {activeTab === "tco" && <TcoTab output={output} />}
         </div>
 
         <div className="border-t border-titanium px-6 py-5 sm:px-8">
@@ -170,6 +182,15 @@ export function ResultPanel({
             >
               {exported ? <Check size={16} /> : <Download size={16} />}
               {exported ? "Downloaded" : "Export report"}
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setBriefOpen(true)}
+              className="h-11 border-titanium bg-carbon-2 text-nova-ink hover:border-titanium-strong"
+            >
+              <FileText size={16} />
+              {dict.executiveBrief.openLabel}
             </Button>
 
             <button
@@ -190,6 +211,8 @@ export function ResultPanel({
       {isSignedIn && saveDialogOpen && (
         <SaveDecisionDialog onClose={() => setSaveDialogOpen(false)} wizardState={state} report={report} />
       )}
+
+      {briefOpen && <ExecutiveBrief output={output} onClose={() => setBriefOpen(false)} />}
     </div>
   );
 }

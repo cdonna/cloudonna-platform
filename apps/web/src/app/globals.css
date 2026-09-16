@@ -114,6 +114,25 @@
   --color-nova-success: #10b981;
   --color-nova-warning: #f59e0b;
 
+  /* Sunset — a second, warm ambient light, layered against the Aurora
+     violet/blue glow rather than replacing it. Reserved for the same
+     "rare, deliberate moment" role Aurora already has: a hero backdrop,
+     a signature CTA, never a surface fill or a body-text color. Named
+     for what it evokes (a restrained coral/amber warmth at dusk), not
+     an arbitrary hex. */
+  --color-sunset-coral: #fb7660;
+  --color-sunset-orange: #f97c3c;
+  --color-sunset-amber: #f5a35c;
+  /* The full Miami/Vice City accent range, deliberately capped at these
+     six — coral, orange and amber (warm) plus violet, deep purple and
+     electric cyan/blue (cool) — cycled through small, repeated accents
+     (icons, active states, glows) rather than each surface reaching for
+     a new color. Never a surface fill, never body text. */
+  --color-electric-blue: #3b82f6;
+  --color-electric-cyan: #22d3ee;
+  --color-deep-purple: #5b21b6;
+  --color-neon-pink: #f0599c;
+
   /* Elevation — glow shadows, reserved for rare, deliberate moments,
      never a default card treatment. */
   --shadow-nova-resting: 0 1px 2px rgb(0 0 0 / 0.4);
@@ -278,5 +297,30 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Standard "print only this element" technique — used by
+   ExecutiveBrief.tsx and ArchitectureDecisionPrint.tsx. Everything is
+   hidden, then the print target and its descendants are made visible
+   again and repositioned to the page origin, so it paginates correctly
+   regardless of where it actually sits in the DOM (no portal needed,
+   consistent with this codebase's existing no-portal modal pattern —
+   see SaveDecisionDialog.tsx). .no-print hides on-screen-only chrome
+   (buttons) that shouldn't appear on the printed page. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-target,
+  .print-target * {
+    visibility: visible;
+  }
+  .print-target {
+    position: absolute;
+    inset: 0;
+  }
+  .no-print {
+    display: none !important;
   }
 }

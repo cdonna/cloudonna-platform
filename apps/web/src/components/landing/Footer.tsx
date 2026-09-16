@@ -10,7 +10,7 @@ import type { Dictionary } from "@/i18n/dictionary";
  * even when this Footer is rendered with a non-English locale (it
  * never is today, since /discovery only ever calls <Footer /> with no
  * props, but this keeps the helper correct if that changes). */
-const LOCALIZED_HREFS = new Set(["/donna-ai", "/independence", "/for-vendors", "/for-partners", "/early-access", "/contact", "/privacy", "/imprint", "/terms"]);
+const LOCALIZED_HREFS = new Set(["/donna-ai", "/independence", "/trust", "/for-vendors", "/for-partners", "/early-access", "/contact", "/privacy", "/imprint", "/terms"]);
 function localeHref(locale: Locale, href: string): string {
   if (href === "/discovery") return href;
   if (href === "/") return `/${locale}`;
@@ -31,6 +31,7 @@ export default function Footer({ dict = en, locale = DEFAULT_LOCALE }: { dict?: 
     { label: dict.nav.links.discovery, href: "/discovery" },
     { label: dict.nav.links.donnaAi, href: "/donna-ai" },
     { label: dict.nav.links.independence, href: "/independence" },
+    { label: dict.nav.links.trust, href: "/trust" },
   ];
   const audienceLinks = [
     { label: dict.nav.links.forVendors, href: "/for-vendors" },
@@ -70,11 +71,8 @@ export default function Footer({ dict = en, locale = DEFAULT_LOCALE }: { dict?: 
           <FooterColumn title={dict.footer.legalHeading} links={legalLinks} locale={locale} />
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-titanium pt-8 text-sm text-nova-ink-faint sm:flex-row">
+        <div className="mt-12 border-t border-titanium pt-8 text-center text-sm text-nova-ink-faint">
           <span>{interpolate(dict.footer.copyright, { year: new Date().getFullYear() })}</span>
-          <span className="rounded-full border border-titanium bg-carbon px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong">
-            {dict.footer.badge}
-          </span>
         </div>
       </div>
     </footer>

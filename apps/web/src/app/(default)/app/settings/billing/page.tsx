@@ -160,7 +160,7 @@ export default async function BillingSettingsPage() {
       </div>
 
       <p className="mt-6 text-xs text-nova-ink-faint">
-        ClouDonna is in Public Alpha. Subscription plans and pricing have not launched yet — every organization currently has full
+        Subscription plans and pricing have not launched yet. Every organization currently has full
         Founding Tester access at no cost, with no payment method required.
       </p>
     </div>

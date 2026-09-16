@@ -5,8 +5,12 @@ const ICONS = [ScrollText, Fingerprint, Lock];
 
 export default function EnterpriseIntelligence({ dict }: { dict: Dictionary }) {
   return (
-    <section id="enterprise" className="scroll-mt-8 bg-void px-6 py-28">
-      <div className="mx-auto max-w-6xl">
+    <section id="enterprise" className="relative scroll-mt-8 overflow-hidden bg-void px-6 py-28">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden motion-safe:animate-aurora-drift">
+        <div className="absolute top-[-8rem] left-1/2 h-[30rem] w-[40rem] -translate-x-1/2 rounded-full bg-electric-cyan/10 blur-[150px]" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl">
         <div className="mx-auto max-w-2xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">
             {dict.enterpriseIntelligence.badge}

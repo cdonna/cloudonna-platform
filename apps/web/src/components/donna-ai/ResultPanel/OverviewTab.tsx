@@ -1,23 +1,60 @@
 import { AlertTriangle, Check, Scale } from "lucide-react";
+import { DECISION_SKILL_CATEGORIES, type DecisionSkillCategoryId } from "@/components/decision-skills/catalog";
 import { localizedDimensionLabel } from "@/i18n/dimension-labels";
 import { interpolate } from "@/i18n/interpolate";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ScoreRing, SectionLabel } from "../shared";
-import type { DecisionOutput } from "../types";
+import type { RecommendationLever, StrategicFraming } from "../decision-insights";
+import type { DecisionOutput, Industry } from "../types";
+import { ExecutiveLens } from "./ExecutiveLens";
 import { assessResultCredibility } from "./result-credibility";
 
-export function OverviewTab({ output }: { output: DecisionOutput }) {
+export function OverviewTab({
+  output,
+  decisionSkills = [],
+  levers = [],
+  framing,
+  industry = null,
+}: {
+  output: DecisionOutput;
+  /** Optional: the live result flow always passes this (see
+   * ResultPanel.tsx). Saved/historical decision views don't have a
+   * live WizardState to classify from, so they render without pills
+   * rather than recomputing one from persisted data — a deliberate
+   * scope line for this pass, not an oversight. */
+  decisionSkills?: DecisionSkillCategoryId[];
+  /** Optional for the same reason as decisionSkills — both are only
+   * ever passed by the live result flow (ResultPanel.tsx). */
+  levers?: RecommendationLever[];
+  framing?: StrategicFraming;
+  /** Same reason as decisionSkills — reused straight from
+   * state.company.industry, not a new input. */
+  industry?: Industry | null;
+}) {
   const { dict, locale } = useLocale();
   const allRanked = [output.recommendation, ...output.alternatives];
   const topScore = allRanked[0]?.overallScore ?? 1;
   const { scoreGap, isNarrowMargin, decisionHinges } = assessResultCredibility(output);
   const r = dict.resultOverview;
+  const skillLabels = decisionSkills
+    .map((id) => DECISION_SKILL_CATEGORIES.find((category) => category.id === id)?.label)
+    .filter((label): label is string => Boolean(label));
 
   return (
     <div>
-      <span className="inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon-2 px-4 py-1.5 text-xs font-semibold text-nova-accent-strong">
-        {r.previewBadge}
-      </span>
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon-2 px-4 py-1.5 text-xs font-semibold text-nova-accent-strong">
+          {r.previewBadge}
+        </span>
+        {skillLabels.map((label) => (
+          <span
+            key={label}
+            className="inline-flex items-center rounded-full border border-titanium bg-carbon px-3 py-1.5 text-xs font-medium text-nova-ink-muted"
+          >
+            {label}
+          </span>
+        ))}
+      </div>
 
       {/* 1. Recommendation, 2. how close it is, 3. confidence — the
           three things a reader needs in the first ten seconds, before
@@ -129,6 +166,62 @@ export function OverviewTab({ output }: { output: DecisionOutput }) {
           )}
         </div>
       </div>
+
+      <div className="mt-6">
+        <ExecutiveLens output={output} />
+      </div>
+
+      {/* "What would change this recommendation" — pure arithmetic on
+          the weighted dimension scores already computed above, never a
+          new evidence source. See decision-insights.ts. */}
+      <div className="mt-6 rounded-2xl border border-titanium p-5">
+        <h4 className="font-semibold text-nova-ink">{r.whatWouldChangeHeading}</h4>
+        <div className="mt-4 space-y-3">
+          {levers.length > 0 ? (
+            levers.map((lever) => (
+              <p key={`${lever.platformName}-${lever.dimensionKey}`} className="text-sm leading-6 text-nova-ink-muted">
+                {interpolate(r.leverBody, {
+                  platform: lever.platformName,
+                  dimension: localizedDimensionLabel(lever.dimensionKey, lever.dimensionLabel, locale),
+                  points: lever.pointsNeeded,
+                })}
+              </p>
+            ))
+          ) : (
+            <p className="text-sm leading-6 text-nova-ink-faint">{r.noLeversBody}</p>
+          )}
+        </div>
+      </div>
+
+      {framing && (
+        <div className="mt-6 grid gap-5 lg:grid-cols-2">
+          <div className="rounded-2xl border border-titanium p-5">
+            <h4 className="font-semibold text-nova-ink">{r.costOfDelayHeading}</h4>
+            <p className="mt-3 text-sm leading-6 text-nova-ink-muted">
+              {interpolate(framing.timelineIsAggressive ? r.costOfDelayAggressive : r.costOfDelayStandard, {
+                platform: output.recommendation.platform.productName,
+              })}
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-titanium p-5">
+            <h4 className="font-semibold text-nova-ink">{r.optionValueHeading}</h4>
+            <p className="mt-3 text-sm leading-6 text-nova-ink-muted">
+              {interpolate(
+                framing.optionValueBand === "low" ? r.optionValueLow : framing.optionValueBand === "medium" ? r.optionValueMedium : r.optionValueHigh,
+                { platform: output.recommendation.platform.productName },
+              )}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {industry && (
+        <div className="mt-6 rounded-2xl border border-dashed border-titanium bg-carbon-2 p-5">
+          <SectionLabel>{r.industryContextHeading}</SectionLabel>
+          <p className="mt-2 text-sm leading-6 text-nova-ink-muted">{r.industryNotes[industry]}</p>
+        </div>
+      )}
 
       {/* 7. Evidence — the full score breakdown, positioned as
           supporting detail underneath the conclusion, not as the

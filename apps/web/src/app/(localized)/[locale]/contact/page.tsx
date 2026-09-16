@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Building2, HandshakeIcon, Rocket, Sparkles, Store } from "lucide-react";
@@ -14,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isSupportedLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  const title = `${dict.seo.contact.title} — ClouDonna`;
+  const title = `${dict.seo.contact.title}: ClouDonna`;
   const description = dict.seo.contact.description;
   return {
     title,
@@ -61,20 +60,6 @@ export default async function ContactPage({
   return (
     <div className="min-h-dvh bg-void">
       <ContactViewedTracker />
-
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
-        <Link href={`/${locale}`} className="flex items-center gap-2.5">
-          <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={36} height={36} className="brand-mark h-9 w-9 object-contain" />
-          <span className="text-lg font-semibold tracking-tight text-nova-ink">
-            Clou<span className="text-nova-accent-strong">Donna</span>
-          </span>
-        </Link>
-
-        <Link href={`/${locale}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition duration-200 hover:text-nova-ink">
-          <ArrowLeft size={15} />
-          {dict.common.backToHome}
-        </Link>
-      </div>
 
       {selectedType ? (
         <>

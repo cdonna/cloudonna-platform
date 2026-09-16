@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/components/landing/Footer";
+import { GlobalNav } from "@/components/layout/GlobalNav";
 import {
-  ArrowLeft,
   ArrowRight,
   ClipboardList,
   Compass,
@@ -19,9 +18,9 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Discovery — How ClouDonna Reaches a Decision · ClouDonna",
+  title: "Discovery: How ClouDonna Reaches a Decision · ClouDonna",
   description:
-    "How ClouDonna moves from a business goal to an evidence-based, vendor-neutral technology recommendation — step by step.",
+    "How ClouDonna moves from a business goal to an evidence-based, vendor-neutral technology recommendation.",
   alternates: { canonical: "/discovery" },
 };
 
@@ -29,7 +28,7 @@ const steps = [
   {
     icon: Target,
     label: "Business Goal",
-    body: "Discovery starts with what you're actually trying to achieve — not a product category. A goal like \"reduce time to close the books\" points to a different answer than \"unify data across a merger.\"",
+    body: "Discovery starts with what you're actually trying to achieve, not a product category. A goal like \"reduce time to close the books\" points to a different answer than \"unify data across a merger.\"",
   },
   {
     icon: Landmark,
@@ -39,7 +38,7 @@ const steps = [
   {
     icon: ListChecks,
     label: "Required Capabilities",
-    body: "The goal and context together imply a set of capabilities that have to exist — governance, scalability, integration reach — before any product enters the conversation.",
+    body: "The goal and context together imply a set of capabilities that have to exist (governance, scalability, integration reach) before any product enters the conversation.",
   },
   {
     icon: ClipboardList,
@@ -54,12 +53,12 @@ const steps = [
   {
     icon: Compass,
     label: "Solution Approaches",
-    body: "Only now does Discovery move to categories of answer — buy vs. build, centralized vs. federated — evaluated on fit to what's above, not on brand recognition.",
+    body: "Only now does Discovery move to categories of answer, such as buy vs. build or centralized vs. federated, evaluated on fit to what's above, not on brand recognition.",
   },
   {
     icon: Search,
     label: "Technology Options",
-    body: "Specific platforms are scored against every dimension above using the Donna Score model — a documented, evidence-based method, not a black box.",
+    body: "Specific platforms are scored against every dimension above using the Donna Score model, a documented, evidence-based method, not a black box.",
   },
   {
     icon: ShieldCheck,
@@ -69,7 +68,7 @@ const steps = [
   {
     icon: Wrench,
     label: "Implementation Approach",
-    body: "How the solution actually gets delivered — in-house, staged rollout, phased migration — affects time to value as much as the technology choice does.",
+    body: "How the solution actually gets delivered (in-house, staged rollout, phased migration) affects time to value as much as the technology choice does.",
   },
   {
     icon: Users,
@@ -87,31 +86,13 @@ export default function DiscoveryPage() {
   return (
     // Not part of the localized route tree (see the localization
     // report's "KNOWN LIMITATIONS") — stays English-only. Renders its
-    // own Footer explicitly now that the root layout no longer renders
-    // one globally for every route (see src/app/layout.tsx).
+    // own GlobalNav and Footer explicitly (with default English props)
+    // now that the root layout no longer renders either globally for
+    // every route (see src/app/layout.tsx). showLanguageSwitcher is
+    // off — LanguageSwitcher calls useLocale(), which throws outside
+    // the LocaleProvider this page deliberately sits outside of.
     <div className="min-h-screen bg-void">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
-        <Link href="/" className="flex items-center gap-2.5">
-          <Image
-            src="/cloudonna-favicon-512.png"
-            alt="ClouDonna"
-            width={36}
-            height={36}
-            className="brand-mark h-9 w-9 object-contain"
-          />
-          <span className="text-lg font-semibold tracking-tight text-nova-ink">
-            Clou<span className="text-nova-accent-strong">Donna</span>
-          </span>
-        </Link>
-
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition hover:text-nova-accent-strong"
-        >
-          <ArrowLeft size={15} />
-          Back to home
-        </Link>
-      </div>
+      <GlobalNav showLanguageSwitcher={false} />
 
       <div className="mx-auto max-w-3xl px-6 pb-24 pt-14">
         <div className="inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
@@ -123,13 +104,13 @@ export default function DiscoveryPage() {
         </h1>
 
         <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
-          Every recommendation ClouDonna produces follows the same eleven-step
-          path, in the same order. No product is named until the reasoning
-          that leads to it has already been established.
+          Every recommendation ClouDonna produces follows the same reasoning,
+          in the same order. No product is named until the case for it has
+          already been established.
         </p>
 
         <div className="mt-14 space-y-8">
-          {steps.map((step, index) => {
+          {steps.map((step) => {
             const Icon = step.icon;
 
             return (
@@ -137,11 +118,8 @@ export default function DiscoveryPage() {
                 key={step.label}
                 className="flex gap-5 rounded-3xl border border-titanium bg-carbon p-6 shadow-sm"
               >
-                <div className="flex flex-none flex-col items-center gap-2">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-nova-accent text-xs font-semibold text-white">
-                    {index + 1}
-                  </span>
-                  <Icon size={18} className="text-nova-accent-strong" />
+                <div className="flex flex-none items-start">
+                  <Icon size={18} className="mt-0.5 text-nova-accent-strong" />
                 </div>
 
                 <div>

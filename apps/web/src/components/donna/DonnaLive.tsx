@@ -25,7 +25,10 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { DECISION_SKILL_CATEGORIES } from "@/components/decision-skills/catalog";
 import { deriveDemoRecommendation, type DemoDecisionResult } from "./demo-decision-engine";
+
+const DECISION_SKILL_LABELS = Object.fromEntries(DECISION_SKILL_CATEGORIES.map((category) => [category.id, category.label]));
 
 const exampleQuestions = [
   "We use SAP S/4HANA, BW 7.5 and Azure. Which modern data platform fits us?",
@@ -53,7 +56,7 @@ function buildReportText(question: string, recommendation: DemoDecisionResult) {
   const { reasoningChain, primary, alternatives, rationale, risks, confidenceExplanation } = recommendation;
 
   const lines = [
-    "ClouDonna — Donna AI Recommendation (Public Alpha preview)",
+    "ClouDonna: Donna AI Recommendation",
     "",
     "Requirement",
     `"${question}"`,
@@ -64,7 +67,7 @@ function buildReportText(question: string, recommendation: DemoDecisionResult) {
     `Solution pattern: ${reasoningChain.solutionPattern}`,
     `Technology pattern: ${reasoningChain.technologyPattern}`,
     "",
-    `Recommendation: ${primary.name} — ${primary.score}% illustrative fit`,
+    `Recommendation: ${primary.name} (${primary.score}% illustrative fit)`,
     rationale,
     confidenceExplanation,
     "",
@@ -72,9 +75,9 @@ function buildReportText(question: string, recommendation: DemoDecisionResult) {
     ...risks.map((risk) => `- ${risk}`),
     "",
     "Alternatives considered",
-    ...alternatives.map((alternative) => `- ${alternative.name} — ${alternative.score}%`),
+    ...alternatives.map((alternative) => `- ${alternative.name} (${alternative.score}%)`),
     "",
-    "This is illustrative demo output from the ClouDonna Public Alpha, derived deterministically from your input using curated mock data — not live analysis, not real AI, and not a certified recommendation.",
+    "This is a public preview of the ClouDonna Donna Score model, derived deterministically from your input using curated platform intelligence. Not live market data, and not a certified recommendation.",
   ];
 
   return lines.join("\n");
@@ -98,8 +101,8 @@ function downloadReport(question: string, recommendation: DemoDecisionResult) {
   URL.revokeObjectURL(url);
 }
 
-export default function DonnaLive() {
-  const [question, setQuestion] = useState("");
+export default function DonnaLive({ initialQuestion = "" }: { initialQuestion?: string }) {
+  const [question, setQuestion] = useState(initialQuestion);
   const [submittedQuestion, setSubmittedQuestion] = useState("");
   const [status, setStatus] = useState<
     "idle" | "analysing" | "answering" | "complete"
@@ -259,7 +262,7 @@ export default function DonnaLive() {
 
           <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
             Describe your landscape and what you&apos;re trying to do. Donna compares real alternatives against it and builds a
-            recommendation — with the reasoning attached.
+            recommendation, with the reasoning attached.
           </p>
 
           <Link
@@ -543,7 +546,7 @@ function EmptyDonnaState() {
         </h3>
 
         <p className="mt-4 text-sm leading-7 text-nova-ink-muted">
-          The full picture — architecture, cost, risk and fit.
+          The full picture: architecture, cost, risk and fit.
         </p>
 
         <div className="mt-8 grid grid-cols-2 gap-3 text-left">
@@ -574,6 +577,16 @@ function EmptyDonnaState() {
   );
 }
 
+/**
+ * One calm moment, not a visible pipeline. Previously rendered all five
+ * analysisSteps at once as a numbered, checkmarked checklist — reading
+ * as an exposed internal processing sequence rather than "Donna is
+ * thinking." Now shows a single caption that fades between steps, plus
+ * a broad progress bar — communicates ongoing work without narrating
+ * the system's internal stages to a visitor who hasn't asked for that
+ * detail. Same pacing (currentStep from the parent's timer), same
+ * analysisSteps copy, just not all visible at once.
+ */
 function AnalysingState({
   question,
   currentStep,
@@ -581,74 +594,40 @@ function AnalysingState({
   question: string;
   currentStep: number;
 }) {
+  const percent = Math.round(((currentStep + 1) / analysisSteps.length) * 100);
+
   return (
     <div className="flex min-h-[38rem] flex-col justify-center p-8 sm:p-12">
-      <div className="mx-auto w-full max-w-xl">
-        <div className="flex items-center gap-4">
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-nova-accent text-white">
-            <Bot size={25} />
-            <span className="absolute inset-0 rounded-2xl border border-nova-accent-strong motion-safe:animate-nova-breathe" />
-          </div>
-
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
-              Donna is thinking
-            </div>
-            <div className="mt-1 font-semibold text-nova-ink">
-              Analysing your technology decision
-            </div>
-          </div>
+      <div className="mx-auto w-full max-w-xl text-center">
+        <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-nova-accent text-white">
+          <Bot size={25} />
+          <span className="absolute inset-0 rounded-2xl border border-nova-accent-strong motion-safe:animate-nova-breathe" />
         </div>
 
-        <div className="mt-8 rounded-2xl border border-titanium bg-carbon-2 p-5">
-          <p className="text-sm leading-6 text-nova-ink-muted">
-            “{question}”
-          </p>
+        <div className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
+          Donna is thinking
         </div>
 
-        <div className="mt-8 space-y-4">
-          {analysisSteps.map((step, index) => {
-            const completed = index < currentStep;
-            const active = index === currentStep;
+        <div className="mt-8 rounded-2xl border border-titanium bg-carbon-2 p-5 text-left">
+          <p className="text-sm leading-6 text-nova-ink-muted">“{question}”</p>
+        </div>
 
-            return (
-              <div
-                key={step}
-                className={`flex items-center gap-4 rounded-xl border px-4 py-4 transition duration-panel ${
-                  active
-                    ? "border-nova-accent/40 bg-nova-accent/10"
-                    : completed
-                      ? "border-nova-success/25 bg-nova-success/10"
-                      : "border-titanium bg-carbon opacity-45"
-                }`}
-              >
-                <div
-                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                    completed
-                      ? "bg-nova-success text-white"
-                      : active
-                        ? "bg-nova-accent text-white"
-                        : "bg-carbon-2 text-nova-ink-faint"
-                  }`}
-                >
-                  {completed ? (
-                    <Check size={16} />
-                  ) : active ? (
-                    <LoaderCircle
-                      size={16}
-                      className="animate-spin"
-                    />
-                  ) : (
-                    <span className="text-xs">{index + 1}</span>
-                  )}
-                </div>
+        <p
+          key={currentStep}
+          className="mt-8 min-h-6 text-sm font-medium text-nova-ink-muted motion-safe:animate-in motion-safe:fade-in duration-panel ease-nova-settle"
+        >
+          {analysisSteps[currentStep]}
+        </p>
 
-                <span className="text-sm font-medium text-nova-ink-muted">
-                  {step}
-                </span>
-              </div>
-            );
-          })}
+        <div className="mt-4 h-1 overflow-hidden rounded-full bg-carbon-2">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-nova-accent to-sunset-coral transition-[width] duration-500 ease-nova-settle"
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+
+        <div role="status" aria-live="polite" className="sr-only">
+          {analysisSteps[currentStep]}
         </div>
       </div>
     </div>
@@ -722,6 +701,19 @@ function RecommendationView({
           <h3 className="mt-2 text-3xl font-semibold tracking-tight text-nova-ink">
             {recommendation.primary.name}
           </h3>
+
+          {complete && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {recommendation.decisionSkills.map((id) => (
+                <span
+                  key={id}
+                  className="rounded-full border border-titanium bg-carbon px-2.5 py-1 text-[11px] font-medium text-nova-ink-faint"
+                >
+                  {DECISION_SKILL_LABELS[id]}
+                </span>
+              ))}
+            </div>
+          )}
 
           <p className="mt-3 max-w-2xl text-sm leading-7 text-nova-ink-muted">
             {typedSummary}
@@ -971,77 +963,37 @@ function ArchitectureConnection() {
 }
 
 function TcoView({ recommendation }: { recommendation: DemoDecisionResult }) {
-  const { score } = recommendation.primary;
+  const { primary } = recommendation;
 
-  // Deterministic, not fabricated-precise: derived from the same score
-  // shown on the Recommendation tab so the two tabs never contradict each
-  // other, scaled within a clearly illustrative CHF 1.6M–2.5M band.
-  const totalCost = Math.round((2_500_000 - (score - 55) * 15_000) / 10_000) * 10_000;
-  const belowReference = Math.max(0, Math.min(30, score - 55));
-  const confidenceLabel = score >= 80 ? "Higher confidence" : score >= 65 ? "Medium confidence" : "Lower confidence";
-
-  const costs = [
-    ["Subscription", Math.round((totalCost * 0.39) / 1000) * 1000, 39],
-    ["Implementation", Math.round((totalCost * 0.26) / 1000) * 1000, 26],
-    ["Infrastructure", Math.round((totalCost * 0.17) / 1000) * 1000, 17],
-    ["Operations", Math.round((totalCost * 0.18) / 1000) * 1000, 18],
+  // No fabricated dollar figure. This homepage demo has no real cost
+  // data for a visitor's landscape, so it names what a real Decision
+  // Sprint models instead of inventing a number to fill the space.
+  const costDimensions = [
+    ["Subscription", "Licensing and platform fees"],
+    ["Implementation", "Delivery, integration and migration"],
+    ["Infrastructure", "Compute, storage and networking"],
+    ["Operations", "Run, support and continuous optimization"],
   ] as const;
 
   return (
     <div>
       <div className="text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
-        Three-year cost model
+        Total cost of ownership
       </div>
 
-      <div className="mt-3 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-        <div>
-          <div className="text-4xl font-semibold text-nova-ink">
-            CHF {(totalCost / 1_000_000).toFixed(1)}M
-          </div>
-          <div className="mt-2 text-sm text-nova-success">
-            Illustrative estimate, {belowReference}% below the reference scenario
-          </div>
-        </div>
+      <h3 className="mt-2 text-2xl font-semibold text-nova-ink">What a real model covers</h3>
 
-        <div className="rounded-xl border border-nova-accent/30 bg-nova-accent/10 px-4 py-3 text-sm font-medium text-nova-accent-strong">
-          {confidenceLabel}
-        </div>
-      </div>
+      <p className="mt-3 max-w-xl text-sm leading-6 text-nova-ink-muted">
+        A Decision Sprint builds a three-year cost model for {primary.name} from your actual
+        licensing, delivery plan and infrastructure. This preview does not have your numbers, so
+        it will not invent one.
+      </p>
 
-      <div className="mt-8 space-y-5">
-        {costs.map(([label, amount, share]) => (
-          <div key={label}>
-            <div className="mb-2 flex items-center justify-between text-sm">
-              <span className="text-nova-ink-muted">{label}</span>
-              <span className="font-semibold text-nova-ink">
-                CHF {amount.toLocaleString("de-CH")}
-              </span>
-            </div>
-
-            <div className="h-3 overflow-hidden rounded-full bg-carbon-2">
-              <div
-                className="h-full rounded-full bg-nova-accent"
-                style={{ width: `${share}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
-        {[
-          ["Time to value", "9–15 months"],
-          ["Implementation risk", "Medium"],
-          ["Expected ROI", "24–36 months"],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="rounded-2xl border border-titanium bg-carbon-2 p-5"
-          >
-            <div className="text-xs text-nova-ink-faint">{label}</div>
-            <div className="mt-2 font-semibold text-nova-ink">
-              {value}
-            </div>
+      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        {costDimensions.map(([label, body]) => (
+          <div key={label} className="rounded-2xl border border-titanium bg-carbon-2 p-5">
+            <div className="text-sm font-semibold text-nova-ink">{label}</div>
+            <div className="mt-1.5 text-xs leading-5 text-nova-ink-faint">{body}</div>
           </div>
         ))}
       </div>

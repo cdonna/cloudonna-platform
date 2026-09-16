@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
+import { GlobalNav } from "@/components/layout/GlobalNav";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -28,12 +28,16 @@ export const metadata: Metadata = {
 export default function GlobalNotFound() {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col items-center justify-center bg-obsidian px-6 text-center text-nova-ink">
-        <p className="text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">404</p>
-        <h1 className="mt-3 text-2xl font-semibold">Page not found</h1>
-        <Link href="/" className="mt-6 text-sm font-medium text-nova-accent-strong hover:underline">
-          Back to home
-        </Link>
+      <body className="flex min-h-full flex-col bg-obsidian text-nova-ink">
+        {/* No locale/dict context exists this far outside the route
+            tree, so GlobalNav uses its own English defaults — same
+            pattern as /discovery. Even the fallback 404 stays part of
+            one product, not an isolated page. */}
+        <GlobalNav showLanguageSwitcher={false} />
+        <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+          <p className="text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">404</p>
+          <h1 className="mt-3 text-2xl font-semibold">Page not found</h1>
+        </div>
       </body>
     </html>
   );

@@ -163,7 +163,7 @@ function pickRisks(state: WizardState): string[] {
   const candidates = [
     state.constraints.budget ? BUDGET_RISK_TEXT[state.constraints.budget] : null,
     state.constraints.timeline === "aggressive"
-      ? "An aggressive timeline increases delivery risk — a phased rollout is worth considering."
+      ? "An aggressive timeline increases delivery risk. A phased rollout is worth considering."
       : null,
     state.constraints.internalSkills === "limited"
       ? "Implementation will likely require external expertise given limited internal capacity."
@@ -203,7 +203,7 @@ function pickAssumptions(state: WizardState): string[] {
   for (const step of stepsWithNotes) {
     if (step.note.trim().length === 0) {
       assumptions.push(
-        `No additional detail was provided for ${step.label} — assumed the selected options fully describe this area.`,
+        `No additional detail was provided for ${step.label}. Assumed the selected options fully describe this area.`,
       );
     }
   }
@@ -303,7 +303,7 @@ function buildExecutiveSummary(
   const topReason = architectureDimension?.positiveEvidence[0];
 
   if (!topReason) {
-    return `For ${sizePhrase}, none of your selected priorities strongly differentiated between platforms, so ${recommendation.platform.productName} is shown as a starting point (overall score ${recommendation.overallScore}%). ${alternativesPhrase} and scored similarly — add more detail in Landscape, Goals or Constraints for a sharper recommendation.`;
+    return `For ${sizePhrase}, none of your selected priorities strongly differentiated between platforms, so ${recommendation.platform.productName} is shown as a starting point (overall score ${recommendation.overallScore}%). ${alternativesPhrase} and scored similarly. Add more detail in Landscape, Goals or Constraints for a sharper recommendation.`;
   }
 
   return `For ${sizePhrase}, ${recommendation.platform.productName} is the strongest fit (overall score ${recommendation.overallScore}%): ${topReason.charAt(0).toLowerCase()}${topReason.slice(1)} ${alternativesPhrase} and scored lower on your stated priorities.`;
@@ -352,7 +352,7 @@ function labelList<T extends string>(options: Array<{ value: T; label: string }>
 
 export function buildReportText(state: WizardState, output: DecisionOutput): string {
   const lines = [
-    "ClouDonna — Donna AI Recommendation (Public Alpha preview)",
+    "ClouDonna: Donna AI Recommendation",
     "",
     "Company profile",
     `Industry: ${optionLabel(INDUSTRY_OPTIONS, state.company.industry) ?? "—"}`,
@@ -379,9 +379,9 @@ export function buildReportText(state: WizardState, output: DecisionOutput): str
     "Executive summary",
     output.executiveSummary,
     "",
-    `Recommendation: ${output.recommendation.platform.productName} — Donna Score ${output.donnaScore}% · Confidence ${output.confidenceScore}%`,
+    `Recommendation: ${output.recommendation.platform.productName} (Donna Score ${output.donnaScore}% · Confidence ${output.confidenceScore}%)`,
     output.alternativeRecommendation
-      ? `Alternative recommendation: ${output.alternativeRecommendation.platform.productName} — ${output.alternativeRecommendation.overallScore}%`
+      ? `Alternative recommendation: ${output.alternativeRecommendation.platform.productName} (${output.alternativeRecommendation.overallScore}%)`
       : "",
     "",
     "Score breakdown",
@@ -394,7 +394,7 @@ export function buildReportText(state: WizardState, output: DecisionOutput): str
     ...output.concerns.map((e) => `- ${e.text}`),
     "",
     "Alternatives considered",
-    ...output.alternatives.map((alt) => `- ${alt.platform.productName} — ${alt.overallScore}%`),
+    ...output.alternatives.map((alt) => `- ${alt.platform.productName} (${alt.overallScore}%)`),
     "",
     "Risks to validate",
     ...output.risks.map((risk) => `- ${risk.text}`),
@@ -411,7 +411,7 @@ export function buildReportText(state: WizardState, output: DecisionOutput): str
     "Suggested workshops",
     ...output.workshops.map((workshop) => `- ${workshop.title}: ${workshop.description}`),
     "",
-    "This is illustrative alpha output based on curated mock data. No live market data was used, no AI model was called, and this assessment is not persisted.",
+    `This report reflects ClouDonna's deterministic Donna Score evaluation, scored against curated platform intelligence last reviewed ${output.recommendation.platform.lastReviewedDate}. Not live market pricing, and not a certified procurement recommendation. This assessment is only persisted if you explicitly save it.`,
   ];
 
   return lines.join("\n");

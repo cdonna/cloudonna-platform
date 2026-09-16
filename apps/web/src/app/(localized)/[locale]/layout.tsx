@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import Footer from "@/components/landing/Footer";
+import { GlobalNav } from "@/components/layout/GlobalNav";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { isSupportedLocale, SUPPORTED_LOCALES } from "@/i18n/locales";
@@ -62,6 +63,7 @@ export default async function LocaleRootLayout({
       <body className="flex min-h-full flex-col">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
         <LocaleProvider locale={locale} dict={dict}>
+          <GlobalNav dict={dict} locale={locale} />
           {children}
           <Footer dict={dict} locale={locale} />
         </LocaleProvider>

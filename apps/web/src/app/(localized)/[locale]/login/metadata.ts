@@ -18,7 +18,7 @@ export async function generateLoginMetadata({ params }: { params: Promise<{ loca
   const { locale } = await params;
   if (!isSupportedLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  const title = `${dict.login.h1} — ClouDonna`;
+  const title = `${dict.login.h1}: ClouDonna`;
   const description = dict.login.sub;
   return {
     title,

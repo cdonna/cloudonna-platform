@@ -14,6 +14,7 @@
  * If the full Donna AI experience (/donna-ai) ever needs this same logic,
  * it should use the real engine in components/donna-ai/, not this file.
  */
+import type { DecisionSkillCategoryId } from "@/components/decision-skills/catalog";
 
 export type DemoTrait =
   | "sap-native"
@@ -51,6 +52,11 @@ interface DemoProfile {
   /** How much each trait matters for this goal — drives vendor ranking. */
   traitWeights: Partial<Record<DemoTrait, number>>;
   risks: [string, string];
+  /** Which Decision Skill categories this profile represents — the same
+   * light labeling donna-ai/decision-skills.ts does for the real
+   * engine, kept here rather than shared since this demo's inputs
+   * (DemoProfile) and the real engine's (WizardState) don't overlap. */
+  decisionSkills: DecisionSkillCategoryId[];
 }
 
 const DEMO_PROFILES: DemoProfile[] = [
@@ -66,6 +72,7 @@ const DEMO_PROFILES: DemoProfile[] = [
       "Commercial model and capacity planning require validation",
       "Non-SAP workloads may need complementary platform services",
     ],
+    decisionSkills: ["technology-strategy", "transformation"],
   },
   {
     id: "multi-cloud",
@@ -79,6 +86,7 @@ const DEMO_PROFILES: DemoProfile[] = [
       "Consumption-based pricing needs active cost governance",
       "Cross-cloud egress costs require early architecture review",
     ],
+    decisionSkills: ["technology-strategy", "vendor"],
   },
   {
     id: "ai-lakehouse",
@@ -92,6 +100,7 @@ const DEMO_PROFILES: DemoProfile[] = [
       "ML governance and model lifecycle maturity should be assessed",
       "Skills investment needed for lakehouse-native tooling",
     ],
+    decisionSkills: ["ai-data", "technology-strategy"],
   },
   {
     id: "microsoft-stack",
@@ -105,6 +114,7 @@ const DEMO_PROFILES: DemoProfile[] = [
       "Capacity-based pricing needs workload sizing before commit",
       "Depth of non-Microsoft integrations should be validated",
     ],
+    decisionSkills: ["vendor", "technology-strategy"],
   },
   {
     id: "cost-reduction",
@@ -115,9 +125,10 @@ const DEMO_PROFILES: DemoProfile[] = [
     technologyPattern: "Elastic compute with workload isolation",
     traitWeights: { "cost-efficient": 3, "multi-cloud": 1 },
     risks: [
-      "Lowest list price is not always lowest total cost — model realistic usage",
+      "Lowest list price is not always lowest total cost. Model realistic usage",
       "Migration cost can offset short-term savings in year one",
     ],
+    decisionSkills: ["investment", "prioritization"],
   },
   {
     id: "governance",
@@ -131,6 +142,7 @@ const DEMO_PROFILES: DemoProfile[] = [
       "Governance tooling maturity varies by deployment region",
       "Policy rollout typically needs a dedicated stewardship track",
     ],
+    decisionSkills: ["risk", "ai-data"],
   },
 ];
 
@@ -159,9 +171,10 @@ const FALLBACK_PROFILE: DemoProfile = {
     "microsoft-aligned": 1,
   },
   risks: [
-    "No specific signal was detected in your input — this is a generic baseline, not a tailored fit",
+    "No specific signal was detected in your input. This is a generic baseline, not a tailored fit",
     "Describe your current systems and goals for a more specific illustrative result",
   ],
+  decisionSkills: ["technology-strategy"],
 };
 
 function selectProfile(input: string): { profile: DemoProfile; matchedTriggers: string[] } {
@@ -215,6 +228,7 @@ export interface DemoDecisionResult {
   rationale: string;
   risks: [string, string];
   confidenceExplanation: string;
+  decisionSkills: DecisionSkillCategoryId[];
 }
 
 /**
@@ -254,5 +268,6 @@ export function deriveDemoRecommendation(rawInput: string): DemoDecisionResult {
     rationale,
     risks: profile.risks,
     confidenceExplanation,
+    decisionSkills: profile.decisionSkills,
   };
 }

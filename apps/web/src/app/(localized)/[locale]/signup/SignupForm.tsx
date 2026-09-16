@@ -1,9 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { signUp, type AuthActionState } from "../../../auth/actions";
@@ -16,20 +15,7 @@ export function SignupForm({ locale }: { locale: string }) {
 
   return (
     <div className="mx-auto min-h-dvh max-w-md bg-void px-6 py-16">
-      <div className="flex items-center justify-between">
-        <Link href={`/${locale}`} className="flex items-center gap-2.5">
-          <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={36} height={36} className="brand-mark h-9 w-9 object-contain" />
-          <span className="text-lg font-semibold tracking-tight text-nova-ink">
-            Clou<span className="text-nova-accent-strong">Donna</span>
-          </span>
-        </Link>
-        <Link href={`/${locale}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition hover:text-nova-accent-strong">
-          <ArrowLeft size={15} />
-          {dict.common.backToHome}
-        </Link>
-      </div>
-
-      <div className="mt-12 overflow-hidden rounded-[1.75rem] border border-titanium bg-carbon/80 p-8 shadow-[0_30px_90px_-45px_rgba(79,70,229,0.35)] backdrop-blur-xl">
+      <div className="overflow-hidden rounded-[1.75rem] border border-titanium bg-carbon/80 p-8 shadow-[0_30px_90px_-45px_rgba(79,70,229,0.35)] backdrop-blur-xl">
         <h1 className="text-2xl font-semibold tracking-tight text-nova-ink">{dict.signup.h1}</h1>
         <p className="mt-2 text-sm leading-6 text-nova-ink-faint">{dict.signup.sub}</p>
 

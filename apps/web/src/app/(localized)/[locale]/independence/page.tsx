@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BadgeCheck, EyeOff, Scale, Users2 } from "lucide-react";
+import { BadgeCheck, EyeOff, Scale, Users2 } from "lucide-react";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
 import { localizedAlternates, localizedOpenGraph } from "@/i18n/seo";
@@ -11,7 +10,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isSupportedLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  const title = `${dict.independence.metaTitle} — ClouDonna`;
+  const title = `${dict.independence.metaTitle}: ClouDonna`;
   const description = dict.independence.metaDescription;
   return {
     title,
@@ -30,29 +29,6 @@ export default async function IndependencePage({ params }: { params: Promise<{ l
 
   return (
     <div className="min-h-dvh bg-void">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 pt-8">
-        <Link href={`/${locale}`} className="flex items-center gap-2.5">
-          <Image
-            src="/cloudonna-favicon-512.png"
-            alt="ClouDonna"
-            width={36}
-            height={36}
-            className="brand-mark h-9 w-9 object-contain"
-          />
-          <span className="text-lg font-semibold tracking-tight text-nova-ink">
-            Clou<span className="text-nova-accent-strong">Donna</span>
-          </span>
-        </Link>
-
-        <Link
-          href={`/${locale}`}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-muted transition hover:text-nova-accent-strong"
-        >
-          <ArrowLeft size={15} />
-          {dict.common.backToHome}
-        </Link>
-      </div>
-
       <div className="mx-auto max-w-3xl px-6 pb-24 pt-14">
         <div className="inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
           {dict.independence.badge}
