@@ -106,7 +106,7 @@ jobs:
         id: claude
         uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             You are implementing one founder-approved development task for
             ClouDonna. Before editing anything:
@@ -170,7 +170,7 @@ jobs:
         if: steps.gate1.outputs.all_passed != 'true'
         uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             The quality gate failed after your last change. Fix the
             regressions below without changing the task's scope or
