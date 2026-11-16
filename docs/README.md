@@ -31,8 +31,14 @@ Read in this order when picking up the platform architecture:
    Trino) alongside Supabase/Postgres, plus the enterprise ontology, the
    typed evidence model, Decision Memory replay, and the agent runtime.
    Nothing in that directory is deployed.
-5. [`adr/`](./adr/) — Architecture Decision Records: the six decisions
-   behind the Intelligence Fabric, each with its alternatives and its costs.
+5. [`adr/`](./adr/) — Architecture Decision Records: the nine decisions
+   behind the Intelligence Fabric and the Founder Agent, each with its
+   alternatives and its costs.
+6. [`founder-agent/`](./founder-agent/) — the private, mobile-first
+   `/founder` control plane for remote-controlled development: a real,
+   tested task lifecycle and GitHub integration, with the actual remote
+   dispatch currently unconfigured (no GitHub App installed, no token
+   set) — see `founder-agent/operations.md` for exactly what that takes.
 
 ## Design system
 

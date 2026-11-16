@@ -1,0 +1,281 @@
+# ClouDonna Founder Agent — remote task worker
+#
+# Triggered by GET /api/founder/tasks/[id]/dispatch (via
+# apps/web/src/lib/founder-agent/github-client.ts#dispatchWorkflow),
+# never by a human typing `gh workflow run` directly, and never on push
+# or pull_request — the only trigger is workflow_dispatch, matching the
+# brief's "ephemeral containers, one task per isolated workspace" model.
+#
+# STATUS: written to the spec documented in
+# docs/founder-agent/architecture.md and the official Claude Code
+# GitHub Action docs (https://code.claude.com/docs/en/github-actions),
+# but NOT YET INSTALLED OR RUN in this repository — no Claude GitHub
+# App is installed here, no ANTHROPIC_API_KEY secret exists, and no
+# FOUNDER_AGENT_GITHUB_TOKEN exists to ever trigger this workflow in
+# the first place. Committing this file is a prerequisite for the first
+# real remote task, not a claim that one has happened. See
+# docs/founder-agent/operations.md.
+#
+# What this job does, in order:
+#   1. Checks out `main`, creates (or resumes) the task's own
+#      `agent/<id>-<slug>` branch — never `main`.
+#   2. Runs anthropics/claude-code-action@v1 in automation mode with a
+#      prompt built from the task's title/description/constraints/
+#      acceptance criteria, scoped to the tools it actually needs.
+#   3. Runs the SAME quality gate this repository's own founder report
+#      requires (TypeScript, ESLint, Vitest, production build). If any
+#      gate fails, it runs exactly one repair pass and re-checks once —
+#      "the agent should attempt to repair regressions... if still
+#      failing, status = failed" — then lets the job fail for real if
+#      it is still red, which is what gives
+#      sync-task.ts's "run conclusion success ⇒ all four gates passed"
+#      assumption its honesty.
+#   4. Commits, pushes to the task branch (never main), and opens a
+#      pull request if one doesn't already exist.
+#   5. Uploads a structured `founder-agent-report` artifact for the
+#      Founder Control API to read on sync.
+#
+# This job never merges anything and never touches `main` directly —
+# merging is exclusively apps/web/src/lib/founder-agent/
+# handle-merge-task-request.ts, gated on an explicit founder approval.
+# A branch protection rule on `main` requiring a pull request (not
+# configured by this sprint — see security.md) is the second,
+# independent enforcement of the same rule.
+
+name: Founder Agent Task
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_id:
+        description: "founder_tasks.id"
+        required: true
+      branch_name:
+        description: "agent/<id>-<slug> — created fresh, or resumed if it already exists"
+        required: true
+      title:
+        required: true
+      description:
+        required: true
+      constraints:
+        required: false
+        default: ""
+      acceptance_criteria:
+        required: true
+      target_area:
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+  id-token: write
+  actions: read
+
+concurrency:
+  # One run per task at a time — a second dispatch for the same task
+  # (e.g. a double-tap on "Resume" in the mobile UI) queues rather than
+  # racing another run on the same branch.
+  group: founder-agent-task-${{ inputs.task_id }}
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Create or resume the task branch
+        run: |
+          set -euo pipefail
+          BRANCH="${{ inputs.branch_name }}"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            echo "Resuming existing branch $BRANCH"
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+          else
+            echo "Creating new branch $BRANCH from main"
+            git checkout -b "$BRANCH"
+          fi
+
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are implementing one founder-approved development task for
+            ClouDonna. Before editing anything:
+              1. Read CLAUDE.md / AGENTS.md at the repository root.
+              2. Read any architecture docs and ADRs under docs/ relevant
+                 to the target area below (docs/intelligence-fabric/,
+                 docs/adr/, docs/design/, docs/founder-agent/ as applicable).
+              3. Inspect the current implementation of the target area.
+              4. Write a short, concrete implementation plan before making
+                 changes.
+
+            Target area: ${{ inputs.target_area }}
+
+            Task: ${{ inputs.title }}
+
+            ${{ inputs.description }}
+
+            Constraints: ${{ inputs.constraints }}
+
+            Acceptance criteria (the task is not done until every one of
+            these is true): ${{ inputs.acceptance_criteria }}
+
+            Implement incrementally. Do not run `git commit`, `git push`,
+            or open a pull request yourself — a later step in this workflow
+            does that. Do not modify anything under .github/workflows/,
+            supabase production configuration, or any secret. Stay inside
+            apps/, packages/, docs/, and supabase/migrations/ (new
+            migrations only — never edit a migration that has already
+            been committed).
+          claude_args: |
+            --max-turns 40
+            --allowedTools "Edit,Read,Grep,Glob,Bash(npm run *),Bash(npx tsc*),Bash(npx eslint*),Bash(npx vitest*)"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Quality gate — attempt 1
+        id: gate1
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npx tsc --noEmit -p apps/web/tsconfig.json 2>&1 | tee typescript.log; TS=${PIPESTATUS[0]}
+          npm run lint --workspace apps/web 2>&1 | tee eslint.log; ESLINT=${PIPESTATUS[0]}
+          npx vitest run --root apps/web 2>&1 | tee vitest.log; VITEST=${PIPESTATUS[0]}
+          npm run build --workspace apps/web 2>&1 | tee build.log; BUILD=${PIPESTATUS[0]}
+          echo "typescript=$([ $TS -eq 0 ] && echo passed || echo failed)" >> "$GITHUB_OUTPUT"
+          echo "eslint=$([ $ESLINT -eq 0 ] && echo passed || echo failed)" >> "$GITHUB_OUTPUT"
+          echo "vitest=$([ $VITEST -eq 0 ] && echo passed || echo failed)" >> "$GITHUB_OUTPUT"
+          echo "build=$([ $BUILD -eq 0 ] && echo passed || echo failed)" >> "$GITHUB_OUTPUT"
+          if [ $TS -eq 0 ] && [ $ESLINT -eq 0 ] && [ $VITEST -eq 0 ] && [ $BUILD -eq 0 ]; then
+            echo "all_passed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "all_passed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # "The agent should attempt to repair regressions caused by its
+      # changes." One repair pass, with the actual failures attached —
+      # never a second blind attempt at the same prompt.
+      - name: Repair pass
+        id: repair
+        if: steps.gate1.outputs.all_passed != 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            The quality gate failed after your last change. Fix the
+            regressions below without changing the task's scope or
+            acceptance criteria. Do not commit, push, or open a PR.
+
+            TypeScript: ${{ steps.gate1.outputs.typescript }}
+            ESLint: ${{ steps.gate1.outputs.eslint }}
+            Vitest: ${{ steps.gate1.outputs.vitest }}
+            Build: ${{ steps.gate1.outputs.build }}
+
+            Logs are available in this workflow run as typescript.log,
+            eslint.log, vitest.log, and build.log.
+          claude_args: |
+            --max-turns 20
+            --allowedTools "Edit,Read,Grep,Glob,Bash(npm run *),Bash(npx tsc*),Bash(npx eslint*),Bash(npx vitest*)"
+
+      - name: Quality gate — final
+        id: gate_final
+        if: always()
+        run: |
+          set -o pipefail
+          if [ "${{ steps.gate1.outputs.all_passed }}" = "true" ]; then
+            echo "typescript=${{ steps.gate1.outputs.typescript }}" >> "$GITHUB_OUTPUT"
+            echo "eslint=${{ steps.gate1.outputs.eslint }}" >> "$GITHUB_OUTPUT"
+            echo "vitest=${{ steps.gate1.outputs.vitest }}" >> "$GITHUB_OUTPUT"
+            echo "build=${{ steps.gate1.outputs.build }}" >> "$GITHUB_OUTPUT"
+            echo "all_passed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          npx tsc --noEmit -p apps/web/tsconfig.json 2>&1 | tee typescript.log; TS=${PIPESTATUS[0]}
+          npm run lint --workspace apps/web 2>&1 | tee eslint.log; ESLINT=${PIPESTATUS[0]}
+          npx vitest run --root apps/web 2>&1 | tee vitest.log; VITEST=${PIPESTATUS[0]}
+          npm run build --workspace apps/web 2>&1 | tee build.log; BUILD=${PIPESTATUS[0]}
+          echo "typescript=$([ $TS -eq 0 ] && echo passed || echo failed)" >> "$GITHUB_OUTPUT"
+          echo "eslint=$([ $ESLINT -eq 0 ] && echo passed || echo failed)" >> "$GITHUB_OUTPUT"
+          echo "vitest=$([ $VITEST -eq 0 ] && echo passed || echo failed)" >> "$GITHUB_OUTPUT"
+          echo "build=$([ $BUILD -eq 0 ] && echo passed || echo failed)" >> "$GITHUB_OUTPUT"
+          if [ $TS -eq 0 ] && [ $ESLINT -eq 0 ] && [ $VITEST -eq 0 ] && [ $BUILD -eq 0 ]; then
+            echo "all_passed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "all_passed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push (never to main)
+        if: always()
+        run: |
+          set -euo pipefail
+          git config user.name "cloudonna-founder-agent[bot]"
+          git config user.email "founder-agent@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "agent: ${{ inputs.title }}
+
+          Task ${{ inputs.task_id }}. Automated commit from the Founder
+          Agent workflow — see docs/founder-agent/task-lifecycle.md."
+          fi
+          git push origin "${{ inputs.branch_name }}"
+
+      - name: Open pull request
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if ! gh pr view "${{ inputs.branch_name }}" --json number >/dev/null 2>&1; then
+            gh pr create \
+              --base main \
+              --head "${{ inputs.branch_name }}" \
+              --title "${{ inputs.title }}" \
+              --body "Task ${{ inputs.task_id }}. Opened by the Founder Agent workflow. Requires founder approval before merge — see /founder."
+          fi
+
+      - name: Write founder-agent-report
+        if: always()
+        run: |
+          cat > founder-agent-report.json <<EOF
+          {
+            "taskId": "${{ inputs.task_id }}",
+            "branchName": "${{ inputs.branch_name }}",
+            "qualityGate": {
+              "typescript": "${{ steps.gate_final.outputs.typescript }}",
+              "eslint": "${{ steps.gate_final.outputs.eslint }}",
+              "vitest": "${{ steps.gate_final.outputs.vitest }}",
+              "build": "${{ steps.gate_final.outputs.build }}"
+            },
+            "repairAttempted": ${{ steps.gate1.outputs.all_passed != 'true' }}
+          }
+          EOF
+
+      - name: Upload founder-agent-report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: founder-agent-report
+          path: |
+            founder-agent-report.json
+            typescript.log
+            eslint.log
+            vitest.log
+            build.log
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Fail the job if the quality gate did not pass
+        if: steps.gate_final.outputs.all_passed != 'true'
+        run: |
+          echo "Quality gate failed after one repair attempt. See founder-agent-report artifact."
+          exit 1

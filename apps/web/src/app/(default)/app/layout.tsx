@@ -56,6 +56,15 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             <Link href="/app/settings/billing" className="shrink-0 py-1 text-sm font-medium whitespace-nowrap text-nova-ink-muted transition duration-200 hover:text-nova-ink">
               Billing
             </Link>
+            {/* Visible to every signed-in user here, same as every other
+                link in this bar — /founder/layout.tsx is what actually
+                restricts it to platform staff (is_platform_staff()), via
+                the same RLS-backed RPC /app/inquiries uses. A non-staff
+                user who clicks this sees an explicit 403 notice, not a
+                broken link. */}
+            <Link href="/founder" className="shrink-0 py-1 text-sm font-medium whitespace-nowrap text-nova-ink-muted transition duration-200 hover:text-nova-ink">
+              Founder Control
+            </Link>
           </nav>
           <div className="shrink-0">
             <AccountMenu />
