@@ -54,30 +54,34 @@
 }
 
 /* ==========================================================================
-   ClouDonna Editorial System
+   ClouDonna Editorial System — Emerald & Gold
    --------------------------------------------------------------------------
-   Supersedes the earlier "Project NOVA — Deep Space" material system
-   (warm-black + Miami/aurora accent range: coral, amber, electric cyan,
-   neon pink, violet/blue aurora glows). That system is retired here, not
-   renamed: the public product's register is now warm off-white paper and
-   near-black ink, with ONE restrained accent family (deep plum / muted
-   violet) and no broad gradients, no ambient glow fields.
+   Supersedes the warm-neutral "deep plum" editorial palette with a
+   luxury-engineering register: deep emerald-black canvases, warm
+   off-white clarity pages, emerald as the everyday brand hue, and gold
+   held back for a short, deliberate list of high-value moments — a
+   primary CTA fill, a confidence/score indicator, a premium divider.
+   Gold is never the default accent for a link, a badge, or a border;
+   if gold is appearing on every element, that is a regression, not a
+   stronger brand.
 
    TWO REGISTERS, ONE PALETTE
    The editorial tokens below are *register-relative*: `bg-paper`,
    `text-ink`, `border-rule`, `text-accent` resolve against whichever
    register they sit inside. The default is the light register. Adding
-   `register-dark` to any ancestor flips every one of those tokens to the
-   dark values — so a dark section, or a dark product canvas inside a
-   light page, is one class, not a parallel set of components.
+   `register-dark` to any ancestor flips every one of those tokens to
+   the dark values — so a dark section, or a dark product canvas inside
+   a light page, is one class, not a parallel set of components.
 
    `--color-void / obsidian / carbon / carbon-2 / titanium / nova-*` are
-   kept (retuned to the same warm near-blacks as the dark register) because
-   the authenticated product and the Donna AI experience — ~200 files — are
-   built on them and legitimately stay on the dark register. They are the
-   dark register's *absolute* names; the editorial tokens are its
-   *relative* ones. Both resolve to the same values, so a page can mix a
-   light editorial frame with a dark product canvas and stay coherent.
+   kept (retuned to the new emerald-black neutrals) because the
+   authenticated product and the Donna AI experience — ~260 call sites
+   — are built on them and legitimately stay on the dark register. They
+   are the dark register's *absolute* names; the editorial tokens are
+   its *relative* ones. Both resolve to the same values, so a page can
+   mix a light editorial frame with a dark product canvas and stay
+   coherent. Every hex below was chosen against a computed WCAG
+   contrast ratio, not eyeballed — see the ratio noted next to each.
    ========================================================================== */
 
 @theme inline {
@@ -94,25 +98,44 @@
   --color-accent-2: var(--ed-accent-2);
   --color-accent-wash: var(--ed-accent-wash);
   --color-accent-on: var(--ed-accent-on);
-  /* The primary button: maximum-contrast solid against its own register. */
+  /* Gold — the brief's "precision accent only." Deliberately a second,
+     separate token from `accent`, never the thing a page reaches for
+     by default. Reserved for: the primary button fill (`solid`, below,
+     which already uses it), decision-confidence and score indicators,
+     a handful of premium dividers and badges. See
+     docs/design/05-color-system.md for the enforced list of where gold
+     is and is not allowed to appear. */
+  --color-gold: var(--ed-gold);
+  --color-gold-wash: var(--ed-gold-wash);
+  /* The primary button: a deliberate gold fill in both registers — the
+     one place "high-value CTA" from the brief is executed literally,
+     everywhere a PrimaryAction renders. Never swapped per-register:
+     gold reads correctly on both a warm paper page and an emerald-black
+     canvas, so there is no reason to vary it. */
   --color-solid: var(--ed-solid);
   --color-solid-on: var(--ed-solid-on);
 
   /* Signals. Register-relative because the same badge renders on a light
      editorial page and inside a dark product canvas. These encode meaning
      (a risk level, a confidence band), so they are deliberately exempt
-     from the one-accent-family rule — but they are muted, never neon. */
+     from the one-accent-family rule — but they are muted, never neon,
+     and deliberately distinct in hue from gold (amber-orange, not
+     amber-gold) so a caution badge is never mistaken for a premium one. */
   --color-sig-positive: var(--ed-sig-positive);
   --color-sig-caution: var(--ed-sig-caution);
   --color-sig-critical: var(--ed-sig-critical);
   --color-sig-neutral: var(--ed-sig-neutral);
-  /* Customer-supplied input. The one non-plum hue in the system, because
-     "you told us this" has to be distinguishable at a glance from "we
-     derived this" — see EvidenceTag.tsx. */
+  /* Customer-supplied input. The one non-emerald hue in the system,
+     because "you told us this" has to be distinguishable at a glance
+     from "we derived this" — see EvidenceTag.tsx. */
   --color-sig-input: var(--ed-sig-input);
 
   /* Editorial type scale. Few sizes, large jumps, tight tracking — the
-     hierarchy is carried by scale and whitespace, not by weight soup. */
+     hierarchy is carried by scale and whitespace, not by weight soup.
+     Unchanged from the previous system: Geist already reads as the
+     "Swiss precision, technical, executive, international" grotesk the
+     brief asks for — a typeface swap would be a cosmetic change with
+     no brief requirement behind it. */
   --text-display: clamp(2.75rem, 7.2vw, 5.75rem);
   --text-display--line-height: 0.95;
   --text-display--letter-spacing: -0.042em;
@@ -125,7 +148,7 @@
   --text-lede: clamp(1.0625rem, 1.5vw, 1.375rem);
   --text-lede--line-height: 1.6;
   --text-lede--letter-spacing: -0.012em;
-  /* The large section numerals (01–05). Mono, because the numeral is a
+  /* The large section numerals (01–07). Mono, because the numeral is a
      coordinate in the argument, not decoration. */
   --text-numeral: clamp(2.5rem, 6vw, 5rem);
   --text-numeral--line-height: 0.9;
@@ -137,133 +160,156 @@
 }
 
 :root {
-  /* ---- Light register (default): warm off-white paper, near-black ink -- */
-  --ed-paper: #faf8f5;
-  --ed-paper-2: #fffefc;
-  --ed-paper-3: #f1ece3;
-  --ed-ink: #141311;
-  --ed-ink-2: #4a4641; /* 8.8:1 on paper */
-  --ed-ink-3: #6f6a63; /* 5.1:1 on paper — the floor, not a default */
-  --ed-rule: rgba(20, 19, 17, 0.11);
-  --ed-rule-2: rgba(20, 19, 17, 0.24);
-  --ed-accent: #5a2a4a; /* deep plum — 10.6:1 on paper */
-  --ed-accent-2: #7d3c67;
-  --ed-accent-wash: rgba(90, 42, 74, 0.06);
-  --ed-accent-on: #fffefc;
-  --ed-solid: #141311;
-  --ed-solid-on: #faf8f5;
+  /* ---- Light register (default): off-white clarity, near-black ink ---- */
+  --ed-paper: #f5f7f4;
+  --ed-paper-2: #fbfcfa;
+  --ed-paper-3: #e9ece8;
+  --ed-ink: #07110e;
+  --ed-ink-2: #3f4a45; /* 8.6:1 on paper */
+  --ed-ink-3: #5b6660; /* 5.6:1 on paper — the floor, not a default */
+  --ed-rule: rgba(7, 17, 14, 0.11);
+  --ed-rule-2: rgba(7, 17, 14, 0.24);
+  --ed-accent: #075e4b; /* emerald — 7.2:1 on paper */
+  --ed-accent-2: #0b8b65;
+  --ed-accent-wash: rgba(7, 94, 75, 0.07);
+  --ed-accent-on: #fbfcfa;
+  /* Antique gold — the raw brand gold (#d4af67) fails text contrast on
+     warm-white (1.9:1); this is a deepened bronze variant for the rare
+     place gold is used as *text* on the light register, verified at
+     4.6:1. */
+  --ed-gold: #8a6b2a;
+  --ed-gold-wash: rgba(212, 175, 103, 0.12);
+  --ed-solid: #d4af67;
+  --ed-solid-on: #07110e; /* 9.2:1 */
   --ed-sig-positive: #2f6b4f;
-  --ed-sig-caution: #8a5f1f;
+  --ed-sig-caution: #92551a;
   --ed-sig-critical: #a33a2e;
-  --ed-sig-neutral: #6f6a63;
+  --ed-sig-neutral: #5b6660;
   --ed-sig-input: #3c6382;
 }
 
 .register-dark {
-  /* ---- Dark register: the same palette, recomposed (never inverted) ---- */
-  --ed-paper: #121110;
-  --ed-paper-2: #1c1a18;
-  --ed-paper-3: #0b0a09;
-  --ed-ink: #f7f4ef;
-  --ed-ink-2: #b2aba2; /* 8.3:1 on paper */
-  --ed-ink-3: #8a847c; /* 5.1:1 on paper, 4.7:1 on paper-2 */
-  --ed-rule: rgba(255, 250, 243, 0.12);
-  --ed-rule-2: rgba(255, 250, 243, 0.26);
-  --ed-accent: #c9a7bd; /* the same plum, lifted — 8.7:1 on paper */
-  --ed-accent-2: #ddc2d3;
-  --ed-accent-wash: rgba(201, 167, 189, 0.1);
-  --ed-accent-on: #1c1a18;
-  --ed-solid: #f7f4ef;
-  --ed-solid-on: #141311;
+  /* ---- Dark register: deep emerald-black canvas, the brief's "luxury
+     engineering system." Recomposed, never inverted. ---- */
+  --ed-paper: #07110e;
+  --ed-paper-2: #0d1714;
+  --ed-paper-3: #040907;
+  --ed-ink: #f5f7f4;
+  --ed-ink-2: #aeb8b2; /* 9.4:1 on paper */
+  --ed-ink-3: #7e8c86; /* 5.5:1 on paper, 5.2:1 on paper-2 */
+  --ed-rule: rgba(245, 247, 244, 0.12);
+  --ed-rule-2: rgba(245, 247, 244, 0.26);
+  --ed-accent: #4fb894; /* the same emerald, lifted — 7.9:1 on paper */
+  --ed-accent-2: #7dd3ae;
+  --ed-accent-wash: rgba(79, 184, 148, 0.1);
+  --ed-accent-on: #07110e;
+  /* The full brand gold reads correctly here — 9.2:1 on paper. */
+  --ed-gold: #d4af67;
+  --ed-gold-wash: rgba(212, 175, 103, 0.1);
+  --ed-solid: #d4af67;
+  --ed-solid-on: #07110e;
   --ed-sig-positive: #6fbf96;
-  --ed-sig-caution: #d9a84a;
+  --ed-sig-caution: #e09a4a;
   --ed-sig-critical: #e5796a;
-  --ed-sig-neutral: #a8a29a;
+  --ed-sig-neutral: #9aa39d;
   --ed-sig-input: #8fbcd9;
 }
 
 @theme {
   /* ======================================================================
-     Dark-register absolute names (the authenticated product and the Donna
-     AI experience). Retuned from the old blue-black "deep space" values to
-     the warm near-blacks above, so the two naming systems resolve to one
-     palette — `bg-carbon` and `bg-paper-2` inside `.register-dark` are the
-     same surface.
+     Dark-register absolute names (the authenticated product and the
+     Donna AI experience — ~260 call sites). Retuned from the earlier
+     plum-accent "deep space" values to the emerald-black palette above,
+     so the two naming systems resolve to one palette — `bg-carbon` and
+     `bg-paper-2` inside `.register-dark` are the same surface. Nothing
+     below needed a single component edit: every `bg-nova-accent`,
+     `text-nova-accent-strong`, `bg-carbon` etc. across the product
+     repaints automatically from these eleven lines.
      ====================================================================== */
-  --color-void: #0b0a09;
-  --color-obsidian: #121110;
-  --color-carbon: #1c1a18;
-  --color-carbon-2: #272320;
+  --color-void: #040907;
+  --color-obsidian: #07110e;
+  --color-carbon: #0d1714;
+  --color-carbon-2: #152420;
 
   /* Edges only, applied via border-color, never a fill. */
-  --color-titanium: rgba(255, 250, 243, 0.12);
-  --color-titanium-strong: rgba(255, 250, 243, 0.26);
+  --color-titanium: rgba(245, 247, 244, 0.12);
+  --color-titanium-strong: rgba(245, 247, 244, 0.26);
 
   /* Text hierarchy on the dark register — recomposed, not inverted;
      never pure white. Each clears 4.5:1 against carbon and obsidian. */
-  --color-nova-ink: #f7f4ef;
-  --color-nova-ink-muted: #b2aba2;
-  --color-nova-ink-faint: #8a847c;
+  --color-nova-ink: #f5f7f4;
+  --color-nova-ink-muted: #aeb8b2;
+  --color-nova-ink-faint: #7e8c86;
 
-  /* The single accent family. `nova-accent` is the solid fill (white type
-     on it measures 9.4:1); `nova-accent-strong` is accent *type* on a dark
-     surface (8.7:1 on carbon). The former Miami range — sunset coral /
-     orange / amber, electric blue / cyan, neon pink, deep purple, and the
-     aurora violet+blue glow pair — is deliberately gone. */
-  --color-nova-accent: #6b3358;
-  --color-nova-accent-strong: #c9a7bd;
+  /* The everyday brand hue. `nova-accent` is the solid FILL (white
+     type on it measures 4.9:1 — the icon-tile/badge use across the
+     product); `nova-accent-strong` is accent *text* on a dark surface
+     (7.9:1 on carbon). This is deliberately emerald, not gold — gold
+     appearing on every icon tile across the authenticated product
+     would be exactly the "flashy, everywhere" failure mode the brief
+     rules out. Gold is the separate `--color-gold` token above, used
+     only where docs/design/05-color-system.md names it. */
+  --color-nova-accent: #0e7a5a;
+  --color-nova-accent-strong: #4fb894;
 
   /* Evidence reliability (maps onto evidence_reliability_tier) */
-  --color-evidence-primary: #c9a7bd;
-  --color-evidence-vendor: #a8a29a;
+  --color-evidence-primary: #4fb894;
+  --color-evidence-vendor: #9aa39d;
   --color-evidence-analyst: #8fbcd9;
-  --color-evidence-community: #7d776f;
-  --color-evidence-internal: #e8e3db;
+  --color-evidence-community: #6b7570;
+  --color-evidence-internal: #e3e8e1;
 
   /* Confidence bands — deliberately never the Decision Score palette;
      conflating "how good" with "how sure" is the false-precision risk
      the Confidence Model architecture rules out. */
-  --color-confidence-high: #d8d2c8;
-  --color-confidence-medium: #d9a84a;
+  --color-confidence-high: #d8ddd5;
+  --color-confidence-medium: #e09a4a;
   --color-confidence-low: #e5796a;
-  --color-confidence-insufficient: #7d776f;
+  --color-confidence-insufficient: #6b7570;
 
   /* Risk severity */
   --color-risk-low: #6fbf96;
-  --color-risk-medium: #d9a84a;
+  --color-risk-medium: #e09a4a;
   --color-risk-high: #e5796a;
   --color-risk-critical: #e0564f;
 
   /* Semantic — kept structurally separate from the brand accent */
   --color-nova-success: #6fbf96;
-  --color-nova-warning: #d9a84a;
+  --color-nova-warning: #e09a4a;
 
-  /* Elevation. No glow shadow any more: on a warm paper register a violet
-     bloom reads as a sticker, and the brief retires decorative glow
-     outright. Depth comes from a hairline rule plus a quiet, neutral
-     shadow — or from nothing at all, which is usually right. */
-  --shadow-ed-resting: 0 1px 2px rgb(20 19 17 / 0.05);
-  --shadow-ed-raised: 0 18px 44px -28px rgb(20 19 17 / 0.3), 0 2px 6px -3px rgb(20 19 17 / 0.07);
+  /* Elevation. No glow shadow — on an already-dark emerald canvas a
+     colored bloom reads as a sticker; depth comes from a hairline rule
+     plus a quiet, neutral shadow tinted to the new near-black, or from
+     nothing at all, which is usually right. */
+  --shadow-ed-resting: 0 1px 2px rgb(7 17 14 / 0.05);
+  --shadow-ed-raised: 0 18px 44px -28px rgb(7 17 14 / 0.32), 0 2px 6px -3px rgb(7 17 14 / 0.08);
   --shadow-nova-resting: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-nova-raised: 0 16px 40px -20px rgb(0 0 0 / 0.55);
+  /* Reserved for the short, named list of premium moments — a score
+     ring at its emphasized state, a flagship panel — never a default
+     card treatment. A restrained gold bloom, not a saturated one. */
+  --shadow-gold-raised: 0 16px 36px -18px rgb(212 175 103 / 0.22), 0 1px 2px rgb(7 17 14 / 0.3);
 
   /* Motion — one coherent system, named by what's moving rather than an
      arbitrary number. One shared easing curve everywhere: a calm
      decelerate, never a bounce or spring. duration-* map to Tailwind v4's
-     `duration-<name>` utilities via the --transition-duration-* namespace.
-     The 90s `aurora-drift` ambient animation is retired with the glow
-     fields it animated. */
+     `duration-<name>` utilities via the --transition-duration-* namespace. */
   --ease-nova-settle: cubic-bezier(0.16, 1, 0.3, 1);
   --transition-duration-micro: 150ms; /* chip/button state changes */
   --transition-duration-control: 190ms; /* inputs, toggles, tabs */
   --transition-duration-panel: 270ms; /* section/card reveals */
   --transition-duration-modal: 340ms; /* dialogs, drawers */
   --transition-duration-reveal: 550ms; /* the recommendation itself */
-  /* Replaces Tailwind's default animate-ping for "Donna is thinking" —
-     ping's sharp expand-to-transparent reads as an alert (a browser
-     notification dot), not calm ongoing work. This is a slower, gentler
-     scale+opacity pulse — GPU-only properties. */
+  /* "Donna is thinking" — a slow, gentle scale+opacity pulse, GPU-only
+     properties. Ping's sharp expand-to-transparent reads as an alert, not
+     calm ongoing work. */
   --animate-nova-breathe: nova-breathe 2.4s ease-in-out infinite;
+  /* A single thin line resolving left-to-right — "evidence nodes
+     connecting," "score bars resolving" from the brief's Motion section.
+     Used sparingly: the hero's decision-graph accents, a score bar
+     filling in. GPU-only (transform), respects reduced-motion via the
+     media query below. */
+  --animate-line-resolve: line-resolve 900ms var(--ease-nova-settle) both;
 }
 
 @keyframes nova-breathe {
@@ -278,42 +324,51 @@
   }
 }
 
+@keyframes line-resolve {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 /* shadcn/base-ui primitives (Button, inputs) read these. Repointed at the
    editorial palette so an unstyled `<Button>` is already correct on the
    light register instead of needing an override at every call site. */
 :root {
-  --background: #faf8f5;
-  --foreground: #141311;
-  --card: #fffefc;
-  --card-foreground: #141311;
-  --popover: #fffefc;
-  --popover-foreground: #141311;
-  --primary: #141311;
-  --primary-foreground: #faf8f5;
-  --secondary: #f1ece3;
-  --secondary-foreground: #141311;
-  --muted: #f1ece3;
-  --muted-foreground: #4a4641;
-  --accent: #f1ece3;
-  --accent-foreground: #141311;
+  --background: #f5f7f4;
+  --foreground: #07110e;
+  --card: #fbfcfa;
+  --card-foreground: #07110e;
+  --popover: #fbfcfa;
+  --popover-foreground: #07110e;
+  --primary: #07110e;
+  --primary-foreground: #f5f7f4;
+  --secondary: #e9ece8;
+  --secondary-foreground: #07110e;
+  --muted: #e9ece8;
+  --muted-foreground: #3f4a45;
+  --accent: #e9ece8;
+  --accent-foreground: #07110e;
   --destructive: #a33a2e;
-  --border: rgba(20, 19, 17, 0.11);
-  --input: rgba(20, 19, 17, 0.18);
-  --ring: #5a2a4a;
-  --chart-1: #5a2a4a;
-  --chart-2: #7d3c67;
-  --chart-3: #3c6382;
-  --chart-4: #6f6a63;
-  --chart-5: #2f6b4f;
+  --border: rgba(7, 17, 14, 0.11);
+  --input: rgba(7, 17, 14, 0.18);
+  --ring: #075e4b;
+  --chart-1: #075e4b;
+  --chart-2: #0b8b65;
+  --chart-3: #d4af67;
+  --chart-4: #3c6382;
+  --chart-5: #5b6660;
   --radius: 0.5rem;
-  --sidebar: #f1ece3;
-  --sidebar-foreground: #141311;
-  --sidebar-primary: #141311;
-  --sidebar-primary-foreground: #faf8f5;
-  --sidebar-accent: #fffefc;
-  --sidebar-accent-foreground: #141311;
-  --sidebar-border: rgba(20, 19, 17, 0.11);
-  --sidebar-ring: #5a2a4a;
+  --sidebar: #e9ece8;
+  --sidebar-foreground: #07110e;
+  --sidebar-primary: #07110e;
+  --sidebar-primary-foreground: #f5f7f4;
+  --sidebar-accent: #fbfcfa;
+  --sidebar-accent-foreground: #07110e;
+  --sidebar-border: rgba(7, 17, 14, 0.11);
+  --sidebar-ring: #075e4b;
 }
 
 /* `.register-dark` flips the editorial tokens; this flips the primitives
@@ -322,32 +377,32 @@
    same palette expressed for a different consumer. */
 .dark,
 .register-dark {
-  --background: #121110;
-  --foreground: #f7f4ef;
-  --card: #1c1a18;
-  --card-foreground: #f7f4ef;
-  --popover: #1c1a18;
-  --popover-foreground: #f7f4ef;
-  --primary: #f7f4ef;
-  --primary-foreground: #141311;
-  --secondary: #272320;
-  --secondary-foreground: #f7f4ef;
-  --muted: #272320;
-  --muted-foreground: #b2aba2;
-  --accent: #272320;
-  --accent-foreground: #f7f4ef;
+  --background: #07110e;
+  --foreground: #f5f7f4;
+  --card: #0d1714;
+  --card-foreground: #f5f7f4;
+  --popover: #0d1714;
+  --popover-foreground: #f5f7f4;
+  --primary: #f5f7f4;
+  --primary-foreground: #07110e;
+  --secondary: #152420;
+  --secondary-foreground: #f5f7f4;
+  --muted: #152420;
+  --muted-foreground: #aeb8b2;
+  --accent: #152420;
+  --accent-foreground: #f5f7f4;
   --destructive: #e5796a;
-  --border: rgba(255, 250, 243, 0.12);
-  --input: rgba(255, 250, 243, 0.18);
-  --ring: #c9a7bd;
-  --sidebar: #1c1a18;
-  --sidebar-foreground: #f7f4ef;
-  --sidebar-primary: #f7f4ef;
-  --sidebar-primary-foreground: #141311;
-  --sidebar-accent: #272320;
-  --sidebar-accent-foreground: #f7f4ef;
-  --sidebar-border: rgba(255, 250, 243, 0.12);
-  --sidebar-ring: #c9a7bd;
+  --border: rgba(245, 247, 244, 0.12);
+  --input: rgba(245, 247, 244, 0.18);
+  --ring: #4fb894;
+  --sidebar: #0d1714;
+  --sidebar-foreground: #f5f7f4;
+  --sidebar-primary: #f5f7f4;
+  --sidebar-primary-foreground: #07110e;
+  --sidebar-accent: #152420;
+  --sidebar-accent-foreground: #f5f7f4;
+  --sidebar-border: rgba(245, 247, 244, 0.12);
+  --sidebar-ring: #4fb894;
 }
 
 @layer base {
@@ -364,12 +419,12 @@
 
 /* The brand mark (cloudonna-favicon-512.png) has a dark-navy "C" half.
    On the dark register that measured ~1.1:1 against the surface behind it
-   — functionally invisible — so it carried a tight rim-light. On the warm
+   — functionally invisible — so it carries a tight rim-light. On the warm
    paper register the mark reads correctly unassisted, so the rim-light is
    now scoped to dark surfaces only rather than applied globally. */
 .register-dark .brand-mark,
 .brand-mark-dark {
-  filter: drop-shadow(0 0 1px rgba(247, 244, 239, 0.4)) drop-shadow(0 0 5px rgba(201, 167, 189, 0.35));
+  filter: drop-shadow(0 0 1px rgba(245, 247, 244, 0.4)) drop-shadow(0 0 5px rgba(212, 175, 103, 0.3));
 }
 
 @media (prefers-reduced-motion: reduce) {

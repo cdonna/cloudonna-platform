@@ -2,7 +2,7 @@
 
 import { useLocale } from "@/i18n/LocaleProvider";
 
-export type EvidenceType = "customer-input" | "official-source" | "calculated" | "ai-interpretation" | "assumption";
+export type EvidenceType = "customer-input" | "official-source" | "observed-data" | "calculated" | "ai-interpretation" | "assumption";
 
 /**
  * Register-relative, so the same tag is legible on a warm paper page and
@@ -18,6 +18,7 @@ export type EvidenceType = "customer-input" | "official-source" | "calculated" |
 const EVIDENCE_STYLES: Record<EvidenceType, string> = {
   "customer-input": "border-sig-input/40 bg-sig-input/10 text-sig-input",
   "official-source": "border-accent/40 bg-accent-wash text-accent",
+  "observed-data": "border-sig-neutral/40 bg-sig-neutral/10 text-sig-neutral",
   calculated: "border-sig-positive/40 bg-sig-positive/10 text-sig-positive",
   "ai-interpretation": "border-dashed border-rule-2 bg-transparent text-ink-3",
   assumption: "border-sig-caution/40 bg-sig-caution/10 text-sig-caution",
@@ -35,6 +36,7 @@ export function EvidenceTag({ type }: { type: EvidenceType }) {
   const labels: Record<EvidenceType, string> = {
     "customer-input": s.evidenceCustomerInput,
     "official-source": s.evidenceOfficialSource,
+    "observed-data": s.evidenceObservedData,
     calculated: s.evidenceCalculated,
     "ai-interpretation": s.evidenceAiInterpretation,
     assumption: s.evidenceAssumption,

@@ -23,6 +23,15 @@ export function Chip({
   );
 }
 
+/**
+ * Decision confidence and score are the one place this product's own
+ * design system names gold explicitly ("decision confidence, important
+ * metrics" — docs/design/05-color-system.md). `emphasize` is the
+ * Donna Score itself (the primary number a result is read by); the
+ * plain state (e.g. the Confidence ring next to it) stays on the
+ * everyday emerald accent, so gold still reads as the rarer, higher-
+ * value signal between two rings sitting side by side.
+ */
 export function ScoreRing({
   value,
   label,
@@ -35,16 +44,10 @@ export function ScoreRing({
   return (
     <div
       className={`w-24 rounded-2xl border px-3 py-3.5 text-center ${
-        emphasize ? "border-nova-accent/30 bg-carbon shadow-nova-raised" : "border-titanium bg-carbon"
+        emphasize ? "border-gold/30 bg-carbon shadow-gold-raised" : "border-titanium bg-carbon"
       }`}
     >
-      <div
-        className={`font-mono text-2xl font-bold tabular-nums ${
-          emphasize ? "text-nova-accent-strong" : "text-nova-ink"
-        }`}
-      >
-        {value}%
-      </div>
+      <div className={`font-mono text-2xl font-bold tabular-nums ${emphasize ? "text-gold" : "text-nova-ink"}`}>{value}%</div>
       <div className="mt-1 text-[10px] font-medium tracking-[0.06em] text-nova-ink-faint uppercase">{label}</div>
     </div>
   );

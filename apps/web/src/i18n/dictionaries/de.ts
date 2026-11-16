@@ -15,13 +15,14 @@ const de: Dictionary = {
   nav: {
     links: {
       discovery: "Discovery",
-      product: "Produkt",
+      product: "Plattform",
       donnaAi: "Donna AI",
-      decisionSkills: "Decision Skills",
+      decisionSkills: "Decision Intelligence",
       demo: "Demo",
-      architects: "Architekten",
-      dataEconomy: "Data Economy",
-      trust: "Vertrauen",
+      architects: "Technologie",
+      dataEconomy: "Lösungen",
+      trust: "Sicherheit",
+      decisionMemory: "Decision Memory",
       independence: "Unabhängigkeit",
       forVendors: "Für Anbieter",
       forPartners: "Für Partner",
@@ -52,15 +53,15 @@ const de: Dictionary = {
     eyebrow: "Enterprise Decision Intelligence",
     h1: "Decision Intelligence",
     h1Second: "für Enterprise-Technologie",
-    sub: "Eine Entscheidungsebene für die Menschen, die Technologie auswählen, und für die, die für ihre geschäftliche Wirkung verantwortlich sind.",
+    sub: "ClouDonna macht komplexe Technologieentscheidungen zu strukturierten, nachvollziehbaren und wiederverwendbaren Unternehmensentscheidungen.",
     ctaPrimary: "Entscheidung einbringen",
-    ctaSecondary: "Produkt ansehen",
+    ctaSecondary: "Plattform entdecken",
     tagline: "Herstellerneutral · Evidenzbasiert · Nachvollziehbar",
   },
 
   journey: {
     eyebrow: "Der Entscheidungszyklus",
-    heading: "Eine Entscheidung braucht fünf Dinge. ClouDonna hält alle fünf zusammen.",
+    heading: "Eine Entscheidung braucht sieben Dinge. ClouDonna hält alle sieben zusammen.",
     sub: "Jede Ansicht unten ist eine ClouDonna-Oberfläche, gezeigt an einer illustrativen Enterprise-Entscheidung.",
     understand: {
       number: "01",
@@ -74,8 +75,15 @@ const de: Dictionary = {
       prioritiesLabel: "Prioritäten",
       stakeholdersLabel: "Stakeholder",
     },
-    compare: {
+    evidence: {
       number: "02",
+      label: "Evidenz",
+      heading: "Trennen Sie, was belegt ist, von dem, was angenommen wurde.",
+      body: "Jede Aussage hinter dieser Entscheidung trägt einen Typ — eine offizielle Quelle, eine Kundenangabe, etwas Beobachtetes, etwas Berechnetes, eine KI-Erzählung oder eine ausgewiesene Annahme. Nichts hier ist Evidenz, nur weil es überzeugend klingt.",
+      frame: "Decision Workspace · Evidenz",
+    },
+    compare: {
+      number: "03",
       label: "Vergleichen",
       heading: "Alternativen, Evidenz und Trade-offs in einem Entscheidungsraum.",
       body: "Keine Funktionsmatrix. Jede Alternative zeigt, was sie für die Architektur bedeutet, worauf sie kommerziell festlegt, wovon sie abhängt und welche Evidenz hinter der Aussage steht.",
@@ -87,15 +95,24 @@ const de: Dictionary = {
       riskLabel: "Risiko",
       dependencyLabel: "Abhängigkeit",
     },
+    simulate: {
+      number: "04",
+      label: "Simulieren",
+      heading: "Ändern Sie eine Annahme und beobachten Sie, wie die Empfehlung reagiert.",
+      body: "Dasselbe Szenariomodell hinter dieser Entscheidung, live: Ändern Sie eine reale Bedingung und sehen Sie, welche Alternative an Boden gewinnt — und warum.",
+      frame: "Scenario Lab · Simulieren",
+    },
     decide: {
-      number: "03",
+      number: "05",
       label: "Entscheiden",
       heading: "Eine Empfehlung, die ihre Begründung nicht zeigen kann, ist nur eine Meinung.",
       body: "Jede Empfehlung kommt mit dem Warum, den Trade-offs, die sie akzeptiert, den Risiken, die sie trägt, den Annahmen, auf denen sie ruht, und den Bedingungen, die sie kippen würden.",
       frame: "Decision Workspace · Entscheiden",
+      confidenceLabel: "Konfidenz",
+      executiveSummaryLabel: "Executive Summary",
     },
     align: {
-      number: "04",
+      number: "06",
       label: "Ausrichten",
       heading: "Eine Entscheidung, vier Lesarten.",
       body: "CEO, CFO, CIO und Enterprise Architect stellen keine unterschiedlichen Fragen zu unterschiedlichen Entscheidungen. Sie stellen unterschiedliche Fragen zu derselben.",
@@ -105,7 +122,7 @@ const de: Dictionary = {
       roles: { ceo: "CEO", cfo: "CFO", cio: "CIO", architect: "Enterprise Architect" },
     },
     remember: {
-      number: "05",
+      number: "07",
       label: "Erinnern",
       heading: "Eine Entscheidung ist kein Dokument. Sie ist ein lebendiges Asset.",
       body: "ClouDonna behält, was entschieden wurde, was damals bekannt war und was sich seither verändert hat — damit \u201ewürden wir das heute noch so entscheiden?\u201c eine Antwort hat und kein Meeting braucht.",
@@ -508,6 +525,7 @@ const de: Dictionary = {
     exploreMoreLabel: "Weitere Beispielentscheidungen entdecken",
     evidenceCustomerInput: "Kundeneingabe",
     evidenceOfficialSource: "Offizielle Quelle",
+    evidenceObservedData: "Beobachtete Daten",
     evidenceCalculated: "Berechnet",
     evidenceAiInterpretation: "KI-Interpretation",
     evidenceAssumption: "Annahme",
@@ -799,6 +817,56 @@ const de: Dictionary = {
       contactBodyLink: "Kontaktformular",
       contactBodySuffix: "bis ein eigener rechtlicher Kontaktkanal hier veröffentlicht wird.",
     },
+  },
+
+  architectureSection: {
+    eyebrow: "Plattformarchitektur",
+    heading: "In Schichten gebaut, nicht als eine Blackbox.",
+    body: "Jede Schicht unten wurde gegen das geprüft, was in diesem Produkt heute tatsächlich läuft — verfügbar, in Arbeit oder ein festgelegtes Konzept, das noch nicht gebaut wurde. Nichts hier behauptet eine Integration, die nicht existiert.",
+    frame: "Plattformarchitektur",
+    statusAvailable: "Verfügbar",
+    statusPlanned: "Geplant",
+    statusDirection: "Architektonische Richtung",
+    integrationsLabel: "Enterprise-Daten & -Systeme",
+    integrationsNote: "Jeder Connector unten ist heute architektonische Richtung — ein festgelegtes Konzept, keine aktive Integration. Keiner davon sollte als verfügbar verstanden werden.",
+  },
+
+  sampleDecisionsSection: {
+    eyebrow: "Beispielentscheidungen",
+    heading: "Neun durchgearbeitete Entscheidungen, nicht eine Demo und ein Versprechen.",
+    body: "Jede davon ist illustrativ und von Anfang bis Ende so durchgearbeitet, wie Donna eine echte Entscheidung durcharbeitet: Kontext, Trade-offs, Empfehlung und was sie ändern würde.",
+    flagshipLabel: "Leitentscheidung",
+    sampleLabel: "Beispielentscheidung",
+  },
+
+  commercialSection: {
+    eyebrow: "Mit ClouDonna arbeiten",
+    heading: "Drei Wege, eine echte Entscheidung zu ClouDonna zu bringen.",
+    body: "Keine öffentlichen Preise, denn keines davon ist Selbstbedienung — jeder Weg erreicht direkt einen Gründer, der klärt, wie eine Zusammenarbeit tatsächlich aussieht.",
+    tiers: {
+      sprint: { name: "Decision Sprint", tagline: "Eine Entscheidung lösen.", body: "Bringen Sie eine strategische Enterprise-Technologieentscheidung mit und arbeiten Sie sie mit ClouDonna von Anfang bis Ende durch.", cta: "Entscheidung einbringen" },
+      team: { name: "Team", tagline: "Decision Intelligence für ein Team.", body: "Für ein Technologie- oder Transformationsteam, das diese Art von Entscheidung wiederholt trifft, nicht nur einmal.", cta: "Decision Sprint anfragen" },
+      enterprise: { name: "Enterprise", tagline: "Eine governte Entscheidungsebene.", body: "Eine gemeinsame Entscheidungsebene für die gesamte Organisation, mit demselben Evidenzstandard überall.", cta: "Executive Demo buchen" },
+    },
+  },
+
+  evidenceTaxonomySection: {
+    eyebrow: "Evidenz, typisiert",
+    heading: "Sechs Arten von Evidenz. Nie verwechselt.",
+    body: "Jede Aussage auf dieser Seite trägt eines von sechs Labels, und das Label entscheidet, wie viel Gewicht die Aussage tragen darf — dieselbe Taxonomie, die eine echte ClouDonna-Entscheidung verwendet.",
+    linkLabel: "Den vollständigen Trust Center lesen",
+  },
+
+  governanceSection: {
+    eyebrow: "Enterprise-Sicherheit & Governance",
+    heading: "Vertrauen ist hier eine strukturelle Regel, keine Behauptung.",
+    body: "Drei Dinge, die bei diesem Produkt konstruktionsbedingt wahr sind, nicht nur per Richtlinie.",
+    points: [
+      { label: "Isoliert by Design", body: "Die Entscheidungen jeder Organisation sind auf Datenbankebene isoliert. Keine andere Organisation kann sie lesen — by Design, nicht nur per Richtlinie." },
+      { label: "Deterministisches Scoring", body: "Dieselbe Eingabe ergibt immer denselben Score. KI erläutert die Begründung; sie entscheidet nie über das Ergebnis." },
+      { label: "Auditierbares Protokoll", body: "Ein vollständiger Audit-Trail und ein Entscheidungsprotokoll, das niemand still verändern kann — Decision Memory, kein Dokument, das umgeschrieben werden kann." },
+    ],
+    linkLabel: "Den vollständigen Trust Center lesen",
   },
 
   seo: {

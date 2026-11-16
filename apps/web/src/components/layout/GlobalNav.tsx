@@ -53,16 +53,21 @@ export function GlobalNav({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Six items, matching the brief's target IA. Contact and Donna AI are
-  // still real pages (Contact from the Footer, Donna AI as "Product"
-  // here and as every page's primary action) — they moved out of the bar
-  // rather than disappearing.
+  // Six items — "Platform, Solutions, Decision Intelligence, Decision
+  // Memory, Technology, Security" from the brief's suggested structure,
+  // each pointed at a route that actually carries that content rather
+  // than a page invented to fill the label. Decision Memory has no
+  // dedicated route; it anchors into the homepage's own Remember
+  // chapter (DecisionJourney.tsx sets id="remember" on that section).
+  // Demo and Contact moved out of the bar (reachable from the footer
+  // and every page's own CTA) to keep six items, not seven — "do not
+  // overload navigation."
   const navItems: NavItem[] = [
     { label: dict.nav.links.product, href: `/${locale}/donna-ai` },
-    { label: dict.nav.links.decisionSkills, href: `/${locale}/decision-skills` },
-    { label: dict.nav.links.architects, href: `/${locale}/architects` },
     { label: dict.nav.links.dataEconomy, href: `/${locale}/data-economy` },
-    { label: dict.nav.links.demo, href: `/${locale}/demo` },
+    { label: dict.nav.links.decisionSkills, href: `/${locale}/decision-skills` },
+    { label: dict.nav.links.decisionMemory, href: `/${locale}#remember` },
+    { label: dict.nav.links.architects, href: `/${locale}/architects` },
     { label: dict.nav.links.trust, href: `/${locale}/trust` },
   ];
 

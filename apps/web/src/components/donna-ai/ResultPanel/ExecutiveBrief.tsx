@@ -30,14 +30,14 @@ export function ExecutiveBrief({ output, onClose }: { output: DecisionOutput; on
   const generatedOn = new Date().toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" });
 
   return (
-    <div className="print-target fixed inset-0 z-50 overflow-y-auto bg-white text-[#14171f]">
+    <div className="print-target fixed inset-0 z-50 overflow-y-auto bg-white text-[#07110e]">
       <div className="no-print sticky top-0 z-10 flex items-center justify-between border-b border-black/10 bg-white px-6 py-3">
         <span className="text-sm font-semibold">{b.openLabel}</span>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#14171f] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#07110e] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
           >
             <Printer size={15} />
             {b.printLabel}
@@ -46,7 +46,7 @@ export function ExecutiveBrief({ output, onClose }: { output: DecisionOutput; on
             type="button"
             onClick={onClose}
             aria-label={b.closeLabel}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 text-[#14171f] transition hover:bg-black/5"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 text-[#07110e] transition hover:bg-black/5"
           >
             <X size={16} />
           </button>
