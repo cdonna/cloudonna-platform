@@ -10,9 +10,9 @@
  * real, persisted one. See docs/operations/01-business-operations.md.
  */
 import { useEffect, useId, useState } from "react";
-import { ArrowRight, CheckCircle2, LoaderCircle, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, LoaderCircle } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Display, Eyebrow, Lede, Shell } from "@/components/editorial/primitives";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { getAnalyticsProvider } from "@/lib/analytics/config";
 import type { InquiryType } from "@/lib/inquiries/schema";
@@ -23,7 +23,18 @@ const SUBMITTED_EVENT_BY_TYPE: Partial<Record<InquiryType, string>> = {
   vendor: "vendor_inquiry_submitted",
 };
 
-export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryType; sectionId?: string }) {
+export function InquiryForm({
+  inquiryType,
+  sectionId,
+  register = "light",
+}: {
+  inquiryType: InquiryType;
+  sectionId?: string;
+  /** The form is register-relative: every colour below resolves against
+   * whichever register it sits in, so the dark homepage closing section
+   * and the light /contact page share one implementation. */
+  register?: "light" | "dark";
+}) {
   const { dict } = useLocale();
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -99,36 +110,33 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
   }
 
   return (
-    <section id={sectionId} className="relative scroll-mt-8 overflow-hidden bg-void px-6 py-28">
-      <div className="pointer-events-none absolute inset-0 motion-safe:animate-aurora-drift">
-        <div className="absolute left-1/2 top-0 h-[26rem] w-[40rem] -translate-x-1/2 rounded-full bg-aurora-primary/20 blur-[140px]" />
-      </div>
-
-      <div className="relative mx-auto max-w-3xl">
-        <div className="text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
-            <Sparkles size={14} />
-            {copy.eyebrow}
+    <section
+      id={sectionId}
+      className={`${register === "dark" ? "register-dark " : ""}scroll-mt-20 bg-paper py-24 text-ink sm:py-32`}
+    >
+      <Shell>
+        <div className="grid gap-14 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
+          <div className="max-w-[34rem]">
+            <Eyebrow>{copy.eyebrow}</Eyebrow>
+            <Display size={2} className="mt-7">
+              {copy.heading}
+            </Display>
+            <Lede className="mt-6">{copy.body}</Lede>
           </div>
 
-          <h2 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">{copy.heading}</h2>
-
-          <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-nova-ink-muted">{copy.body}</p>
-        </div>
-
-        <div className="mt-12 overflow-hidden rounded-[2rem] border border-titanium bg-carbon shadow-nova-glow" aria-live="polite">
+          <div className="overflow-hidden rounded-xl border border-rule bg-paper-2" aria-live="polite">
           {status === "success" ? (
-            <div className="flex flex-col items-center gap-4 p-10 text-center sm:p-14">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full border border-nova-success/30 bg-nova-success/10 text-nova-success">
-                <CheckCircle2 size={28} />
+            <div className="flex flex-col gap-5 p-8 sm:p-10">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full border border-sig-positive/40 text-sig-positive">
+                <CheckCircle2 size={22} />
               </span>
 
-              <h3 className="text-2xl font-semibold text-nova-ink">{dict.inquiryForm.thanksHeading}</h3>
+              <h3 className="text-display-3 font-medium text-ink">{dict.inquiryForm.thanksHeading}</h3>
 
-              <p className="max-w-md text-sm leading-6 text-nova-ink-muted">{copy.successBody}</p>
+              <p className="max-w-md text-sm leading-6 text-ink-2">{copy.successBody}</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="p-7 sm:p-10">
+            <form onSubmit={handleSubmit} className="p-6 sm:p-8">
               {/* Only these two fields are actually required — see
                   createInquiryRequestSchema. Everything below is
                   visually separated and labeled optional so the form
@@ -139,8 +147,8 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
                 <Field id={`${formId}-email`} name="email" label={dict.inquiryForm.fields.workEmail} type="email" required autoComplete="email" />
               </div>
 
-              <div className="mt-7 border-t border-titanium pt-6">
-                <p className="text-xs font-medium tracking-[0.08em] text-nova-ink-faint uppercase">
+              <div className="mt-7 border-t border-rule pt-6">
+                <p className="font-mono text-label font-medium text-ink-3 uppercase">
                   {dict.inquiryForm.optionalHint}
                 </p>
 
@@ -149,14 +157,14 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
                   <Field id={`${formId}-country`} name="country" label={dict.inquiryForm.fields.country} optional optionalLabel={dict.inquiryForm.fields.optional} autoComplete="country-name" />
 
                   <div className="flex flex-col gap-1.5">
-                    <label htmlFor={`${formId}-role`} className="text-sm font-medium text-nova-ink">
-                      {dict.inquiryForm.fields.role} <span className="font-normal text-nova-ink-faint">{dict.inquiryForm.fields.optional}</span>
+                    <label htmlFor={`${formId}-role`} className="text-sm font-medium text-ink">
+                      {dict.inquiryForm.fields.role} <span className="font-normal text-ink-3">{dict.inquiryForm.fields.optional}</span>
                     </label>
                     <select
                       id={`${formId}-role`}
                       name="role"
                       defaultValue=""
-                      className="h-11 rounded-xl border border-titanium bg-carbon-2 px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+                      className="h-11 rounded-md border border-rule-2 bg-paper px-3 text-sm text-ink outline-none transition-colors duration-control focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/25"
                     >
                       <option value="">{dict.inquiryForm.fields.selectRole}</option>
                       {roles.map((role) => (
@@ -170,15 +178,15 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
                   <Field id={`${formId}-phone`} name="phone" label={dict.inquiryForm.fields.phone} type="tel" optional optionalLabel={dict.inquiryForm.fields.optional} autoComplete="tel" />
 
                   <div className="flex flex-col gap-1.5 sm:col-span-2">
-                    <label htmlFor={`${formId}-message`} className="text-sm font-medium text-nova-ink">
-                      {dict.inquiryForm.fields.message} <span className="font-normal text-nova-ink-faint">{dict.inquiryForm.fields.optional}</span>
+                    <label htmlFor={`${formId}-message`} className="text-sm font-medium text-ink">
+                      {dict.inquiryForm.fields.message} <span className="font-normal text-ink-3">{dict.inquiryForm.fields.optional}</span>
                     </label>
                     <textarea
                       id={`${formId}-message`}
                       name="message"
                       rows={4}
                       placeholder={dict.inquiryForm.fields.messagePlaceholder}
-                      className="resize-none rounded-xl border border-titanium bg-carbon-2 px-3 py-2.5 text-sm text-nova-ink outline-none placeholder:text-nova-ink-faint focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+                      className="resize-none rounded-md border border-rule-2 bg-paper px-3 py-2.5 text-sm text-ink outline-none transition-colors duration-control placeholder:text-ink-3 focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/25"
                     />
                   </div>
                 </div>
@@ -192,13 +200,17 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
               </div>
 
               {status === "error" && errorMessage && (
-                <p role="alert" className="mt-6 text-sm text-red-400">
+                <p role="alert" className="mt-6 text-sm text-sig-critical">
                   {errorMessage}
                 </p>
               )}
 
               <div className="mt-7">
-                <Button type="submit" disabled={status === "submitting"} className="h-12 w-full bg-nova-accent text-white shadow-nova-glow hover:bg-nova-accent-strong">
+                <button
+                  type="submit"
+                  disabled={status === "submitting"}
+                  className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-solid px-5 text-sm font-medium text-solid-on transition-colors duration-control hover:bg-accent hover:text-accent-on focus-visible:ring-3 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-60"
+                >
                   {status === "submitting" ? (
                     <>
                       <LoaderCircle size={16} className="animate-spin" />
@@ -210,12 +222,13 @@ export function InquiryForm({ inquiryType, sectionId }: { inquiryType: InquiryTy
                       <ArrowRight size={16} />
                     </>
                   )}
-                </Button>
+                </button>
               </div>
             </form>
           )}
+          </div>
         </div>
-      </div>
+      </Shell>
     </section>
   );
 }
@@ -241,9 +254,9 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-nova-ink">
-        {label} {required && <span className="text-nova-accent-strong">*</span>}
-        {optional && <span className="font-normal text-nova-ink-faint">{optionalLabel}</span>}
+      <label htmlFor={id} className="text-sm font-medium text-ink">
+        {label} {required && <span className="text-accent">*</span>}
+        {optional && <span className="font-normal text-ink-3">{optionalLabel}</span>}
       </label>
       <input
         id={id}
@@ -251,7 +264,7 @@ function Field({
         type={type}
         required={required}
         autoComplete={autoComplete}
-        className="h-11 rounded-xl border border-titanium bg-carbon-2 px-3 text-sm text-nova-ink outline-none placeholder:text-nova-ink-faint focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+        className="h-11 rounded-md border border-rule-2 bg-paper px-3 text-sm text-ink outline-none transition-colors duration-control placeholder:text-ink-3 focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/25"
       />
     </div>
   );

@@ -67,6 +67,27 @@ export const COST_VALUE_SCENARIO = {
       operationsNote: "Lower operations overhead where Microsoft tooling is already standard.",
     },
   ] as PlatformCostProfile[],
+  /**
+   * What the business gets for the spend. Kept strictly qualitative:
+   * "avoided engineering time" is a real, defensible claim; "€1.4m of
+   * avoided cost" would be an invented one, and a CFO can tell the
+   * difference faster than anyone.
+   */
+  businessValue: [
+    { label: "Avoided engineering time", description: "Hours currently spent maintaining duplicate extracts and reconciling numbers before executive reporting." },
+    { label: "Faster time to a governed AI foundation", description: "AI initiatives build on data that is already governed rather than each one re-solving governance." },
+    { label: "Fewer integration points to maintain", description: "A smaller number of governed data products in place of a web of point-to-point extracts." },
+    { label: "Reporting continuity", description: "The value of regional reporting not going dark, which only becomes visible if it does." },
+  ] as CostDriver[],
+  /**
+   * Cost of delay. Direction and mechanism, never a monthly figure —
+   * the figure depends entirely on the organization's own contracts.
+   */
+  costOfDelay: [
+    { label: "Duplicate data flows keep running", description: "Every month of delay is another month of paying to maintain the thing the decision is meant to remove." },
+    { label: "Commercial terms move", description: "Vendor pricing models shift during an evaluation; a quote that shaped the shortlist can expire before the decision lands." },
+    { label: "AI initiatives start without a foundation", description: "Teams that cannot wait build their own ungoverned path, which then has to be unpicked." },
+  ] as CostDriver[],
   notComparable: [
     "List prices alone, without factoring in existing commercial agreements and discounts",
     "AI compute costs across platforms without a defined workload profile, since usage patterns vary widely",

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
 import { AIUseCaseCard } from "@/components/ai-portfolio/AIUseCaseCard";
 import { AI_USE_CASES, type AIUseCaseQuadrant } from "@/components/ai-portfolio/catalog";
+import { IllustrativeLabel, PageCta, PageHeader, Section, Shell } from "@/components/editorial/primitives";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
 import { localizedAlternates, localizedOpenGraph } from "@/i18n/seo";
@@ -24,11 +23,17 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 const QUADRANT_ORDER: AIUseCaseQuadrant[] = ["quick-win", "strategic-bet", "foundation-investment", "low-value-high-complexity"];
 
-const QUADRANT_STYLE: Record<AIUseCaseQuadrant, string> = {
-  "quick-win": "border-nova-success/30 bg-nova-success/10 text-nova-success",
-  "strategic-bet": "border-nova-accent/30 bg-nova-accent/10 text-nova-accent-strong",
-  "foundation-investment": "border-electric-blue/30 bg-electric-blue/10 text-electric-blue",
-  "low-value-high-complexity": "border-sunset-coral/30 bg-sunset-coral/10 text-sunset-coral",
+/**
+ * The four quadrants are a judgement about investment, so they are
+ * ranked down the page with the accent reserved for the one that is a
+ * warning ("low value, high complexity") rather than four differently
+ * coloured badges implying four equal options.
+ */
+const QUADRANT_TONE: Record<AIUseCaseQuadrant, string> = {
+  "quick-win": "text-sig-positive",
+  "strategic-bet": "text-accent",
+  "foundation-investment": "text-sig-input",
+  "low-value-high-complexity": "text-sig-caution",
 };
 
 export default async function AIUseCasesPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -36,7 +41,6 @@ export default async function AIUseCasesPage({ params }: { params: Promise<{ loc
   if (!isSupportedLocale(locale)) notFound();
   const dict = await getDictionary(locale);
   const p = dict.aiPortfolioPage;
-  const s = dict.showcase;
 
   const quadrantLabels: Record<AIUseCaseQuadrant, string> = {
     "quick-win": p.quickWinLabel,
@@ -46,49 +50,48 @@ export default async function AIUseCasesPage({ params }: { params: Promise<{ loc
   };
 
   return (
-    <div className="min-h-dvh bg-void">
-      <div className="mx-auto max-w-3xl px-6 pt-14 text-center">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
-          {p.badge}
-        </div>
+    <main className="bg-paper">
+      <PageHeader
+        eyebrow={p.badge}
+        title={p.h1}
+        lede={p.sub}
+        aside={<IllustrativeLabel>{dict.showcase.illustrativeLabel}</IllustrativeLabel>}
+      />
 
-        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-balance text-nova-ink sm:text-5xl">{p.h1}</h1>
+      {QUADRANT_ORDER.map((quadrant, index) => {
+        const useCases = AI_USE_CASES.filter((useCase) => useCase.quadrant === quadrant);
+        return (
+          <Section key={quadrant} size="md" tone={index % 2 === 1 ? "sunken" : "default"}>
+            <Shell>
+              <div className="grid gap-10 lg:grid-cols-[18rem_1fr] lg:gap-16">
+                <div>
+                  <div className="font-mono text-label font-medium text-ink-3 tabular-nums uppercase">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+                  <h2 className={`mt-4 text-display-3 font-medium tracking-[-0.025em] ${QUADRANT_TONE[quadrant]}`}>
+                    {quadrantLabels[quadrant]}
+                  </h2>
+                </div>
 
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-nova-ink-muted">{p.sub}</p>
-
-        <div className="mx-auto mt-6 inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-3 py-1 text-[10px] font-semibold tracking-[0.1em] text-nova-ink-faint uppercase">
-          {s.illustrativeLabel}
-        </div>
-      </div>
-
-      <div className="mx-auto mt-14 max-w-6xl px-6 pb-16">
-        <div className="grid gap-8 lg:grid-cols-2">
-          {QUADRANT_ORDER.map((quadrant) => (
-            <div key={quadrant}>
-              <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.06em] ${QUADRANT_STYLE[quadrant]}`}>
-                {quadrantLabels[quadrant]}
-              </span>
-              <div className="mt-4 space-y-3">
-                {AI_USE_CASES.filter((useCase) => useCase.quadrant === quadrant).map((useCase) => (
-                  <AIUseCaseCard key={useCase.id} useCase={useCase} />
-                ))}
+                <div className="border-t border-rule">
+                  {useCases.map((useCase) => (
+                    <AIUseCaseCard key={useCase.id} useCase={useCase} />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            </Shell>
+          </Section>
+        );
+      })}
 
-        <div className="mt-14 rounded-3xl border border-titanium bg-carbon-2 p-8 text-center">
-          <h2 className="text-xl font-semibold text-nova-ink">{p.ctaHeading}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-nova-ink-muted">{p.ctaBody}</p>
-          <Link
-            href={`/${locale}/donna-ai`}
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-nova-accent to-sunset-coral px-6 py-3 text-sm font-semibold text-white shadow-nova-glow transition hover:brightness-110"
-          >
-            {p.ctaLabel}
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-      </div>
-    </div>
+      <PageCta
+        heading={p.ctaHeading}
+        body={p.ctaBody}
+        primaryHref={`/${locale}/donna-ai`}
+        primaryLabel={p.ctaLabel}
+        secondaryHref={`/${locale}/data-economy`}
+        secondaryLabel={dict.dataEconomyPage.badge}
+      />
+    </main>
   );
 }

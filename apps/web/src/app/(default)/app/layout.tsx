@@ -34,7 +34,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-obsidian text-nova-ink">
+    <div className="register-dark min-h-screen bg-obsidian text-nova-ink">
       <header className="sticky top-0 z-40 border-b border-titanium bg-obsidian/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-4">
           <Link href="/app" className="flex shrink-0 items-center gap-2.5">

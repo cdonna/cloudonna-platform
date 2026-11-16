@@ -1,58 +1,56 @@
-"use client";
+import { Display, Eyebrow, Lede, PrimaryAction, SecondaryAction, Shell } from "@/components/editorial/primitives";
+import { JOURNEY_DECISION } from "@/components/landing/journey-content";
+import type { Dictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 
-import { ArrowRight, Play } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { useLocale } from "@/i18n/LocaleProvider";
-
-export default function Hero() {
-  const { locale, dict } = useLocale();
+/**
+ * The hero is now calm by construction: warm paper, no ambient glow
+ * field, no gradient button, nothing animated. What filled it before —
+ * three drifting blur circles, a pill badge, a gradient-to-coral CTA
+ * with a violet glow shadow — is gone, and the space it occupied is now
+ * actual whitespace.
+ *
+ * It ends on the decision the rest of the page works through, stated as
+ * a line of the product's own interface rather than as marketing copy,
+ * which is what makes the transition into 01 Understand continuous
+ * rather than a scroll into a different website.
+ */
+export default function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
+  const h = dict.hero;
 
   return (
-    <section className="relative overflow-hidden bg-void">
-      {/* Ambient background — Project NOVA (docs/design/04-material-system.md,
-          "Deep Space" + "Aurora"), layered with one warm Sunset glow low in
-          the frame. Three glows, asymmetric, slow drift — the violet/blue
-          pair still leads; coral only ever grounds the horizon beneath it.
-          The persistent GlobalNav (see components/layout/GlobalNav.tsx) now
-          owns primary navigation — this section is hero content only. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden motion-safe:animate-aurora-drift">
-        <div className="absolute -top-40 left-[8%] h-[34rem] w-[34rem] rounded-full bg-aurora-secondary/20 blur-[140px]" />
-        <div className="absolute top-[10%] right-[5%] h-[30rem] w-[30rem] rounded-full bg-aurora-primary/25 blur-[140px]" />
-        <div className="absolute top-[60%] left-1/2 h-[28rem] w-[46rem] -translate-x-1/2 rounded-full bg-sunset-coral/15 blur-[160px]" />
-      </div>
+    <section className="bg-paper pt-16 pb-0 sm:pt-24 lg:pt-32">
+      <Shell>
+        <div className="max-w-[46rem]">
+          <Eyebrow>{h.eyebrow}</Eyebrow>
 
-      <div className="relative mx-auto max-w-7xl px-6 pt-20 pb-28">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold tracking-[0.14em] text-nova-accent-strong uppercase">
-            {dict.hero.badge}
+          <Display level={1} size={1} className="mt-8">
+            {h.h1}
+            <br />
+            <span className="text-ink-2">{h.h1Second}</span>
+          </Display>
+
+          <Lede className="mt-8 max-w-[34rem]">{h.sub}</Lede>
+
+          <div className="mt-11 flex flex-wrap items-center gap-x-8 gap-y-3">
+            <PrimaryAction href={`/${locale}/early-access`}>{h.ctaPrimary}</PrimaryAction>
+            <SecondaryAction href={`/${locale}/donna-ai`}>{h.ctaSecondary}</SecondaryAction>
           </div>
 
-          <h1 className="mt-8 text-5xl font-semibold tracking-[-0.035em] text-balance text-nova-ink sm:text-6xl lg:text-7xl">
-            {dict.hero.h1}
-          </h1>
-
-          <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-nova-ink-muted">{dict.hero.sub}</p>
-
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button
-              size="lg"
-              className="h-12 bg-gradient-to-r from-nova-accent to-sunset-coral px-7 text-white shadow-nova-glow transition-[filter] duration-control hover:brightness-110"
-              render={<a href={`/${locale}/early-access`} />}
-            >
-              {dict.hero.ctaPrimary}
-              <ArrowRight size={17} />
-            </Button>
-
-            <Button size="lg" variant="outline" className="h-12 border-titanium bg-transparent px-7 text-nova-ink hover:border-titanium-strong" render={<a href="#donna" />}>
-              <Play size={16} />
-              {dict.hero.ctaSecondary}
-            </Button>
-          </div>
-
-          <p className="mt-8 text-xs tracking-wide text-nova-ink-faint uppercase">{dict.hero.tagline}</p>
+          <p className="mt-10 font-mono text-label font-medium text-ink-3 uppercase">{h.tagline}</p>
         </div>
-      </div>
+      </Shell>
+
+      {/* The handoff into the product story: the decision the entire page
+          follows, shown as the workspace's own header line. */}
+      <Shell className="mt-20 sm:mt-28">
+        <div className="border-t border-rule pt-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+            <p className="font-mono text-label font-medium text-ink-3 uppercase">{dict.journey.sub}</p>
+            <p className="text-sm text-ink-2">{JOURNEY_DECISION.question}</p>
+          </div>
+        </div>
+      </Shell>
     </section>
   );
 }

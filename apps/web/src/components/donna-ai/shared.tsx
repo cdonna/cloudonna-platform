@@ -14,7 +14,7 @@ export function Chip({
       onClick={onClick}
       className={`flex min-h-11 items-center rounded-full border px-4 py-2 text-sm font-medium outline-none transition duration-200 active:scale-95 focus-visible:ring-3 focus-visible:ring-nova-accent/40 ${
         selected
-          ? "border-transparent bg-gradient-to-r from-nova-accent to-sunset-coral/80 text-white shadow-[0_0_0_1px_var(--color-nova-accent-strong)]"
+          ? "border-transparent bg-nova-accent text-white"
           : "border-titanium bg-carbon text-nova-ink-muted hover:border-titanium-strong hover:text-nova-ink"
       }`}
     >
@@ -35,12 +35,12 @@ export function ScoreRing({
   return (
     <div
       className={`w-24 rounded-2xl border px-3 py-3.5 text-center ${
-        emphasize ? "border-nova-accent/30 bg-carbon shadow-[0_0_24px_-12px_var(--color-sunset-coral)]" : "border-titanium bg-carbon"
+        emphasize ? "border-nova-accent/30 bg-carbon shadow-nova-raised" : "border-titanium bg-carbon"
       }`}
     >
       <div
         className={`font-mono text-2xl font-bold tabular-nums ${
-          emphasize ? "bg-gradient-to-r from-nova-accent-strong to-sunset-coral bg-clip-text text-transparent" : "text-nova-ink"
+          emphasize ? "text-nova-accent-strong" : "text-nova-ink"
         }`}
       >
         {value}%

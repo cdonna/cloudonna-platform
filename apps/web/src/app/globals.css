@@ -10,9 +10,8 @@
   /* Was self-referential (var(--font-sans) inside its own definition,
      an inherited shadcn scaffolding bug) — font-sans never actually
      resolved to Geist despite Geist being loaded in layout.tsx. Fixed
-     as part of Project NOVA's typography pass, since every other
-     typography token in this file depends on this one actually
-     working. */
+     as part of the typography pass, since every other typography token
+     in this file depends on this one actually working. */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
@@ -55,124 +54,216 @@
 }
 
 /* ==========================================================================
-   Project NOVA — Deep Space Material & Motion System
-   docs/design/{01-10}.md is the Design Constitution this implements;
-   docs/design/04-material-system.md and 05-color-system.md name every
-   value below. Additive only — nothing above this block is renamed,
-   removed, or overridden. Named tokens, used consistently across every
-   Nova surface, so no component reaches for a hardcoded hex value.
-   ========================================================================== */
-@theme {
-  /* Materials — surfaces */
-  --color-void: #05070d;
-  --color-obsidian: #0a0e17;
-  --color-carbon: #10141f;
-  --color-carbon-2: #1a2030;
+   ClouDonna Editorial System
+   --------------------------------------------------------------------------
+   Supersedes the earlier "Project NOVA — Deep Space" material system
+   (warm-black + Miami/aurora accent range: coral, amber, electric cyan,
+   neon pink, violet/blue aurora glows). That system is retired here, not
+   renamed: the public product's register is now warm off-white paper and
+   near-black ink, with ONE restrained accent family (deep plum / muted
+   violet) and no broad gradients, no ambient glow fields.
 
-  /* Titanium — edges only, applied via border-color, never a fill */
-  --color-titanium: rgba(255, 255, 255, 0.08);
-  --color-titanium-strong: rgba(255, 255, 255, 0.14);
+   TWO REGISTERS, ONE PALETTE
+   The editorial tokens below are *register-relative*: `bg-paper`,
+   `text-ink`, `border-rule`, `text-accent` resolve against whichever
+   register they sit inside. The default is the light register. Adding
+   `register-dark` to any ancestor flips every one of those tokens to the
+   dark values — so a dark section, or a dark product canvas inside a
+   light page, is one class, not a parallel set of components.
+
+   `--color-void / obsidian / carbon / carbon-2 / titanium / nova-*` are
+   kept (retuned to the same warm near-blacks as the dark register) because
+   the authenticated product and the Donna AI experience — ~200 files — are
+   built on them and legitimately stay on the dark register. They are the
+   dark register's *absolute* names; the editorial tokens are its
+   *relative* ones. Both resolve to the same values, so a page can mix a
+   light editorial frame with a dark product canvas and stay coherent.
+   ========================================================================== */
+
+@theme inline {
+  /* Register-relative surfaces and type. Overridden by `.register-dark`. */
+  --color-paper: var(--ed-paper);
+  --color-paper-2: var(--ed-paper-2);
+  --color-paper-3: var(--ed-paper-3);
+  --color-ink: var(--ed-ink);
+  --color-ink-2: var(--ed-ink-2);
+  --color-ink-3: var(--ed-ink-3);
+  --color-rule: var(--ed-rule);
+  --color-rule-2: var(--ed-rule-2);
+  --color-accent: var(--ed-accent);
+  --color-accent-2: var(--ed-accent-2);
+  --color-accent-wash: var(--ed-accent-wash);
+  --color-accent-on: var(--ed-accent-on);
+  /* The primary button: maximum-contrast solid against its own register. */
+  --color-solid: var(--ed-solid);
+  --color-solid-on: var(--ed-solid-on);
+
+  /* Signals. Register-relative because the same badge renders on a light
+     editorial page and inside a dark product canvas. These encode meaning
+     (a risk level, a confidence band), so they are deliberately exempt
+     from the one-accent-family rule — but they are muted, never neon. */
+  --color-sig-positive: var(--ed-sig-positive);
+  --color-sig-caution: var(--ed-sig-caution);
+  --color-sig-critical: var(--ed-sig-critical);
+  --color-sig-neutral: var(--ed-sig-neutral);
+  /* Customer-supplied input. The one non-plum hue in the system, because
+     "you told us this" has to be distinguishable at a glance from "we
+     derived this" — see EvidenceTag.tsx. */
+  --color-sig-input: var(--ed-sig-input);
+
+  /* Editorial type scale. Few sizes, large jumps, tight tracking — the
+     hierarchy is carried by scale and whitespace, not by weight soup. */
+  --text-display: clamp(2.75rem, 7.2vw, 5.75rem);
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.042em;
+  --text-display-2: clamp(2.125rem, 4.8vw, 3.75rem);
+  --text-display-2--line-height: 1;
+  --text-display-2--letter-spacing: -0.036em;
+  --text-display-3: clamp(1.625rem, 3vw, 2.5rem);
+  --text-display-3--line-height: 1.1;
+  --text-display-3--letter-spacing: -0.028em;
+  --text-lede: clamp(1.0625rem, 1.5vw, 1.375rem);
+  --text-lede--line-height: 1.6;
+  --text-lede--letter-spacing: -0.012em;
+  /* The large section numerals (01–05). Mono, because the numeral is a
+     coordinate in the argument, not decoration. */
+  --text-numeral: clamp(2.5rem, 6vw, 5rem);
+  --text-numeral--line-height: 0.9;
+  --text-numeral--letter-spacing: -0.04em;
+  /* Eyebrow / label: the one small size in the system. */
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.3;
+  --text-label--letter-spacing: 0.16em;
+}
+
+:root {
+  /* ---- Light register (default): warm off-white paper, near-black ink -- */
+  --ed-paper: #faf8f5;
+  --ed-paper-2: #fffefc;
+  --ed-paper-3: #f1ece3;
+  --ed-ink: #141311;
+  --ed-ink-2: #4a4641; /* 8.8:1 on paper */
+  --ed-ink-3: #6f6a63; /* 5.1:1 on paper — the floor, not a default */
+  --ed-rule: rgba(20, 19, 17, 0.11);
+  --ed-rule-2: rgba(20, 19, 17, 0.24);
+  --ed-accent: #5a2a4a; /* deep plum — 10.6:1 on paper */
+  --ed-accent-2: #7d3c67;
+  --ed-accent-wash: rgba(90, 42, 74, 0.06);
+  --ed-accent-on: #fffefc;
+  --ed-solid: #141311;
+  --ed-solid-on: #faf8f5;
+  --ed-sig-positive: #2f6b4f;
+  --ed-sig-caution: #8a5f1f;
+  --ed-sig-critical: #a33a2e;
+  --ed-sig-neutral: #6f6a63;
+  --ed-sig-input: #3c6382;
+}
+
+.register-dark {
+  /* ---- Dark register: the same palette, recomposed (never inverted) ---- */
+  --ed-paper: #121110;
+  --ed-paper-2: #1c1a18;
+  --ed-paper-3: #0b0a09;
+  --ed-ink: #f7f4ef;
+  --ed-ink-2: #b2aba2; /* 8.3:1 on paper */
+  --ed-ink-3: #8a847c; /* 5.1:1 on paper, 4.7:1 on paper-2 */
+  --ed-rule: rgba(255, 250, 243, 0.12);
+  --ed-rule-2: rgba(255, 250, 243, 0.26);
+  --ed-accent: #c9a7bd; /* the same plum, lifted — 8.7:1 on paper */
+  --ed-accent-2: #ddc2d3;
+  --ed-accent-wash: rgba(201, 167, 189, 0.1);
+  --ed-accent-on: #1c1a18;
+  --ed-solid: #f7f4ef;
+  --ed-solid-on: #141311;
+  --ed-sig-positive: #6fbf96;
+  --ed-sig-caution: #d9a84a;
+  --ed-sig-critical: #e5796a;
+  --ed-sig-neutral: #a8a29a;
+  --ed-sig-input: #8fbcd9;
+}
+
+@theme {
+  /* ======================================================================
+     Dark-register absolute names (the authenticated product and the Donna
+     AI experience). Retuned from the old blue-black "deep space" values to
+     the warm near-blacks above, so the two naming systems resolve to one
+     palette — `bg-carbon` and `bg-paper-2` inside `.register-dark` are the
+     same surface.
+     ====================================================================== */
+  --color-void: #0b0a09;
+  --color-obsidian: #121110;
+  --color-carbon: #1c1a18;
+  --color-carbon-2: #272320;
+
+  /* Edges only, applied via border-color, never a fill. */
+  --color-titanium: rgba(255, 250, 243, 0.12);
+  --color-titanium-strong: rgba(255, 250, 243, 0.26);
 
   /* Text hierarchy on the dark register — recomposed, not inverted;
-     never pure white. */
-  --color-nova-ink: #f4f6fb;
-  --color-nova-ink-muted: #9aa4b8;
-  /* #6b7590 measured ~4.0:1 on --color-carbon and ~3.5:1 on
-     --color-carbon-2 — under WCAG AA's 4.5:1 for the small/caption text
-     this token is used for almost everywhere. Lightened to clear 4.5:1
-     against carbon, carbon-2, and obsidian alike; same hue, same role. */
-  --color-nova-ink-faint: #808aa5;
+     never pure white. Each clears 4.5:1 against carbon and obsidian. */
+  --color-nova-ink: #f7f4ef;
+  --color-nova-ink-muted: #b2aba2;
+  --color-nova-ink-faint: #8a847c;
 
-  /* Aurora — ambient light only, never a surface fill */
-  --color-aurora-primary: #7c3aed;
-  --color-aurora-secondary: #2563eb;
-  --color-nova-accent: #8b5cf6;
-  --color-nova-accent-strong: #a78bfa;
+  /* The single accent family. `nova-accent` is the solid fill (white type
+     on it measures 9.4:1); `nova-accent-strong` is accent *type* on a dark
+     surface (8.7:1 on carbon). The former Miami range — sunset coral /
+     orange / amber, electric blue / cyan, neon pink, deep purple, and the
+     aurora violet+blue glow pair — is deliberately gone. */
+  --color-nova-accent: #6b3358;
+  --color-nova-accent-strong: #c9a7bd;
 
   /* Evidence reliability (maps onto evidence_reliability_tier) */
-  --color-evidence-primary: #8b5cf6;
-  --color-evidence-vendor: #94a3b8;
-  --color-evidence-analyst: #38bdf8;
-  --color-evidence-community: #64748b;
-  --color-evidence-internal: #e2e8f0;
+  --color-evidence-primary: #c9a7bd;
+  --color-evidence-vendor: #a8a29a;
+  --color-evidence-analyst: #8fbcd9;
+  --color-evidence-community: #7d776f;
+  --color-evidence-internal: #e8e3db;
 
   /* Confidence bands — deliberately never the Decision Score palette;
      conflating "how good" with "how sure" is the false-precision risk
      the Confidence Model architecture rules out. */
-  --color-confidence-high: #cbd5e1;
-  --color-confidence-medium: #f59e0b;
-  --color-confidence-low: #ef4444;
-  --color-confidence-insufficient: #64748b;
+  --color-confidence-high: #d8d2c8;
+  --color-confidence-medium: #d9a84a;
+  --color-confidence-low: #e5796a;
+  --color-confidence-insufficient: #7d776f;
 
   /* Risk severity */
-  --color-risk-low: #10b981;
-  --color-risk-medium: #f59e0b;
-  --color-risk-high: #ef4444;
-  --color-risk-critical: #f43f5e;
+  --color-risk-low: #6fbf96;
+  --color-risk-medium: #d9a84a;
+  --color-risk-high: #e5796a;
+  --color-risk-critical: #e0564f;
 
   /* Semantic — kept structurally separate from the brand accent */
-  --color-nova-success: #10b981;
-  --color-nova-warning: #f59e0b;
+  --color-nova-success: #6fbf96;
+  --color-nova-warning: #d9a84a;
 
-  /* Sunset — a second, warm ambient light, layered against the Aurora
-     violet/blue glow rather than replacing it. Reserved for the same
-     "rare, deliberate moment" role Aurora already has: a hero backdrop,
-     a signature CTA, never a surface fill or a body-text color. Named
-     for what it evokes (a restrained coral/amber warmth at dusk), not
-     an arbitrary hex. */
-  --color-sunset-coral: #fb7660;
-  --color-sunset-orange: #f97c3c;
-  --color-sunset-amber: #f5a35c;
-  /* The full Miami/Vice City accent range, deliberately capped at these
-     six — coral, orange and amber (warm) plus violet, deep purple and
-     electric cyan/blue (cool) — cycled through small, repeated accents
-     (icons, active states, glows) rather than each surface reaching for
-     a new color. Never a surface fill, never body text. */
-  --color-electric-blue: #3b82f6;
-  --color-electric-cyan: #22d3ee;
-  --color-deep-purple: #5b21b6;
-  --color-neon-pink: #f0599c;
-
-  /* Elevation — glow shadows, reserved for rare, deliberate moments,
-     never a default card treatment. */
+  /* Elevation. No glow shadow any more: on a warm paper register a violet
+     bloom reads as a sticker, and the brief retires decorative glow
+     outright. Depth comes from a hairline rule plus a quiet, neutral
+     shadow — or from nothing at all, which is usually right. */
+  --shadow-ed-resting: 0 1px 2px rgb(20 19 17 / 0.05);
+  --shadow-ed-raised: 0 18px 44px -28px rgb(20 19 17 / 0.3), 0 2px 6px -3px rgb(20 19 17 / 0.07);
   --shadow-nova-resting: 0 1px 2px rgb(0 0 0 / 0.4);
-  --shadow-nova-raised: 0 12px 32px -12px rgb(0 0 0 / 0.55);
-  --shadow-nova-glow: 0 30px 90px -35px rgb(124 58 237 / 0.45);
+  --shadow-nova-raised: 0 16px 40px -20px rgb(0 0 0 / 0.55);
 
-  /* Motion — one coherent system, named by what's moving rather than
-     an arbitrary number. Superseded the earlier "reuse Tailwind's raw
-     duration scale" approach (see git history) once the interface
-     needed to reason about motion consistently across dozens of
-     surfaces — a name (duration-control) survives a refactor; a bare
-     number (duration-200) has to be re-derived from scratch every
-     time. One shared easing curve everywhere: a calm decelerate, never
-     a bounce or spring — see docs/design/03-motion-language.md and the
-     experience report for the full duration-band rationale.
-     duration-* below map directly to Tailwind v4's `duration-<name>`
-     utilities via the --transition-duration-* namespace. */
+  /* Motion — one coherent system, named by what's moving rather than an
+     arbitrary number. One shared easing curve everywhere: a calm
+     decelerate, never a bounce or spring. duration-* map to Tailwind v4's
+     `duration-<name>` utilities via the --transition-duration-* namespace.
+     The 90s `aurora-drift` ambient animation is retired with the glow
+     fields it animated. */
   --ease-nova-settle: cubic-bezier(0.16, 1, 0.3, 1);
   --transition-duration-micro: 150ms; /* chip/button state changes */
   --transition-duration-control: 190ms; /* inputs, toggles, tabs */
   --transition-duration-panel: 270ms; /* section/card reveals */
   --transition-duration-modal: 340ms; /* dialogs, drawers */
   --transition-duration-reveal: 550ms; /* the recommendation itself */
-  --animate-aurora-drift: aurora-drift 90s ease-in-out infinite;
   /* Replaces Tailwind's default animate-ping for "Donna is thinking" —
      ping's sharp expand-to-transparent reads as an alert (a browser
-     notification dot), not calm ongoing work. This is a slower,
-     gentler scale+opacity pulse — GPU-only properties, same as
-     aurora-drift. */
+     notification dot), not calm ongoing work. This is a slower, gentler
+     scale+opacity pulse — GPU-only properties. */
   --animate-nova-breathe: nova-breathe 2.4s ease-in-out infinite;
-}
-
-@keyframes aurora-drift {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(2%, -3%) scale(1.05);
-  }
 }
 
 @keyframes nova-breathe {
@@ -187,73 +278,76 @@
   }
 }
 
+/* shadcn/base-ui primitives (Button, inputs) read these. Repointed at the
+   editorial palette so an unstyled `<Button>` is already correct on the
+   light register instead of needing an override at every call site. */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #faf8f5;
+  --foreground: #141311;
+  --card: #fffefc;
+  --card-foreground: #141311;
+  --popover: #fffefc;
+  --popover-foreground: #141311;
+  --primary: #141311;
+  --primary-foreground: #faf8f5;
+  --secondary: #f1ece3;
+  --secondary-foreground: #141311;
+  --muted: #f1ece3;
+  --muted-foreground: #4a4641;
+  --accent: #f1ece3;
+  --accent-foreground: #141311;
+  --destructive: #a33a2e;
+  --border: rgba(20, 19, 17, 0.11);
+  --input: rgba(20, 19, 17, 0.18);
+  --ring: #5a2a4a;
+  --chart-1: #5a2a4a;
+  --chart-2: #7d3c67;
+  --chart-3: #3c6382;
+  --chart-4: #6f6a63;
+  --chart-5: #2f6b4f;
+  --radius: 0.5rem;
+  --sidebar: #f1ece3;
+  --sidebar-foreground: #141311;
+  --sidebar-primary: #141311;
+  --sidebar-primary-foreground: #faf8f5;
+  --sidebar-accent: #fffefc;
+  --sidebar-accent-foreground: #141311;
+  --sidebar-border: rgba(20, 19, 17, 0.11);
+  --sidebar-ring: #5a2a4a;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* `.register-dark` flips the editorial tokens; this flips the primitives
+   that sit inside one, so a <Button> in a dark section needs no override
+   either. Kept in sync with .register-dark above by hand — these are the
+   same palette expressed for a different consumer. */
+.dark,
+.register-dark {
+  --background: #121110;
+  --foreground: #f7f4ef;
+  --card: #1c1a18;
+  --card-foreground: #f7f4ef;
+  --popover: #1c1a18;
+  --popover-foreground: #f7f4ef;
+  --primary: #f7f4ef;
+  --primary-foreground: #141311;
+  --secondary: #272320;
+  --secondary-foreground: #f7f4ef;
+  --muted: #272320;
+  --muted-foreground: #b2aba2;
+  --accent: #272320;
+  --accent-foreground: #f7f4ef;
+  --destructive: #e5796a;
+  --border: rgba(255, 250, 243, 0.12);
+  --input: rgba(255, 250, 243, 0.18);
+  --ring: #c9a7bd;
+  --sidebar: #1c1a18;
+  --sidebar-foreground: #f7f4ef;
+  --sidebar-primary: #f7f4ef;
+  --sidebar-primary-foreground: #141311;
+  --sidebar-accent: #272320;
+  --sidebar-accent-foreground: #f7f4ef;
+  --sidebar-border: rgba(255, 250, 243, 0.12);
+  --sidebar-ring: #c9a7bd;
 }
 
 @layer base {
@@ -268,21 +362,14 @@
   }
 }
 
-/* Brand mark (cloudonna-favicon-512.png) — its dark-navy "C" half
-   measures RGB(9,26,55), which computes to roughly a 1.12:1 luminance
-   contrast ratio against --color-obsidian (RGB(10,14,23)), the actual
-   surface every header places it on — functionally invisible, not a
-   perception issue. Recoloring the asset would be a redesign; this is
-   a tight rim-light that follows the PNG's own alpha silhouette
-   (drop-shadow, not a bounding box, so no badge/circle artifact),
-   restoring the mark's outer edge as a legible boundary against a
-   dark surface without touching the asset itself. Both colors are
-   pulled from the existing token palette (nova-ink, nova-accent), not
-   arbitrary, so the lift reads as brand-specific, not a generic glow. */
-.brand-mark {
-  filter:
-    drop-shadow(0 0 1px rgba(244, 246, 251, 0.4))
-    drop-shadow(0 0 5px rgba(139, 92, 246, 0.3));
+/* The brand mark (cloudonna-favicon-512.png) has a dark-navy "C" half.
+   On the dark register that measured ~1.1:1 against the surface behind it
+   — functionally invisible — so it carried a tight rim-light. On the warm
+   paper register the mark reads correctly unassisted, so the rim-light is
+   now scoped to dark surfaces only rather than applied globally. */
+.register-dark .brand-mark,
+.brand-mark-dark {
+  filter: drop-shadow(0 0 1px rgba(247, 244, 239, 0.4)) drop-shadow(0 0 5px rgba(201, 167, 189, 0.35));
 }
 
 @media (prefers-reduced-motion: reduce) {

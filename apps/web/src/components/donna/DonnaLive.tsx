@@ -20,7 +20,6 @@ import {
   Save,
   Search,
   ShieldCheck,
-  Sparkles,
   UserRound,
 } from "lucide-react";
 
@@ -242,42 +241,34 @@ export default function DonnaLive({ initialQuestion = "" }: { initialQuestion?: 
   return (
     <section
       id="donna"
-      className="relative scroll-mt-8 overflow-hidden bg-obsidian px-6 py-28"
+      className="register-dark relative scroll-mt-20 overflow-hidden bg-obsidian px-6 py-24 sm:py-32"
     >
-      <div className="pointer-events-none absolute inset-0 motion-safe:animate-aurora-drift">
-        <div className="absolute left-[-10rem] top-20 h-96 w-96 rounded-full bg-aurora-secondary/20 blur-[130px]" />
-        <div className="absolute right-[-8rem] top-10 h-[28rem] w-[28rem] rounded-full bg-aurora-primary/25 blur-[140px]" />
-      </div>
-
       <div className="relative mx-auto max-w-7xl">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-nova-accent-strong">
-            <Sparkles size={14} />
-            Donna AI Live
-          </div>
+        <div className="max-w-[44rem]">
+          <p className="font-mono text-label font-medium text-nova-ink-faint uppercase">Donna AI Live</p>
 
-          <h2 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">
+          <h2 className="mt-7 text-display-2 font-medium text-balance text-nova-ink">
             Turn complex requirements into a clear decision
           </h2>
 
-          <p className="mt-5 text-lg leading-8 text-nova-ink-muted">
+          <p className="mt-7 text-lede text-nova-ink-muted">
             Describe your landscape and what you&apos;re trying to do. Donna compares real alternatives against it and builds a
             recommendation, with the reasoning attached.
           </p>
 
           <Link
             href="/donna-ai"
-            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-nova-accent-strong transition duration-control hover:text-nova-ink"
+            className="group mt-9 inline-flex min-h-12 items-center gap-2 text-sm font-medium text-nova-ink transition-colors duration-control hover:text-nova-accent-strong"
           >
             Try the full Donna AI assessment
-            <ArrowRight size={15} />
+            <ArrowRight size={15} className="transition-transform duration-control ease-nova-settle group-hover:translate-x-0.5" />
           </Link>
         </div>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-[0.72fr_1.28fr]">
           <aside className="rounded-[2rem] border border-titanium bg-carbon p-6 shadow-nova-resting">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-nova-accent text-white shadow-nova-glow">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-nova-accent text-white">
                 <Bot size={21} />
               </div>
 
@@ -371,7 +362,7 @@ export default function DonnaLive({ initialQuestion = "" }: { initialQuestion?: 
             </div>
           </aside>
 
-          <div className="min-h-[38rem] overflow-hidden rounded-[2rem] border border-titanium bg-obsidian shadow-nova-glow">
+          <div className="min-h-[38rem] overflow-hidden rounded-[2rem] border border-titanium bg-obsidian">
             {status === "idle" && (
               <EmptyDonnaState />
             )}
@@ -537,7 +528,7 @@ function EmptyDonnaState() {
   return (
     <div className="flex min-h-[38rem] items-center justify-center p-8 text-center">
       <div className="max-w-md">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-nova-accent text-white shadow-nova-glow">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-nova-accent text-white">
           <Bot size={34} />
         </div>
 
@@ -621,7 +612,7 @@ function AnalysingState({
 
         <div className="mt-4 h-1 overflow-hidden rounded-full bg-carbon-2">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-nova-accent to-sunset-coral transition-[width] duration-500 ease-nova-settle"
+            className="h-full rounded-full bg-nova-accent transition-[width] duration-500 ease-nova-settle"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -936,7 +927,7 @@ function ArchitectureNode({
     <div
       className={`rounded-2xl border p-4 text-center ${
         primary
-          ? "border-nova-accent-strong/40 bg-nova-accent text-white shadow-nova-glow"
+          ? "border-nova-accent-strong/40 bg-nova-accent text-white"
           : "border-titanium bg-carbon text-nova-ink"
       }`}
     >

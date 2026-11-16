@@ -156,7 +156,7 @@ export function AnalysingState({
             dispatch({ type: "RETRY" });
             onRetry();
           }}
-          className="mt-6 h-11 bg-nova-accent px-6 text-white shadow-nova-glow hover:bg-nova-accent-strong"
+          className="mt-6 h-11 bg-nova-accent px-6 text-white hover:bg-nova-accent-strong"
         >
           Try again
         </Button>

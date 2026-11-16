@@ -148,12 +148,7 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
   }
 
   return (
-    <section className="relative overflow-hidden bg-obsidian px-6 py-16 sm:py-20">
-      <div className="pointer-events-none absolute inset-0 motion-safe:animate-aurora-drift">
-        <div className="absolute top-20 left-[-10rem] h-96 w-96 rounded-full bg-aurora-secondary/20 blur-[130px]" />
-        <div className="absolute top-10 right-[-8rem] h-[28rem] w-[28rem] rounded-full bg-aurora-primary/25 blur-[140px]" />
-      </div>
-
+    <section className="register-dark relative overflow-hidden bg-obsidian px-6 py-16 sm:py-20">
       <div className="relative mx-auto max-w-7xl">
         {phase === "intro" && (
           <div className="mx-auto max-w-2xl text-center">
@@ -162,7 +157,7 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
               {dict.donnaExperience.introBadge}
             </div>
 
-            <div className="mx-auto mt-8 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-nova-accent text-white shadow-nova-glow">
+            <div className="mx-auto mt-8 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-nova-accent text-white">
               <Bot size={34} />
             </div>
 
@@ -170,7 +165,7 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
 
             <p className="mt-5 text-lg leading-8 text-nova-ink-muted">{dict.donnaExperience.sub}</p>
 
-            <Button size="lg" onClick={handleStartAssessment} className="mt-9 h-12 bg-nova-accent px-7 text-white shadow-nova-glow hover:bg-nova-accent-strong">
+            <Button size="lg" onClick={handleStartAssessment} className="mt-9 h-12 bg-nova-accent px-7 text-white hover:bg-nova-accent-strong">
               {dict.donnaExperience.startCta}
               <ArrowRight size={17} />
             </Button>
@@ -186,7 +181,7 @@ export function DonnaAIExperience({ isSignedIn }: { isSignedIn: boolean }) {
             <div className="mb-6 rounded-2xl border border-titanium bg-carbon p-5">
               <WizardProgress stepIndex={ANALYSIS_STEP_INDEX} />
             </div>
-            <div className="overflow-hidden rounded-[2rem] border border-titanium bg-obsidian shadow-nova-glow">
+            <div className="overflow-hidden rounded-[2rem] border border-titanium bg-obsidian">
               <AnalysingState
                 state={wizardState}
                 report={report}

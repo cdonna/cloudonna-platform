@@ -15,6 +15,16 @@ export interface ScenarioPlatform {
   baseScore: number;
 }
 
+/**
+ * The kinds of thing a changed assumption can move. Keyed to
+ * dict.scenarioLabPage.shiftKinds, so the Scenario Lab can say *what*
+ * shifted rather than only showing a score moving — "the number went
+ * down" is not an explanation. `shiftKinds.input` in the dictionary
+ * labels the trigger itself (the assumption you changed), which is why
+ * it is not one of these.
+ */
+export type ShiftKind = "recommendation" | "risk" | "cost" | "architecture";
+
 export interface ScenarioAssumption {
   id: string;
   label: string;
@@ -22,6 +32,9 @@ export interface ScenarioAssumption {
   effects: Record<string, number>;
   /** Shown once this assumption is toggled on. */
   note: string;
+  /** What this assumption moves, beyond the score. Qualitative on
+   * purpose: a precise cost delta here would be invented. */
+  shifts: Partial<Record<ShiftKind, string>>;
 }
 
 export interface ScenarioTimelineEvent {
@@ -57,30 +70,50 @@ export const DATA_PLATFORM_SCENARIO: DecisionScenario = {
       label: "Budget reduced by 30%",
       effects: { "sap-bdc": -4, databricks: -3, snowflake: 3, fabric: 2 },
       note: "Consumption-based platforms gain ground once fixed commitments become harder to justify.",
+      shifts: {
+        cost: "Fixed commitments become harder to defend than variable consumption.",
+        recommendation: "The gap between the leader and the consumption-priced alternatives narrows.",
+      },
     },
     {
       id: "deadline-shortened",
       label: "Deadline shortened by six months",
       effects: { "sap-bdc": 5, fabric: 4, databricks: -3, snowflake: -2 },
       note: "Platforms already native to the existing landscape pull ahead once speed matters more than flexibility.",
+      shifts: {
+        risk: "Migration sequencing risk rises; there is less room to decommission legacy extracts on schedule.",
+        architecture: "Favours staying close to the existing landscape over introducing a second platform.",
+      },
     },
     {
       id: "regulation-increases",
       label: "Regulatory requirements increase",
       effects: { "sap-bdc": 6, fabric: 2, databricks: -2, snowflake: -3 },
       note: "Stronger built-in governance becomes worth more once compliance risk rises.",
+      shifts: {
+        risk: "Compliance risk moves from a constraint to a decision driver.",
+        architecture: "Built-in governance stops being a convenience and starts being the requirement.",
+      },
     },
     {
       id: "vendor-pricing-changes",
       label: "A key vendor raises consumption pricing",
       effects: { databricks: -6, snowflake: -5, "sap-bdc": 2, fabric: 3 },
       note: "Consumption-priced platforms carry more exposure to a pricing change than fixed-commercial ones.",
+      shifts: {
+        cost: "Consumption-priced platforms carry materially more exposure under this workload profile.",
+        recommendation: "Two alternatives drop far enough to leave the shortlist in practice.",
+      },
     },
     {
       id: "key-vendor-exits",
       label: "A key implementation partner exits the market",
       effects: { "sap-bdc": 3, fabric: 3, databricks: -4, snowflake: -4 },
       note: "Platforms with a broader delivery partner ecosystem absorb this better than those leaning on fewer specialists.",
+      shifts: {
+        risk: "Delivery risk concentrates on a smaller pool of specialists.",
+        architecture: "Breadth of partner ecosystem becomes an architecture criterion, not a procurement one.",
+      },
     },
   ],
   timeline: [

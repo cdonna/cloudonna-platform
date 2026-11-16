@@ -67,7 +67,7 @@ export default function Ecosystem({ dict, locale }: { dict: Dictionary; locale: 
                 }`}
               >
                 <div className="flex items-start justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-nova-accent text-white shadow-nova-glow">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-nova-accent text-white">
                     <Icon size={22} />
                   </div>
 

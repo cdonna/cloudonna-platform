@@ -28,15 +28,15 @@ export const metadata: Metadata = {
 export default function GlobalNotFound() {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-obsidian text-nova-ink">
+      <body className="flex min-h-full flex-col bg-paper text-ink">
         {/* No locale/dict context exists this far outside the route
             tree, so GlobalNav uses its own English defaults — same
             pattern as /discovery. Even the fallback 404 stays part of
             one product, not an isolated page. */}
         <GlobalNav showLanguageSwitcher={false} />
-        <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-          <p className="text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">404</p>
-          <h1 className="mt-3 text-2xl font-semibold">Page not found</h1>
+        <div className="mx-auto flex w-full max-w-[82rem] flex-1 flex-col justify-center px-6 py-24 sm:px-8 lg:px-12">
+          <p className="font-mono text-label font-medium text-ink-3 uppercase">404</p>
+          <h1 className="mt-7 text-display-2 font-medium tracking-[-0.036em]">Page not found</h1>
         </div>
       </body>
     </html>

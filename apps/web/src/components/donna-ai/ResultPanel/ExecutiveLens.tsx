@@ -46,7 +46,7 @@ export function ExecutiveLens({ output }: { output: DecisionOutput }) {
                 onClick={() => setActiveId(persona.id)}
                 className={`rounded-full border px-3 py-1.5 text-xs font-medium transition duration-control ${
                   isActive
-                    ? "border-transparent bg-gradient-to-r from-nova-accent to-sunset-coral text-white"
+                    ? "border-transparent bg-nova-accent text-white"
                     : "border-titanium bg-carbon text-nova-ink-muted hover:text-nova-ink"
                 }`}
               >

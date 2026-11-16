@@ -17,10 +17,10 @@ export function LoginForm({ locale }: { locale: string }) {
   const [magicLinkSent, setMagicLinkSent] = useState(false);
 
   return (
-    <div className="mx-auto min-h-dvh max-w-md bg-void px-6 py-16">
-      <div className="overflow-hidden rounded-[1.75rem] border border-titanium bg-carbon/80 p-8 shadow-[0_30px_90px_-45px_rgba(79,70,229,0.35)] backdrop-blur-xl">
-        <h1 className="text-2xl font-semibold tracking-tight text-nova-ink">{dict.login.h1}</h1>
-        <p className="mt-2 text-sm leading-6 text-nova-ink-faint">{dict.login.sub}</p>
+    <div className="mx-auto min-h-dvh max-w-md bg-paper px-6 py-16">
+      <div className="overflow-hidden rounded-[1.75rem] border border-rule bg-paper-2/80 p-8 shadow-[0_30px_90px_-45px_rgba(79,70,229,0.35)] backdrop-blur-xl">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">{dict.login.h1}</h1>
+        <p className="mt-2 text-sm leading-6 text-ink-3">{dict.login.sub}</p>
 
         {!usePassword ? (
           magicLinkSent ? (
@@ -30,7 +30,7 @@ export function LoginForm({ locale }: { locale: string }) {
           ) : (
             <form action={magicLinkAction} className="mt-8 flex flex-col gap-4" onSubmit={() => setMagicLinkSent(true)}>
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="login-email" className="text-sm font-medium text-nova-ink">
+                <label htmlFor="login-email" className="text-sm font-medium text-ink">
                   {dict.login.workEmail}
                 </label>
                 <input
@@ -39,7 +39,7 @@ export function LoginForm({ locale }: { locale: string }) {
                   type="email"
                   required
                   autoComplete="email"
-                  className="h-11 rounded-xl border border-titanium bg-carbon px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+                  className="h-11 rounded-xl border border-rule bg-paper-2 px-3 text-sm text-ink outline-none focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/25"
                 />
               </div>
 
@@ -49,7 +49,7 @@ export function LoginForm({ locale }: { locale: string }) {
                 </p>
               )}
 
-              <Button type="submit" disabled={magicLinkPending} className="h-11 bg-nova-accent text-white">
+              <Button type="submit" disabled={magicLinkPending} className="h-11 bg-solid text-solid-on">
                 {magicLinkPending ? <LoaderCircle size={16} className="animate-spin" /> : <Mail size={16} />}
                 {dict.login.sendMagicLink}
               </Button>
@@ -57,7 +57,7 @@ export function LoginForm({ locale }: { locale: string }) {
               <button
                 type="button"
                 onClick={() => setUsePassword(true)}
-                className="text-center text-sm font-medium text-nova-ink-faint underline-offset-4 hover:text-nova-accent-strong hover:underline"
+                className="text-center text-sm font-medium text-ink-3 underline-offset-4 hover:text-accent hover:underline"
               >
                 {dict.login.usePasswordInstead}
               </button>
@@ -66,7 +66,7 @@ export function LoginForm({ locale }: { locale: string }) {
         ) : (
           <form action={passwordAction} className="mt-8 flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="login-email-pw" className="text-sm font-medium text-nova-ink">
+              <label htmlFor="login-email-pw" className="text-sm font-medium text-ink">
                 {dict.login.workEmail}
               </label>
               <input
@@ -75,11 +75,11 @@ export function LoginForm({ locale }: { locale: string }) {
                 type="email"
                 required
                 autoComplete="email"
-                className="h-11 rounded-xl border border-titanium bg-carbon px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+                className="h-11 rounded-xl border border-rule bg-paper-2 px-3 text-sm text-ink outline-none focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/25"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="login-password" className="text-sm font-medium text-nova-ink">
+              <label htmlFor="login-password" className="text-sm font-medium text-ink">
                 {dict.login.password}
               </label>
               <input
@@ -88,7 +88,7 @@ export function LoginForm({ locale }: { locale: string }) {
                 type="password"
                 required
                 autoComplete="current-password"
-                className="h-11 rounded-xl border border-titanium bg-carbon px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+                className="h-11 rounded-xl border border-rule bg-paper-2 px-3 text-sm text-ink outline-none focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/25"
               />
             </div>
 
@@ -98,7 +98,7 @@ export function LoginForm({ locale }: { locale: string }) {
               </p>
             )}
 
-            <Button type="submit" disabled={passwordPending} className="h-11 bg-nova-accent text-white">
+            <Button type="submit" disabled={passwordPending} className="h-11 bg-solid text-solid-on">
               {passwordPending && <LoaderCircle size={16} className="animate-spin" />}
               {dict.login.signIn}
             </Button>
@@ -106,16 +106,16 @@ export function LoginForm({ locale }: { locale: string }) {
             <button
               type="button"
               onClick={() => setUsePassword(false)}
-              className="text-center text-sm font-medium text-nova-ink-faint underline-offset-4 hover:text-nova-accent-strong hover:underline"
+              className="text-center text-sm font-medium text-ink-3 underline-offset-4 hover:text-accent hover:underline"
             >
               {dict.login.useMagicLinkInstead}
             </button>
           </form>
         )}
 
-        <p className="mt-6 text-center text-sm text-nova-ink-faint">
+        <p className="mt-6 text-center text-sm text-ink-3">
           {dict.login.newToClouDonna}{" "}
-          <Link href={`/${locale}/signup`} className="font-medium text-nova-accent-strong underline-offset-4 hover:underline">
+          <Link href={`/${locale}/signup`} className="font-medium text-accent underline-offset-4 hover:underline">
             {dict.login.createAccount}
           </Link>
         </p>

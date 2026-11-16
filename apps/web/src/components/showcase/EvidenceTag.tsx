@@ -4,12 +4,23 @@ import { useLocale } from "@/i18n/LocaleProvider";
 
 export type EvidenceType = "customer-input" | "official-source" | "calculated" | "ai-interpretation" | "assumption";
 
-const EVIDENCE_COLORS: Record<EvidenceType, string> = {
-  "customer-input": "border-electric-blue/30 bg-electric-blue/10 text-electric-blue",
-  "official-source": "border-nova-accent/30 bg-nova-accent/10 text-nova-accent-strong",
-  calculated: "border-nova-success/30 bg-nova-success/10 text-nova-success",
-  "ai-interpretation": "border-sunset-coral/30 bg-sunset-coral/10 text-sunset-coral",
-  assumption: "border-nova-warning/30 bg-nova-warning/10 text-nova-warning",
+/**
+ * Register-relative, so the same tag is legible on a warm paper page and
+ * inside a dark product canvas without a second code path.
+ *
+ * `ai-interpretation` is deliberately the one type with no colour of its
+ * own and a dashed edge. Every other type is a kind of evidence; AI
+ * interpretation is a narrative *over* evidence, and the Trust Center
+ * commits to never presenting it as verified evidence. Giving it the
+ * same solid, coloured treatment as an official source would contradict
+ * that commitment in the visual language while the copy denied it.
+ */
+const EVIDENCE_STYLES: Record<EvidenceType, string> = {
+  "customer-input": "border-sig-input/40 bg-sig-input/10 text-sig-input",
+  "official-source": "border-accent/40 bg-accent-wash text-accent",
+  calculated: "border-sig-positive/40 bg-sig-positive/10 text-sig-positive",
+  "ai-interpretation": "border-dashed border-rule-2 bg-transparent text-ink-3",
+  assumption: "border-sig-caution/40 bg-sig-caution/10 text-sig-caution",
 };
 
 /**
@@ -30,7 +41,7 @@ export function EvidenceTag({ type }: { type: EvidenceType }) {
   };
 
   return (
-    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-[0.04em] uppercase ${EVIDENCE_COLORS[type]}`}>
+    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 font-mono text-[0.625rem] font-medium tracking-[0.1em] uppercase ${EVIDENCE_STYLES[type]}`}>
       {labels[type]}
     </span>
   );

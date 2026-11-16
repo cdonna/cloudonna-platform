@@ -1,21 +1,26 @@
 "use client";
 
 /**
- * The one persistent header for every public ClouDonna page — replaces
- * the per-page "logo + Back to home" mini-headers that used to make
- * each page feel like an island. Rendered once from
- * (localized)/[locale]/layout.tsx (covers all 12 localized pages) and
- * once, with defaults, from the standalone /discovery page (outside
- * the locale tree, same optional-props pattern Footer.tsx already
+ * The one persistent header for every public ClouDonna page. Rendered
+ * once from (localized)/[locale]/layout.tsx (covers all localized
+ * pages) and once, with defaults, from the standalone /discovery page
+ * (outside the locale tree, same optional-props pattern Footer.tsx
  * uses). Never rendered inside /app/* — the authenticated product has
  * its own nav and is a deliberately different context.
+ *
+ * Redesigned for the editorial register: a quiet, always-present bar on
+ * warm paper. What was removed, deliberately — the gradient CTA button
+ * (`from-nova-accent to-sunset-coral`), the glass pill behind the active
+ * item, the coral glow under it, the gradient underline, the
+ * transparent-until-scrolled background, and the second CTA in the
+ * mobile sheet. What remains is: wordmark, six items, one solid CTA, and
+ * the language selector as the secondary control the brief asks for.
  */
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
 import { en } from "@/i18n/dictionary";
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales";
@@ -48,17 +53,17 @@ export function GlobalNav({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Discovery and Independence remain real pages (linked from the
-  // Footer's "Explore" column) but sit outside the primary bar — six
-  // items reads clean, matches the brief's target IA, and every item
-  // here has real content behind it.
+  // Six items, matching the brief's target IA. Contact and Donna AI are
+  // still real pages (Contact from the Footer, Donna AI as "Product"
+  // here and as every page's primary action) — they moved out of the bar
+  // rather than disappearing.
   const navItems: NavItem[] = [
-    { label: dict.nav.links.donnaAi, href: `/${locale}/donna-ai` },
+    { label: dict.nav.links.product, href: `/${locale}/donna-ai` },
     { label: dict.nav.links.decisionSkills, href: `/${locale}/decision-skills` },
-    { label: dict.nav.links.demo, href: `/${locale}/demo` },
     { label: dict.nav.links.architects, href: `/${locale}/architects` },
     { label: dict.nav.links.dataEconomy, href: `/${locale}/data-economy` },
-    { label: dict.nav.links.contact, href: `/${locale}/contact` },
+    { label: dict.nav.links.demo, href: `/${locale}/demo` },
+    { label: dict.nav.links.trust, href: `/${locale}/trust` },
   ];
 
   function isActive(href: string): boolean {
@@ -67,19 +72,19 @@ export function GlobalNav({
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b transition-colors duration-panel ease-nova-settle ${
-        scrolled ? "border-titanium bg-obsidian/75 backdrop-blur-xl" : "border-transparent bg-transparent"
+      className={`sticky top-0 z-50 bg-paper/90 backdrop-blur-xl transition-colors duration-panel ease-nova-settle ${
+        scrolled ? "border-b border-rule" : "border-b border-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3.5">
+      <div className="mx-auto flex w-full max-w-[82rem] items-center gap-6 px-6 py-4 sm:px-8 lg:px-12">
         <Link href={`/${locale}`} className="flex shrink-0 items-center gap-2.5">
-          <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={36} height={36} className="brand-mark h-8 w-8 object-contain" priority />
-          <span className="text-lg font-bold tracking-[-0.02em] text-nova-ink">
-            Clou<span className="text-nova-accent-strong">Donna</span>
+          <Image src="/cloudonna-favicon-512.png" alt="ClouDonna" width={32} height={32} className="h-7 w-7 object-contain" priority />
+          <span className="text-[1.0625rem] font-medium tracking-[-0.025em] text-ink">
+            Clou<span className="text-accent">Donna</span>
           </span>
         </Link>
 
-        <nav aria-label="Primary" className="hidden items-center gap-1.5 lg:flex">
+        <nav aria-label="Primary" className="hidden flex-1 items-center justify-center gap-7 lg:flex">
           {navItems.map((item) => {
             const active = isActive(item.href);
             return (
@@ -87,59 +92,51 @@ export function GlobalNav({
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`relative rounded-full px-4 py-2 text-sm font-semibold tracking-[-0.006em] transition-colors duration-control ${
-                  active ? "text-nova-ink" : "text-nova-ink-muted hover:text-nova-ink"
+                className={`relative py-1 text-sm tracking-[-0.008em] transition-colors duration-control ${
+                  active ? "text-ink" : "text-ink-2 hover:text-ink"
                 }`}
               >
-                {active && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-0 rounded-full border border-titanium bg-carbon-2/80 shadow-[0_10px_24px_-16px_rgba(251,118,96,0.55)]"
-                  />
-                )}
-                <span className="relative">{item.label}</span>
-                {active && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-x-4 -bottom-px h-px bg-gradient-to-r from-nova-accent to-sunset-coral"
-                  />
-                )}
+                {item.label}
+                {/* A hairline, not a pill. The only state marker in the bar. */}
+                {active && <span aria-hidden="true" className="absolute -bottom-px left-0 h-px w-full bg-accent" />}
               </Link>
             );
           })}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="ml-auto flex items-center gap-2 lg:ml-0">
           {showLanguageSwitcher && (
             <div className="hidden lg:block">
               <LanguageSwitcher />
             </div>
           )}
 
-          <Button
-            className="hidden bg-gradient-to-r from-nova-accent to-sunset-coral text-white transition-[filter] duration-control hover:brightness-110 sm:inline-flex"
-            render={<a href={`/${locale}/early-access`} />}
+          <Link
+            href={`/${locale}/early-access`}
+            className="hidden min-h-10 items-center rounded-md bg-solid px-4 text-sm font-medium text-solid-on transition-colors duration-control hover:bg-accent hover:text-accent-on focus-visible:ring-3 focus-visible:ring-accent/40 focus-visible:outline-none sm:inline-flex"
           >
             {dict.nav.ctaDesktop}
-          </Button>
+          </Link>
 
-          <Button
-            variant="outline"
-            size="icon"
+          <button
+            type="button"
             aria-label={menuOpen ? dict.nav.closeMenu : dict.nav.openMenu}
             aria-expanded={menuOpen}
             aria-controls="global-mobile-nav"
-            className="h-11 w-11 border-titanium bg-carbon text-nova-ink lg:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-md text-ink transition-colors duration-control hover:bg-paper-3 focus-visible:ring-3 focus-visible:ring-accent/40 focus-visible:outline-none lg:hidden"
             onClick={() => setMenuOpen((open) => !open)}
           >
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
-          </Button>
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
 
+      {/* The mobile sheet is not the desktop bar stacked: items are set at
+          reading size on their own hairline-separated rows, so a thumb has
+          a real target and the list reads as a table of contents. */}
       {menuOpen && (
-        <div id="global-mobile-nav" className="border-t border-titanium bg-obsidian/95 px-6 py-4 backdrop-blur-xl lg:hidden">
-          <nav aria-label="Primary" className="flex flex-col gap-1">
+        <div id="global-mobile-nav" className="border-t border-rule bg-paper lg:hidden">
+          <nav aria-label="Primary" className="flex flex-col px-6 sm:px-8">
             {navItems.map((item) => {
               const active = isActive(item.href);
               return (
@@ -148,8 +145,8 @@ export function GlobalNav({
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   onClick={() => setMenuOpen(false)}
-                  className={`rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
-                    active ? "bg-carbon-2 text-nova-ink" : "text-nova-ink-muted hover:bg-carbon hover:text-nova-ink"
+                  className={`flex min-h-14 items-center border-b border-rule text-[1.0625rem] tracking-[-0.015em] transition-colors duration-control ${
+                    active ? "text-accent" : "text-ink hover:text-accent"
                   }`}
                 >
                   {item.label}
@@ -158,21 +155,16 @@ export function GlobalNav({
             })}
           </nav>
 
-          {showLanguageSwitcher && (
-            <div className="mt-3 px-1">
-              <LanguageSwitcher variant="inline" />
-            </div>
-          )}
-
-          <div className="mt-3 flex flex-col gap-2 px-1">
-            <Button
-              className="bg-gradient-to-r from-nova-accent to-sunset-coral text-white"
-              render={<a href={`/${locale}/early-access`} />}
+          <div className="flex flex-col gap-5 px-6 py-6 sm:px-8">
+            <Link
+              href={`/${locale}/early-access`}
               onClick={() => setMenuOpen(false)}
+              className="flex min-h-12 items-center justify-center rounded-md bg-solid px-5 text-sm font-medium text-solid-on"
             >
               {dict.nav.ctaMobile}
-              <ArrowRight size={16} />
-            </Button>
+            </Link>
+
+            {showLanguageSwitcher && <LanguageSwitcher variant="inline" />}
           </div>
         </div>
       )}

@@ -126,7 +126,7 @@ export function ResultPanel({
         </p>
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-[2rem] border border-titanium bg-obsidian shadow-nova-glow">
+      <div className="mt-8 overflow-hidden rounded-[2rem] border border-titanium bg-obsidian">
         <div className="border-b border-titanium px-4 py-4 sm:px-8">
           <div role="tablist" aria-label="Donna AI result view" className="flex flex-wrap items-center gap-2">
             <TabButton tab={PRIMARY_TAB} index={0} selected={activeTab === PRIMARY_TAB.value} registerTab={registerTab} onSelect={setActiveTab} onKeyDown={(e, i) => handleTabKeyDown(e, i, selectTabByIndex)} primary />
@@ -250,7 +250,7 @@ function TabButton({
       className={`flex min-h-11 items-center rounded-xl font-medium transition-colors duration-control ${primary ? "px-4 py-2 text-sm" : "px-3 py-1.5 text-xs"} ${
         selected
           ? primary
-            ? "bg-nova-accent text-white shadow-nova-glow"
+            ? "bg-nova-accent text-white"
             : "bg-carbon-2 text-nova-ink"
           : "text-nova-ink-faint hover:bg-carbon-2 hover:text-nova-ink-muted"
       }`}

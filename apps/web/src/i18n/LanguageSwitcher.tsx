@@ -66,10 +66,10 @@ export function LanguageSwitcher({ variant = "dropdown" }: { variant?: "dropdown
               onClick={() => switchTo(code)}
               aria-pressed={active}
               aria-label={LOCALE_LABELS[code].name}
-              className={`flex min-h-11 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors duration-control focus-visible:ring-3 focus-visible:ring-nova-accent/40 ${
+              className={`flex min-h-11 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors duration-control focus-visible:ring-3 focus-visible:ring-accent/40 ${
                 active
-                  ? "border-nova-accent/50 bg-nova-accent/15 text-nova-accent-strong"
-                  : "border-titanium bg-carbon-2 text-nova-ink-muted hover:border-titanium-strong hover:text-nova-ink"
+                  ? "border-accent/40 bg-accent-wash text-accent"
+                  : "border-rule bg-paper-2 text-ink-2 hover:border-rule-2 hover:text-ink"
               }`}
             >
               <span aria-hidden="true">{LOCALE_LABELS[code].flag}</span>
@@ -89,7 +89,7 @@ export function LanguageSwitcher({ variant = "dropdown" }: { variant?: "dropdown
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={dict.languageSwitcher.choose}
-        className="flex h-11 items-center gap-1.5 rounded-xl border border-titanium bg-carbon-2 px-3 text-sm font-medium text-nova-ink-muted transition-colors duration-control hover:border-titanium-strong hover:text-nova-ink focus-visible:ring-3 focus-visible:ring-nova-accent/40"
+        className="flex h-10 items-center gap-1.5 rounded-md px-2.5 font-mono text-label font-medium text-ink-3 uppercase transition-colors duration-control hover:text-ink focus-visible:ring-3 focus-visible:ring-accent/40 focus-visible:outline-none"
       >
         <Globe size={15} aria-hidden="true" />
         <span aria-hidden="true">{LOCALE_LABELS[locale].flag}</span>
@@ -101,7 +101,7 @@ export function LanguageSwitcher({ variant = "dropdown" }: { variant?: "dropdown
         <div
           role="menu"
           aria-label={dict.languageSwitcher.choose}
-          className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-2xl border border-titanium bg-carbon shadow-nova-raised"
+          className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-lg border border-rule bg-paper-2 shadow-ed-raised"
         >
           {SUPPORTED_LOCALES.map((code) => {
             const active = code === locale;
@@ -113,7 +113,7 @@ export function LanguageSwitcher({ variant = "dropdown" }: { variant?: "dropdown
                 aria-checked={active}
                 onClick={() => switchTo(code)}
                 className={`flex min-h-11 w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm transition-colors duration-control ${
-                  active ? "bg-nova-accent/10 text-nova-accent-strong" : "text-nova-ink-muted hover:bg-carbon-2 hover:text-nova-ink"
+                  active ? "bg-accent-wash text-accent" : "text-ink-2 hover:bg-paper-3 hover:text-ink"
                 }`}
               >
                 <span aria-hidden="true">{LOCALE_LABELS[code].flag}</span>

@@ -1,8 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Bot, Building2, Cpu, Handshake, ListOrdered, RefreshCw, ShieldAlert, TrendingUp } from "lucide-react";
-import { DECISION_SKILL_CATEGORIES, type DecisionSkillCategoryId } from "@/components/decision-skills/catalog";
+import { ArrowRight } from "lucide-react";
+import { DECISION_SKILL_CATEGORIES } from "@/components/decision-skills/catalog";
+import {
+  Disclosure,
+  FrameField,
+  FramePanel,
+  IllustrativeLabel,
+  PageCta,
+  PageHeader,
+  ProductFrame,
+  RuledList,
+  Section,
+  SectionHeading,
+  Shell,
+  Tag,
+} from "@/components/editorial/primitives";
+import { EvidenceTag } from "@/components/showcase/EvidenceTag";
 import { EXAMPLE_DECISIONS } from "@/components/showcase/example-decisions";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
@@ -22,23 +37,19 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-// One icon per category, cycling the same restrained accent set used
-// across the site (coral, amber, violet, electric blue) rather than a
-// distinct color per card — a system, not a rainbow.
-const ICONS: Record<DecisionSkillCategoryId, typeof Cpu> = {
-  "technology-strategy": Cpu,
-  investment: TrendingUp,
-  vendor: Handshake,
-  transformation: RefreshCw,
-  risk: ShieldAlert,
-  prioritization: ListOrdered,
-  "ai-data": Bot,
-  "operating-model": Building2,
-};
+const PREVIEW = EXAMPLE_DECISIONS[0];
 
-const ACCENT_TEXT = ["text-sunset-coral", "text-sunset-amber", "text-nova-accent-strong", "text-electric-blue"];
-const ACCENT_BG = ["bg-sunset-coral/10", "bg-sunset-amber/10", "bg-nova-accent/10", "bg-electric-blue/10"];
-
+/**
+ * Decision Skills now reads as product capability rather than a taxonomy:
+ * the eight categories are a ruled index of the real enterprise questions
+ * each one covers, and the page ends on an actual recommendation preview
+ * — the same output the engine produces, not a description of it.
+ *
+ * The four-colour rotating icon tile per category is gone. It implied
+ * eight categories differ in kind when they differ only in subject, and
+ * it was the last place on the site still cycling the retired accent
+ * range.
+ */
 export default async function DecisionSkillsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isSupportedLocale(locale)) notFound();
@@ -46,76 +57,113 @@ export default async function DecisionSkillsPage({ params }: { params: Promise<{
   const d = dict.decisionSkillsPage;
 
   return (
-    <div className="min-h-dvh bg-void">
-      <div className="mx-auto max-w-3xl px-6 pt-14 text-center">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
-          {d.badge}
-        </div>
+    <main className="bg-paper">
+      <PageHeader
+        eyebrow={d.badge}
+        title={d.h1}
+        lede={d.sub}
+        aside={
+          <div>
+            <div className="font-mono text-label font-medium text-ink-3 uppercase">{d.outputHeading}</div>
+            <div className="mt-5">
+              <RuledList items={d.outputs} tone="accent" />
+            </div>
+          </div>
+        }
+      />
 
-        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-nova-ink sm:text-5xl">{d.h1}</h1>
+      <Section size="lg">
+        <Shell>
+          <SectionHeading eyebrow={d.questionsHeading} title={d.metaDescription} />
 
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-nova-ink-muted">{d.sub}</p>
-      </div>
+          <div className="mt-12 border-t border-rule">
+            {DECISION_SKILL_CATEGORIES.map((category) => {
+              const example = EXAMPLE_DECISIONS.find((decision) => decision.decisionSkills.includes(category.id));
+              return (
+                <Disclosure key={category.id} title={category.label} summary={category.description}>
+                  <FrameField label={d.questionsHeading} className="sm:col-span-2">
+                    <div className="flex flex-wrap gap-1.5">
+                      {category.examples.map((exampleLabel) => (
+                        <Tag key={exampleLabel}>{exampleLabel}</Tag>
+                      ))}
+                    </div>
+                  </FrameField>
 
-      <div className="mx-auto mt-14 max-w-4xl px-6 pb-16">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {DECISION_SKILL_CATEGORIES.map((category, index) => {
-            const Icon = ICONS[category.id];
-            const accentText = ACCENT_TEXT[index % ACCENT_TEXT.length];
-            const accentBg = ACCENT_BG[index % ACCENT_BG.length];
-            const example = EXAMPLE_DECISIONS.find((decision) => decision.decisionSkills.includes(category.id));
+                  {example && (
+                    <div className="sm:col-span-2">
+                      <Link
+                        href={`/${locale}/examples#${example.id}`}
+                        className="group inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors duration-control hover:text-accent"
+                      >
+                        {d.exampleLinkLabel}
+                        <ArrowRight size={14} className="transition-transform duration-control ease-nova-settle group-hover:translate-x-0.5" />
+                      </Link>
+                    </div>
+                  )}
+                </Disclosure>
+              );
+            })}
+          </div>
+        </Shell>
+      </Section>
 
-            return (
-              <details key={category.id} className="group rounded-3xl border border-titanium bg-carbon p-6 open:bg-carbon-2">
-                <summary className="flex cursor-pointer list-none items-start gap-4 [&::-webkit-details-marker]:hidden">
-                  <span className={`flex h-11 w-11 flex-none items-center justify-center rounded-2xl ${accentBg} ${accentText}`}>
-                    <Icon size={20} />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-semibold text-nova-ink">{category.label}</span>
-                    <span className="mt-1 block text-sm leading-6 text-nova-ink-muted">{category.description}</span>
-                  </span>
-                </summary>
+      <Section size="lg" tone="sunken">
+        <Shell>
+          <SectionHeading eyebrow={d.previewHeading} title={PREVIEW.title} note={PREVIEW.question} />
 
-                <div className="mt-5 flex flex-wrap gap-1.5 pl-[3.75rem]">
-                  {category.examples.map((exampleLabel) => (
-                    <span
-                      key={exampleLabel}
-                      className="rounded-full border border-titanium bg-carbon px-3 py-1 text-xs text-nova-ink-faint"
-                    >
-                      {exampleLabel}
-                    </span>
-                  ))}
-                </div>
-
-                {example && (
-                  <div className="mt-4 pl-[3.75rem]">
-                    <Link
-                      href={`/${locale}/examples#${example.id}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-nova-accent-strong transition duration-control hover:text-nova-ink"
-                    >
-                      {d.exampleLinkLabel}
-                      <ArrowRight size={13} />
-                    </Link>
+          <ProductFrame className="mt-12" label={dict.journey.decide.frame} meta={dict.showcase.illustrativeLabel}>
+            <div className="grid gap-px bg-rule lg:grid-cols-[1.1fr_1fr]">
+              <div className="bg-paper p-6 sm:p-8">
+                <FramePanel tone="accent">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-label font-medium text-ink-3 uppercase">{dict.resultOverview.recommendationLabel}</span>
+                    <EvidenceTag type="calculated" />
                   </div>
-                )}
-              </details>
-            );
-          })}
-        </div>
+                  <p className="mt-3 text-[1.0625rem] leading-snug font-medium text-ink">{PREVIEW.recommendation}</p>
+                  <p className="mt-4 text-sm leading-7 text-ink-2">{PREVIEW.recommendationRationale}</p>
+                </FramePanel>
 
-        <div className="mt-14 rounded-3xl border border-titanium bg-carbon-2 p-8 text-center">
-          <h2 className="text-xl font-semibold text-nova-ink">{d.ctaHeading}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-nova-ink-muted">{d.ctaBody}</p>
-          <Link
-            href={`/${locale}/donna-ai`}
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-nova-accent to-sunset-coral px-6 py-3 text-sm font-semibold text-white shadow-nova-glow transition hover:brightness-110"
-          >
-            {d.ctaLabel}
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-      </div>
-    </div>
+                <FrameField label={dict.executiveBrief.tradeOffsHeading} className="mt-8">
+                  <RuledList items={PREVIEW.tradeOffs} />
+                </FrameField>
+              </div>
+
+              <div className="bg-paper p-6 sm:p-8">
+                <FrameField label={dict.resultOverview.whatWouldChangeHeading}>
+                  <div className="space-y-4 border-t border-rule pt-4">
+                    {PREVIEW.whatWouldChange.map((trigger) => (
+                      <p key={trigger.option} className="text-sm leading-7 text-ink-2">
+                        <span className="font-medium text-accent">{trigger.option}</span> — {trigger.condition}
+                      </p>
+                    ))}
+                  </div>
+                </FrameField>
+
+                <FrameField label={dict.executiveBrief.assumptionsHeading} className="mt-8">
+                  <div className="mb-2">
+                    <EvidenceTag type="assumption" />
+                  </div>
+                  <RuledList items={PREVIEW.assumptions} />
+                </FrameField>
+              </div>
+            </div>
+          </ProductFrame>
+
+          <p className="mt-8 flex flex-wrap items-center gap-3 text-sm text-ink-3">
+            <IllustrativeLabel>{dict.showcase.illustrativeLabel}</IllustrativeLabel>
+            {d.evidenceDistinctionNote}
+          </p>
+        </Shell>
+      </Section>
+
+      <PageCta
+        heading={d.ctaHeading}
+        body={d.ctaBody}
+        primaryHref={`/${locale}/donna-ai`}
+        primaryLabel={d.ctaLabel}
+        secondaryHref={`/${locale}/examples`}
+        secondaryLabel={dict.examplesPage.badge}
+      />
+    </main>
   );
 }

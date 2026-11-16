@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { PageCta, PageHeader, Section, SectionHeading, Shell } from "@/components/editorial/primitives";
 import { ScenarioLab, ScenarioTimeline } from "@/components/scenario-lab/ScenarioLab";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
@@ -28,53 +27,48 @@ export default async function ScenarioLabPage({ params }: { params: Promise<{ lo
   const s = dict.scenarioLabPage;
 
   return (
-    <div className="min-h-dvh bg-void">
-      <div className="mx-auto max-w-3xl px-6 pt-14 text-center">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
-          {s.badge}
-        </div>
+    <main className="bg-paper">
+      <PageHeader
+        eyebrow={s.badge}
+        title={s.h1}
+        lede={s.sub}
+        aside={
+          <div>
+            <div className="font-mono text-label font-medium text-ink-3 uppercase">{s.shiftKindsHeading}</div>
+            <ul className="mt-5 border-t border-rule">
+              {[s.shiftKinds.recommendation, s.shiftKinds.risk, s.shiftKinds.cost, s.shiftKinds.architecture].map((kind) => (
+                <li key={kind} className="border-b border-rule py-3 text-sm text-ink-2">
+                  {kind}
+                </li>
+              ))}
+            </ul>
+          </div>
+        }
+      />
 
-        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-balance text-nova-ink sm:text-5xl">{s.h1}</h1>
+      <Section size="lg">
+        <Shell>
+          <ScenarioLab />
+        </Shell>
+      </Section>
 
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-nova-ink-muted">{s.sub}</p>
-      </div>
+      <Section size="lg" register="dark">
+        <Shell>
+          <SectionHeading title={s.timelineHeading} note={s.timelineSub} />
+          <div className="mt-14 max-w-[52rem]">
+            <ScenarioTimeline />
+          </div>
+        </Shell>
+      </Section>
 
-      <div className="mx-auto mt-14 max-w-4xl px-6">
-        <ScenarioLab />
-      </div>
-
-      <div className="mx-auto mt-20 max-w-5xl px-6 pb-16">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold text-nova-ink sm:text-3xl">{s.timelineHeading}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-nova-ink-muted">{s.timelineSub}</p>
-        </div>
-
-        <div className="mt-8">
-          <ScenarioTimeline />
-        </div>
-
-        <div className="mt-8 text-center">
-          <Link
-            href={`/${locale}/cost-value-lab`}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-nova-accent-strong transition duration-control hover:text-nova-ink"
-          >
-            {dict.costValueLabPage.badge}
-            <ArrowRight size={15} />
-          </Link>
-        </div>
-
-        <div className="mt-8 rounded-3xl border border-titanium bg-carbon-2 p-8 text-center">
-          <h2 className="text-xl font-semibold text-nova-ink">{s.ctaHeading}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-nova-ink-muted">{s.ctaBody}</p>
-          <Link
-            href={`/${locale}/donna-ai`}
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-nova-accent to-sunset-coral px-6 py-3 text-sm font-semibold text-white shadow-nova-glow transition hover:brightness-110"
-          >
-            {s.ctaLabel}
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-      </div>
-    </div>
+      <PageCta
+        heading={s.ctaHeading}
+        body={s.ctaBody}
+        primaryHref={`/${locale}/donna-ai`}
+        primaryLabel={s.ctaLabel}
+        secondaryHref={`/${locale}/cost-value-lab`}
+        secondaryLabel={dict.costValueLabPage.badge}
+      />
+    </main>
   );
 }

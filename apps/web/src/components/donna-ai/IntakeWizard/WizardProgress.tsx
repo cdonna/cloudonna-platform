@@ -37,7 +37,7 @@ export function WizardProgress({ stepIndex }: { stepIndex: number }) {
 
       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-carbon-2">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-nova-accent to-sunset-coral transition-[width] duration-500 ease-nova-settle"
+          className="h-full rounded-full bg-nova-accent transition-[width] duration-500 ease-nova-settle"
           style={{ width: `${percent}%` }}
         />
       </div>

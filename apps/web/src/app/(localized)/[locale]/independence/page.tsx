@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BadgeCheck, EyeOff, Scale, Users2 } from "lucide-react";
+import { PageHeader, Section, SectionHeading, Shell } from "@/components/editorial/primitives";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
 import { localizedAlternates, localizedOpenGraph } from "@/i18n/seo";
@@ -20,72 +20,65 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-const ICONS = [Scale, EyeOff, BadgeCheck, Users2];
-
+/**
+ * Four structural rules, numbered. The four lucide icons in rounded
+ * accent tiles are gone: a set of scales next to "every platform is
+ * scored against the same criteria" illustrated the word, not the rule,
+ * and made a neutrality commitment look like a feature card.
+ */
 export default async function IndependencePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isSupportedLocale(locale)) notFound();
   const dict = await getDictionary(locale);
+  const i = dict.independence;
 
   return (
-    <div className="min-h-dvh bg-void">
-      <div className="mx-auto max-w-3xl px-6 pb-24 pt-14">
-        <div className="inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
-          {dict.independence.badge}
-        </div>
+    <main className="bg-paper">
+      <PageHeader eyebrow={i.badge} title={i.h1} lede={i.sub} />
 
-        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-nova-ink sm:text-5xl">
-          {dict.independence.h1}
-        </h1>
-
-        <p className="mt-5 text-lg leading-8 text-nova-ink-muted">{dict.independence.sub}</p>
-
-        <div className="mt-14 space-y-6">
-          {dict.independence.rules.map((rule, index) => {
-            const Icon = ICONS[index];
-
-            return (
+      <Section size="lg">
+        <Shell>
+          <dl className="border-t border-rule">
+            {i.rules.map((rule, index) => (
               <div
                 key={rule.title}
-                className="flex gap-5 rounded-3xl border border-titanium bg-carbon p-6 shadow-sm"
+                className="grid gap-3 border-b border-rule py-8 lg:grid-cols-[4rem_22rem_1fr] lg:items-baseline lg:gap-10"
               >
-                <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-nova-accent text-white">
-                  <Icon size={20} />
-                </span>
-
-                <div>
-                  <h2 className="text-lg font-semibold text-nova-ink">
-                    {rule.title}
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-nova-ink-muted">
-                    {rule.body}
-                  </p>
-                </div>
+                <dt className="font-mono text-label font-medium text-accent tabular-nums uppercase">
+                  {String(index + 1).padStart(2, "0")}
+                </dt>
+                <dt className="text-[1.0625rem] font-medium tracking-[-0.018em] text-ink">{rule.title}</dt>
+                <dd className="max-w-[60ch] text-[0.9375rem] leading-7 text-ink-2">{rule.body}</dd>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </dl>
+        </Shell>
+      </Section>
 
-        <div className="mt-14 rounded-3xl border border-titanium bg-carbon-2 p-8">
-          <h2 className="text-xl font-semibold text-nova-ink">
-            {dict.independence.alphaHeading}
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">
-            {dict.independence.alphaBody1}{" "}
-            <Link href={`/${locale}/for-vendors`} className="font-medium text-nova-accent-strong hover:text-nova-ink">
-              {dict.independence.forVendorsLink}
-            </Link>
-            {dict.independence.alphaBody2}
-          </p>
-        </div>
+      <Section size="md" tone="sunken">
+        <Shell>
+          <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
+            <div>
+              <SectionHeading title={i.alphaHeading} />
+              <p className="mt-6 max-w-[62ch] text-[0.9375rem] leading-7 text-ink-2">
+                {i.alphaBody1}{" "}
+                <Link
+                  href={`/${locale}/for-vendors`}
+                  className="font-medium text-accent underline decoration-accent/30 underline-offset-4 hover:decoration-accent"
+                >
+                  {i.forVendorsLink}
+                </Link>
+                {i.alphaBody2}
+              </p>
+            </div>
 
-        <div className="mt-8 rounded-3xl border border-titanium bg-carbon p-8">
-          <h2 className="text-xl font-semibold text-nova-ink">
-            {dict.independence.communityHeading}
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-nova-ink-muted">{dict.independence.communityBody}</p>
-        </div>
-      </div>
-    </div>
+            <div>
+              <SectionHeading title={i.communityHeading} />
+              <p className="mt-6 max-w-[62ch] text-[0.9375rem] leading-7 text-ink-2">{i.communityBody}</p>
+            </div>
+          </div>
+        </Shell>
+      </Section>
+    </main>
   );
 }

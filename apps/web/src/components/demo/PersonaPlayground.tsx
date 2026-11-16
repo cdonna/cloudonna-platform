@@ -22,7 +22,7 @@ export function PersonaPlayground() {
 
   return (
     <div>
-      <div role="tablist" aria-label={dict.common.choosePersona} className="flex flex-wrap justify-center gap-2">
+      <div role="tablist" aria-label={dict.common.choosePersona} className="flex flex-wrap gap-2">
         {PERSONAS.map((persona) => {
           const active = persona.id === activePersonaId;
           return (
@@ -35,10 +35,10 @@ export function PersonaPlayground() {
                 setActivePersonaId(persona.id);
                 setSelectedQuestion(null);
               }}
-              className={`rounded-full border px-4 py-2 text-sm font-medium transition duration-control ${
+              className={`min-h-11 rounded-full border px-4 text-sm transition-colors duration-control focus-visible:ring-3 focus-visible:ring-accent/40 focus-visible:outline-none ${
                 active
-                  ? "border-transparent bg-gradient-to-r from-nova-accent to-sunset-coral text-white"
-                  : "border-titanium bg-carbon text-nova-ink-muted hover:border-titanium-strong hover:text-nova-ink"
+                  ? "border-transparent bg-solid font-medium text-solid-on"
+                  : "border-rule bg-paper-2 text-ink-2 hover:border-rule-2 hover:text-ink"
               }`}
             >
               {persona.role}
@@ -47,16 +47,16 @@ export function PersonaPlayground() {
         })}
       </div>
 
-      <div className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         {activePersona.questions.map((question) => (
           <button
             key={question}
             type="button"
             onClick={() => setSelectedQuestion(question)}
-            className={`rounded-2xl border px-4 py-2.5 text-left text-sm transition duration-control ${
+            className={`min-h-11 rounded-md border px-4 py-2.5 text-left text-sm transition-colors duration-control focus-visible:ring-3 focus-visible:ring-accent/40 focus-visible:outline-none ${
               selectedQuestion === question
-                ? "border-nova-accent/50 bg-nova-accent/10 text-nova-ink"
-                : "border-titanium bg-carbon-2 text-nova-ink-muted hover:border-titanium-strong hover:text-nova-ink"
+                ? "border-accent/40 bg-accent-wash text-ink"
+                : "border-rule bg-paper-2 text-ink-2 hover:border-rule-2 hover:text-ink"
             }`}
           >
             {question}
@@ -64,7 +64,7 @@ export function PersonaPlayground() {
         ))}
       </div>
 
-      <div className="mt-10">
+      <div className="mt-12">
         <DonnaLive key={selectedQuestion ?? activePersonaId} initialQuestion={selectedQuestion ?? ""} />
       </div>
     </div>

@@ -363,7 +363,7 @@ export function AdaptiveIntake({ onComplete }: { onComplete: (state: WizardState
   if (phase === "opening") {
     return (
       <div className="mx-auto max-w-2xl rounded-[2rem] border border-titanium bg-carbon p-6 shadow-nova-raised sm:p-10">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-nova-accent text-white shadow-nova-glow">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-nova-accent text-white">
           <Sparkles size={24} />
         </div>
         <h2 ref={headingRef} tabIndex={-1} className="mt-6 text-center text-2xl font-semibold text-nova-ink outline-none sm:text-3xl">
@@ -391,7 +391,7 @@ export function AdaptiveIntake({ onComplete }: { onComplete: (state: WizardState
           >
             {dict.adaptiveIntake.skipLink}
           </button>
-          <Button onClick={handleExtract} disabled={!statement.trim()} className="h-12 bg-nova-accent px-7 text-white shadow-nova-glow hover:bg-nova-accent-strong">
+          <Button onClick={handleExtract} disabled={!statement.trim()} className="h-12 bg-nova-accent px-7 text-white hover:bg-nova-accent-strong">
             {dict.adaptiveIntake.continueBtn}
             <ArrowRight size={16} />
           </Button>
@@ -485,7 +485,7 @@ export function AdaptiveIntake({ onComplete }: { onComplete: (state: WizardState
         )}
 
         <div className="mt-8 flex justify-end">
-          <Button onClick={handleConfirm} className="h-11 bg-nova-accent px-6 text-white shadow-nova-glow hover:bg-nova-accent-strong">
+          <Button onClick={handleConfirm} className="h-11 bg-nova-accent px-6 text-white hover:bg-nova-accent-strong">
             {dict.adaptiveIntake.confirmBtn}
             <ArrowRight size={16} />
           </Button>
@@ -527,7 +527,7 @@ export function AdaptiveIntake({ onComplete }: { onComplete: (state: WizardState
               {dict.adaptiveIntake.readyHeading}
             </h2>
             <p className="mt-2 text-sm text-nova-ink-faint">{dict.questionEngine.readinessLabels[readiness]}.</p>
-            <Button onClick={() => onComplete(state)} className="mt-6 h-12 bg-nova-accent px-7 text-white shadow-nova-glow hover:bg-nova-accent-strong">
+            <Button onClick={() => onComplete(state)} className="mt-6 h-12 bg-nova-accent px-7 text-white hover:bg-nova-accent-strong">
               {dict.adaptiveIntake.getRecommendation}
               <ArrowRight size={16} />
             </Button>
@@ -585,7 +585,7 @@ export function AdaptiveIntake({ onComplete }: { onComplete: (state: WizardState
             <Button
               onClick={() => onComplete(state)}
               disabled={!canRecommend}
-              className="h-12 bg-nova-accent px-7 text-white shadow-nova-glow hover:bg-nova-accent-strong"
+              className="h-12 bg-nova-accent px-7 text-white hover:bg-nova-accent-strong"
             >
               {dict.adaptiveIntake.getRecommendation}
               <ArrowRight size={16} />

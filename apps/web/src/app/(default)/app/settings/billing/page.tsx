@@ -112,7 +112,7 @@ export default async function BillingSettingsPage() {
           {isAdmin && (
             <Link
               href="/early-access"
-              className="inline-flex h-10 items-center rounded-xl bg-nova-accent px-4 text-sm font-medium text-white shadow-nova-glow transition duration-200 hover:bg-nova-accent-strong"
+              className="inline-flex h-10 items-center rounded-xl bg-nova-accent px-4 text-sm font-medium text-white transition duration-200 hover:bg-nova-accent-strong"
             >
               Contact / Early Access
             </Link>

@@ -14,14 +14,14 @@ export function SignupForm({ locale }: { locale: string }) {
   const [state, action, pending] = useActionState(signUp, INITIAL_STATE);
 
   return (
-    <div className="mx-auto min-h-dvh max-w-md bg-void px-6 py-16">
-      <div className="overflow-hidden rounded-[1.75rem] border border-titanium bg-carbon/80 p-8 shadow-[0_30px_90px_-45px_rgba(79,70,229,0.35)] backdrop-blur-xl">
-        <h1 className="text-2xl font-semibold tracking-tight text-nova-ink">{dict.signup.h1}</h1>
-        <p className="mt-2 text-sm leading-6 text-nova-ink-faint">{dict.signup.sub}</p>
+    <div className="mx-auto min-h-dvh max-w-md bg-paper px-6 py-16">
+      <div className="overflow-hidden rounded-[1.75rem] border border-rule bg-paper-2/80 p-8 shadow-[0_30px_90px_-45px_rgba(79,70,229,0.35)] backdrop-blur-xl">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">{dict.signup.h1}</h1>
+        <p className="mt-2 text-sm leading-6 text-ink-3">{dict.signup.sub}</p>
 
         <form action={action} className="mt-8 flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="signup-name" className="text-sm font-medium text-nova-ink">
+            <label htmlFor="signup-name" className="text-sm font-medium text-ink">
               {dict.signup.fullName}
             </label>
             <input
@@ -29,11 +29,11 @@ export function SignupForm({ locale }: { locale: string }) {
               name="fullName"
               type="text"
               autoComplete="name"
-              className="h-11 rounded-xl border border-titanium bg-carbon px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+              className="h-11 rounded-xl border border-rule bg-paper-2 px-3 text-sm text-ink outline-none focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/25"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="signup-email" className="text-sm font-medium text-nova-ink">
+            <label htmlFor="signup-email" className="text-sm font-medium text-ink">
               {dict.signup.workEmail}
             </label>
             <input
@@ -42,11 +42,11 @@ export function SignupForm({ locale }: { locale: string }) {
               type="email"
               required
               autoComplete="email"
-              className="h-11 rounded-xl border border-titanium bg-carbon px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+              className="h-11 rounded-xl border border-rule bg-paper-2 px-3 text-sm text-ink outline-none focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/25"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="signup-password" className="text-sm font-medium text-nova-ink">
+            <label htmlFor="signup-password" className="text-sm font-medium text-ink">
               {dict.signup.password}
             </label>
             <input
@@ -56,9 +56,9 @@ export function SignupForm({ locale }: { locale: string }) {
               required
               minLength={8}
               autoComplete="new-password"
-              className="h-11 rounded-xl border border-titanium bg-carbon px-3 text-sm text-nova-ink outline-none focus-visible:border-nova-accent focus-visible:ring-3 focus-visible:ring-nova-accent/30"
+              className="h-11 rounded-xl border border-rule bg-paper-2 px-3 text-sm text-ink outline-none focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/25"
             />
-            <p className="text-xs text-nova-ink-faint">{dict.signup.passwordHint}</p>
+            <p className="text-xs text-ink-3">{dict.signup.passwordHint}</p>
           </div>
 
           {state.error && (
@@ -72,15 +72,15 @@ export function SignupForm({ locale }: { locale: string }) {
             </p>
           )}
 
-          <Button type="submit" disabled={pending} className="h-11 bg-nova-accent text-white">
+          <Button type="submit" disabled={pending} className="h-11 bg-solid text-solid-on">
             {pending && <LoaderCircle size={16} className="animate-spin" />}
             {dict.signup.createAccount}
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-nova-ink-faint">
+        <p className="mt-6 text-center text-sm text-ink-3">
           {dict.signup.alreadyHaveAccount}{" "}
-          <Link href={`/${locale}/login`} className="font-medium text-nova-accent-strong underline-offset-4 hover:underline">
+          <Link href={`/${locale}/login`} className="font-medium text-accent underline-offset-4 hover:underline">
             {dict.signup.signIn}
           </Link>
         </p>

@@ -34,7 +34,7 @@ export default async function DonnaAIPage({ params }: { params: Promise<{ locale
   const user = await getCurrentUser();
 
   return (
-    <div className="min-h-dvh bg-void">
+    <div className="register-dark min-h-dvh bg-void">
       <DonnaAIExperience isSignedIn={Boolean(user)} />
     </div>
   );

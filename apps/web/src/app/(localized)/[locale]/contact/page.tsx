@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Building2, HandshakeIcon, Rocket, Sparkles, Store } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { PageHeader, Shell } from "@/components/editorial/primitives";
 import { InquiryForm } from "@/components/landing/InquiryForm";
 import { ContactViewedTracker } from "@/components/landing/ContactViewedTracker";
 import { getDictionary } from "@/i18n/get-dictionary";
@@ -23,20 +24,19 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-const ENTRY_ICONS: Record<InquiryType, typeof Rocket> = {
-  founding_tester: Rocket,
-  enterprise: Building2,
-  partner: HandshakeIcon,
-  vendor: Store,
-  general: Sparkles,
-};
-
 function parseType(value: string | string[] | undefined): InquiryType | null {
   const candidate = Array.isArray(value) ? value[0] : value;
   const parsed = inquiryTypeSchema.safeParse(candidate);
   return parsed.success ? parsed.data : null;
 }
 
+/**
+ * Five reasons to get in touch, as a numbered index rather than five
+ * icon tiles. The icons (a rocket, a shop, a handshake) were decorating
+ * the reader's own intent back at them; a numbered list of five plain
+ * statements is faster to scan and does not imply a hierarchy that
+ * isn't there.
+ */
 export default async function ContactPage({
   params,
   searchParams,
@@ -58,50 +58,52 @@ export default async function ContactPage({
   ];
 
   return (
-    <div className="min-h-dvh bg-void">
+    <main className="bg-paper">
       <ContactViewedTracker />
 
       {selectedType ? (
         <>
-          <div className="mx-auto max-w-3xl px-6 pt-8">
-            <Link href={`/${locale}/contact`} className="inline-flex items-center gap-1.5 text-sm font-medium text-nova-ink-faint transition duration-200 hover:text-nova-ink">
-              <ArrowLeft size={14} />
+          <Shell className="pt-10">
+            <Link
+              href={`/${locale}/contact`}
+              className="group inline-flex min-h-11 items-center gap-2 text-sm text-ink-2 transition-colors duration-control hover:text-accent"
+            >
+              <ArrowLeft size={14} className="transition-transform duration-control ease-nova-settle group-hover:-translate-x-0.5" />
               {dict.contact.chooseDifferent}
             </Link>
-          </div>
+          </Shell>
           <InquiryForm inquiryType={selectedType} />
         </>
       ) : (
-        <div className="mx-auto max-w-4xl px-6 pb-28 pt-16 text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-2 text-xs font-semibold tracking-[0.16em] text-nova-accent-strong uppercase">
-            {dict.contact.title}
-          </div>
+        <>
+          <PageHeader eyebrow={dict.contact.title} title={dict.contact.header} lede={dict.contact.sub} />
 
-          <h1 className="mt-6 text-4xl font-semibold tracking-[-0.035em] text-nova-ink sm:text-5xl">{dict.contact.header}</h1>
-          <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-nova-ink-muted">{dict.contact.sub}</p>
-
-          <div className="mt-14 grid gap-4 sm:grid-cols-2">
-            {entryPoints.map((entry) => {
-              const Icon = ENTRY_ICONS[entry.type];
-              return (
-                <Link
-                  key={entry.type}
-                  href={`/${locale}/contact?type=${entry.type}`}
-                  className="group flex items-center justify-between gap-4 rounded-2xl border border-titanium bg-carbon p-6 text-left transition duration-300 hover:-translate-y-0.5 hover:border-titanium-strong hover:shadow-nova-raised"
-                >
-                  <span className="flex items-center gap-4">
-                    <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-nova-accent text-white shadow-nova-glow">
-                      <Icon size={20} />
+          <Shell>
+            <ul className="mt-16 mb-28 border-t border-rule">
+              {entryPoints.map((entry, index) => (
+                <li key={entry.type} className="border-b border-rule">
+                  <Link
+                    href={`/${locale}/contact?type=${entry.type}`}
+                    className="group flex items-baseline gap-6 py-7 transition-colors duration-control"
+                  >
+                    <span className="font-mono text-label font-medium text-ink-3 tabular-nums uppercase">
+                      {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className="text-base font-semibold text-nova-ink">{entry.label}</span>
-                  </span>
-                  <ArrowRight size={18} className="shrink-0 text-nova-ink-faint transition duration-200 group-hover:translate-x-1 group-hover:text-nova-accent-strong" />
-                </Link>
-              );
-            })}
-          </div>
-        </div>
+                    <span className="flex-1 text-display-3 font-medium tracking-[-0.025em] text-ink transition-colors duration-control group-hover:text-accent">
+                      {entry.label}
+                    </span>
+                    <ArrowRight
+                      size={18}
+                      aria-hidden="true"
+                      className="shrink-0 self-center text-ink-3 transition-transform duration-control ease-nova-settle group-hover:translate-x-1 group-hover:text-accent"
+                    />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Shell>
+        </>
       )}
-    </div>
+    </main>
   );
 }

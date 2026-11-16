@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
 import { DataProductCard } from "@/components/data-economy/DataProductCard";
 import { DATA_PRODUCTS } from "@/components/data-economy/catalog";
-import { DEMO_VIDEOS } from "@/components/demo/catalog";
-import { VideoCard } from "@/components/demo/VideoCard";
+import {
+  PageCta,
+  PageHeader,
+  ProductFrame,
+  SecondaryAction,
+  Section,
+  SectionHeading,
+  Shell,
+} from "@/components/editorial/primitives";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
 import { localizedAlternates, localizedOpenGraph } from "@/i18n/seo";
@@ -24,94 +29,109 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-const dataEconomyVideo = DEMO_VIDEOS.find((video) => video.id === "data-economy");
-
+/**
+ * The value chain — Source → Trust → Data Product → Decision → Value —
+ * was five equal bordered cards in a row, which read as five unrelated
+ * features. It is now one connected canvas: numbered stages on a single
+ * rule, so the chain is visibly a chain, and the last stage (Value)
+ * carries the accent because it is the only one that is an outcome
+ * rather than a step.
+ *
+ * On narrow screens the rule turns vertical rather than the stages
+ * collapsing into a five-row stack of identical boxes.
+ */
 export default async function DataEconomyPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isSupportedLocale(locale)) notFound();
   const dict = await getDictionary(locale);
   const d = dict.dataEconomyPage;
+  const lastIndex = d.flowSteps.length - 1;
 
   return (
-    <div className="min-h-dvh bg-void">
-      <div className="mx-auto max-w-3xl px-6 pt-14 text-center">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
-          {d.badge}
-        </div>
+    <main className="bg-paper">
+      <PageHeader
+        eyebrow={d.badge}
+        title={d.h1}
+        lede={d.sub}
+        aside={
+          <div>
+            <div className="font-mono text-label font-medium text-ink-3 uppercase">{d.questionsHeading}</div>
+            <ul className="mt-5 border-t border-rule">
+              {d.questions.map((question) => (
+                <li key={question} className="border-b border-rule py-3 text-sm leading-6 text-ink-2">
+                  {question}
+                </li>
+              ))}
+            </ul>
+          </div>
+        }
+      />
 
-        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-balance text-nova-ink sm:text-5xl">{d.h1}</h1>
+      <Section size="lg">
+        <Shell>
+          <SectionHeading eyebrow={d.badge} title={d.flowHeading} />
 
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-nova-ink-muted">{d.sub}</p>
-      </div>
-
-      {dataEconomyVideo && (
-        <div className="mx-auto mt-12 max-w-2xl px-6">
-          <VideoCard video={dataEconomyVideo} index={1} />
-        </div>
-      )}
-
-      <div className="mx-auto mt-16 max-w-4xl px-6">
-        <h2 className="text-center text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">{d.flowHeading}</h2>
-
-        <div className="mt-8 grid gap-3 sm:grid-cols-5">
-          {d.flowSteps.map((step, index) => (
-            <div key={step.label} className="relative rounded-2xl border border-titanium bg-carbon p-5">
-              <span
-                className={`text-xs font-semibold tracking-[0.1em] uppercase ${
-                  index === d.flowSteps.length - 1 ? "text-sunset-coral" : "text-nova-accent-strong"
-                }`}
-              >
-                {step.label}
-              </span>
-              <p className="mt-2 text-xs leading-5 text-nova-ink-muted">{step.body}</p>
+          <ProductFrame className="mt-12" label={d.flowHeading} meta={dict.showcase.illustrativeLabel}>
+            <div className="p-6 sm:p-10">
+              {/* One continuous rule behind the stages on wide screens,
+                  down the left on narrow ones. The connector is the
+                  point of the diagram, so it is drawn once and the
+                  stages sit on it. */}
+              {/* The padding sits on the <li>, so its leading edge lands
+                  exactly on the rule and a 10px marker centred at
+                  -0.3125rem straddles it — vertical rule on narrow
+                  screens, horizontal on wide, same arithmetic both ways. */}
+              <ol className="grid gap-10 border-l border-rule lg:grid-cols-5 lg:gap-0 lg:border-l-0 lg:border-t">
+                {d.flowSteps.map((step, index) => {
+                  const isOutcome = index === lastIndex;
+                  return (
+                    <li key={step.label} className="relative pl-8 lg:pt-10 lg:pr-8 lg:pl-0">
+                      <span
+                        aria-hidden="true"
+                        className={`absolute top-1.5 -left-[0.3125rem] h-2.5 w-2.5 rounded-full lg:-top-[0.3125rem] lg:left-0 ${
+                          isOutcome ? "bg-accent" : "bg-ink-3"
+                        }`}
+                      />
+                      <div className="font-mono text-label font-medium text-ink-3 tabular-nums uppercase">
+                        {String(index + 1).padStart(2, "0")}
+                      </div>
+                      <h3 className={`mt-3 text-[1.0625rem] font-medium tracking-[-0.018em] ${isOutcome ? "text-accent" : "text-ink"}`}>
+                        {step.label}
+                      </h3>
+                      <p className="mt-2 max-w-[32ch] text-sm leading-6 text-ink-2">{step.body}</p>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
-          ))}
-        </div>
-      </div>
+          </ProductFrame>
+        </Shell>
+      </Section>
 
-      <div className="mx-auto mt-16 max-w-4xl px-6">
-        <h2 className="text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">{d.dataProductsHeading}</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-nova-ink-muted">{d.dataProductsSub}</p>
+      <Section size="lg" tone="sunken">
+        <Shell>
+          <SectionHeading eyebrow={d.dataProductsHeading} title={d.dataProductsSub} />
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {DATA_PRODUCTS.map((product) => (
-            <DataProductCard key={product.id} product={product} />
-          ))}
-        </div>
+          <div className="mt-12 border-t border-rule">
+            {DATA_PRODUCTS.map((product) => (
+              <DataProductCard key={product.id} product={product} />
+            ))}
+          </div>
 
-        <div className="mt-8 text-center">
-          <Link
-            href={`/${locale}/ai-use-cases`}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-nova-accent-strong transition duration-control hover:text-nova-ink"
-          >
-            {dict.aiPortfolioPage.badge}
-            <ArrowRight size={15} />
-          </Link>
-        </div>
-      </div>
+          <div className="mt-12">
+            <SecondaryAction href={`/${locale}/ai-use-cases`}>{dict.aiPortfolioPage.badge}</SecondaryAction>
+          </div>
+        </Shell>
+      </Section>
 
-      <div className="mx-auto mt-16 max-w-4xl px-6 pb-16">
-        <h2 className="text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">{d.questionsHeading}</h2>
-        <div className="mt-5 flex flex-wrap gap-2">
-          {d.questions.map((question) => (
-            <span key={question} className="rounded-full border border-titanium bg-carbon px-3.5 py-1.5 text-sm text-nova-ink-muted">
-              {question}
-            </span>
-          ))}
-        </div>
-
-        <div className="mt-14 rounded-3xl border border-titanium bg-carbon-2 p-8 text-center">
-          <h2 className="text-xl font-semibold text-nova-ink">{d.ctaHeading}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-nova-ink-muted">{d.ctaBody}</p>
-          <Link
-            href={`/${locale}/donna-ai`}
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-nova-accent to-sunset-coral px-6 py-3 text-sm font-semibold text-white shadow-nova-glow transition hover:brightness-110"
-          >
-            {d.ctaLabel}
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-      </div>
-    </div>
+      <PageCta
+        heading={d.ctaHeading}
+        body={d.ctaBody}
+        primaryHref={`/${locale}/donna-ai`}
+        primaryLabel={d.ctaLabel}
+        secondaryHref={`/${locale}/cost-value-lab`}
+        secondaryLabel={dict.costValueLabPage.badge}
+      />
+    </main>
   );
 }

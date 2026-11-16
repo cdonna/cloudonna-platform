@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import DonnaLive from "@/components/donna/DonnaLive";
-import DonnaSignature from "@/components/landing/DonnaSignature";
-import EnterpriseIntelligence from "@/components/landing/EnterpriseIntelligence";
+import ClosingCta from "@/components/landing/ClosingCta";
+import DecisionJourney from "@/components/landing/DecisionJourney";
+import ExploreMore from "@/components/landing/ExploreMore";
 import Hero from "@/components/landing/Hero";
 import { InquiryForm } from "@/components/landing/InquiryForm";
-import Problem from "@/components/landing/Problem";
+import ProductPrinciples from "@/components/landing/ProductPrinciples";
 import { Reveal } from "@/components/landing/Reveal";
-import SeeClouDonnaThink from "@/components/landing/SeeClouDonnaThink";
 import TrustStrip from "@/components/landing/TrustStrip";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale, type Locale } from "@/i18n/locales";
@@ -42,43 +41,52 @@ function softwareApplicationJsonLd(locale: Locale, description: string) {
   };
 }
 
+/**
+ * The homepage is one argument in five numbered steps, not a stack of
+ * sections. What it used to be: Hero → Problem (3 symptom cards) →
+ * DonnaSignature (scripted animation) → DonnaLive (interactive demo) →
+ * SeeClouDonnaThink → divider → TrustStrip → EnterpriseIntelligence (3
+ * pillar cards) → InquiryForm.
+ *
+ * Two of those are deliberately gone rather than restyled: Problem and
+ * EnterpriseIntelligence were marketing-card grids whose content the
+ * journey and the principles now carry with the product on screen.
+ * DonnaSignature's scripted "watch Donna think" beat and DonnaLive's
+ * interactive demo both now live on /demo (PersonaPlayground embeds
+ * DonnaLive) — keeping either here would have meant a third and fourth
+ * full-width dark section competing with 05 Remember and the close,
+ * which is exactly the mechanical light/dark alternation the brief rules
+ * out. The hero's secondary action and the nav both reach the real
+ * product in one click.
+ *
+ * `Reveal` stays, wrapping whole sections only: a 550ms settle on
+ * GPU-only properties, never hiding content from anyone (see its own
+ * reduced-motion handling).
+ */
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isSupportedLocale(locale)) notFound();
   const dict = await getDictionary(locale);
 
   return (
-    <main className="min-h-dvh bg-obsidian">
+    <main className="bg-paper">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationJsonLd(locale, dict.seo.home.description)) }}
       />
-      <Hero />
+      <Hero dict={dict} locale={locale} />
+      <DecisionJourney dict={dict} />
       <Reveal>
-        <Problem dict={dict} />
+        <ProductPrinciples dict={dict} />
       </Reveal>
       <Reveal>
-        <DonnaSignature />
+        <ExploreMore dict={dict} locale={locale} />
       </Reveal>
-      <Reveal>
-        <DonnaLive />
-      </Reveal>
-      <Reveal>
-        <SeeClouDonnaThink dict={dict} locale={locale} />
-      </Reveal>
-      {/* One deliberate signature moment between the interactive demo and
-          the trust section — not a recurring divider pattern, so it reads
-          as a chosen beat rather than decoration repeated everywhere. */}
-      <div aria-hidden="true" className="mx-auto h-px max-w-xs bg-gradient-to-r from-transparent via-sunset-coral/60 via-deep-purple/60 to-transparent" />
       <Reveal>
         <TrustStrip dict={dict} locale={locale} />
       </Reveal>
-      <Reveal>
-        <EnterpriseIntelligence dict={dict} />
-      </Reveal>
-      <Reveal>
-        <InquiryForm inquiryType="founding_tester" sectionId="early-access" />
-      </Reveal>
+      <ClosingCta dict={dict} locale={locale} />
+      <InquiryForm inquiryType="founding_tester" sectionId="early-access" register="dark" />
     </main>
   );
 }

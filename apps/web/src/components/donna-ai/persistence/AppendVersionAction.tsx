@@ -102,7 +102,7 @@ function AppendVersionDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="append-version-title"
-        className="w-full max-w-md rounded-2xl border border-titanium bg-obsidian p-6 shadow-nova-glow"
+        className="w-full max-w-md rounded-2xl border border-titanium bg-obsidian p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between">

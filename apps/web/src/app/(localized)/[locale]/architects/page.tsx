@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
 import { ArchitectureDecisionCard } from "@/components/architects/ArchitectureDecisionCard";
 import { ArchitecturePatternCard } from "@/components/architects/ArchitecturePatternCard";
 import { ARCHITECTURE_PATTERNS } from "@/components/architects/architecture-patterns";
 import { ArchitectureTransformationCard } from "@/components/architects/ArchitectureTransformationCard";
 import { ARCHITECTURE_TRANSFORMATIONS } from "@/components/architects/architecture-transformations";
 import { ARCHITECTURE_DECISION_EXAMPLES } from "@/components/architects/catalog";
-import { DEMO_VIDEOS } from "@/components/demo/catalog";
-import { VideoCard } from "@/components/demo/VideoCard";
+import { IllustrativeLabel, PageCta, PageHeader, Section, SectionHeading, Shell } from "@/components/editorial/primitives";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { isSupportedLocale } from "@/i18n/locales";
 import { localizedAlternates, localizedOpenGraph } from "@/i18n/seo";
@@ -28,8 +25,20 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-const architectsVideo = DEMO_VIDEOS.find((video) => video.id === "home-of-architects");
-
+/**
+ * The page keeps its central message — architecture should end with an
+ * explainable decision, not a diagram — and now leads with the largest
+ * thing on it: the before/after transformation canvas, with dependencies,
+ * architecture impact and business impact attached to it.
+ *
+ * What changed structurally: the `questions` list is a ruled index
+ * beside the headline rather than a cloud of pills; the patterns and ADRs
+ * are hairline-separated disclosure rows rather than two dense card
+ * grids; and the placeholder demo video (videoUrl is still null — see
+ * demo/types.ts) was removed from this page, because a title card for an
+ * unrecorded video is not evidence of anything. Every video still lives
+ * on /demo, where the page is actually about watching them.
+ */
 export default async function ArchitectsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isSupportedLocale(locale)) notFound();
@@ -37,75 +46,70 @@ export default async function ArchitectsPage({ params }: { params: Promise<{ loc
   const a = dict.architectsPage;
 
   return (
-    <div className="min-h-dvh bg-void">
-      <div className="mx-auto max-w-3xl px-6 pt-14 text-center">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-nova-accent-strong shadow-sm">
-          {a.badge}
-        </div>
+    <main className="bg-paper">
+      <PageHeader
+        eyebrow={a.badge}
+        title={a.h1}
+        lede={a.sub}
+        aside={
+          <div>
+            <div className="font-mono text-label font-medium text-ink-3 uppercase">{a.questionsHeading}</div>
+            <ul className="mt-5 border-t border-rule">
+              {a.questions.map((question) => (
+                <li key={question} className="border-b border-rule py-3 text-sm leading-6 text-ink-2">
+                  {question}
+                </li>
+              ))}
+            </ul>
+          </div>
+        }
+      />
 
-        <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] text-balance text-nova-ink sm:text-5xl">{a.h1}</h1>
+      <Section size="lg">
+        <Shell>
+          <SectionHeading eyebrow={a.transformationHeading} title={a.transformationSub} />
+          <div className="mt-12 space-y-12">
+            {ARCHITECTURE_TRANSFORMATIONS.map((transformation) => (
+              <ArchitectureTransformationCard key={transformation.id} transformation={transformation} />
+            ))}
+          </div>
+        </Shell>
+      </Section>
 
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-nova-ink-muted">{a.sub}</p>
+      <Section size="lg" tone="sunken">
+        <Shell>
+          <SectionHeading eyebrow={a.patternsHeading} title={a.patternsSub} />
+          <div className="mt-12 border-t border-rule">
+            {ARCHITECTURE_PATTERNS.map((pattern) => (
+              <ArchitecturePatternCard key={pattern.id} pattern={pattern} />
+            ))}
+          </div>
+        </Shell>
+      </Section>
 
-        <div className="mx-auto mt-8 flex max-w-2xl flex-wrap justify-center gap-2">
-          {a.questions.map((question) => (
-            <span key={question} className="rounded-full border border-titanium bg-carbon px-3.5 py-1.5 text-xs text-nova-ink-muted">
-              {question}
-            </span>
-          ))}
-        </div>
-      </div>
+      <Section size="lg">
+        <Shell>
+          <SectionHeading eyebrow={a.adrHeading} title={a.adrSub} />
+          <div className="mt-6">
+            <IllustrativeLabel>{dict.showcase.illustrativeLabel}</IllustrativeLabel>
+          </div>
 
-      {architectsVideo && (
-        <div className="mx-auto mt-12 max-w-2xl px-6">
-          <VideoCard video={architectsVideo} index={0} />
-        </div>
-      )}
+          <div className="mt-12 grid gap-x-16 gap-y-12 lg:grid-cols-2">
+            {ARCHITECTURE_DECISION_EXAMPLES.map((example) => (
+              <ArchitectureDecisionCard key={example.id} example={example} />
+            ))}
+          </div>
+        </Shell>
+      </Section>
 
-      <div className="mx-auto mt-16 max-w-4xl px-6">
-        <h2 className="text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">{a.patternsHeading}</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-nova-ink-muted">{a.patternsSub}</p>
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {ARCHITECTURE_PATTERNS.map((pattern) => (
-            <ArchitecturePatternCard key={pattern.id} pattern={pattern} />
-          ))}
-        </div>
-      </div>
-
-      <div className="mx-auto mt-16 max-w-4xl px-6">
-        <h2 className="text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">{a.transformationHeading}</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-nova-ink-muted">{a.transformationSub}</p>
-
-        <div className="mt-6 space-y-6">
-          {ARCHITECTURE_TRANSFORMATIONS.map((transformation) => (
-            <ArchitectureTransformationCard key={transformation.id} transformation={transformation} />
-          ))}
-        </div>
-      </div>
-
-      <div className="mx-auto mt-16 max-w-4xl px-6 pb-16">
-        <h2 className="text-xs font-semibold tracking-[0.16em] text-nova-ink-faint uppercase">{a.adrHeading}</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-nova-ink-muted">{a.adrSub}</p>
-
-        <div className="mt-6 grid gap-5 sm:grid-cols-2">
-          {ARCHITECTURE_DECISION_EXAMPLES.map((example) => (
-            <ArchitectureDecisionCard key={example.id} example={example} />
-          ))}
-        </div>
-
-        <div className="mt-14 rounded-3xl border border-titanium bg-carbon-2 p-8 text-center">
-          <h2 className="text-xl font-semibold text-nova-ink">{a.ctaHeading}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-nova-ink-muted">{a.ctaBody}</p>
-          <Link
-            href={`/${locale}/donna-ai`}
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-nova-accent to-sunset-coral px-6 py-3 text-sm font-semibold text-white shadow-nova-glow transition hover:brightness-110"
-          >
-            {a.ctaLabel}
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-      </div>
-    </div>
+      <PageCta
+        heading={a.ctaHeading}
+        body={a.ctaBody}
+        primaryHref={`/${locale}/donna-ai`}
+        primaryLabel={a.ctaLabel}
+        secondaryHref={`/${locale}/case-study`}
+        secondaryLabel={dict.caseStudyPage.badge}
+      />
+    </main>
   );
 }

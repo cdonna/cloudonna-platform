@@ -26,20 +26,20 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
   const p = dict.legal.privacy;
 
   return (
-    <div className="min-h-dvh bg-obsidian">
+    <div className="min-h-dvh bg-paper">
       <div className="mx-auto max-w-3xl px-6 py-16">
-        <div className="inline-flex items-center gap-2 rounded-full border border-titanium bg-carbon px-4 py-1.5 text-xs font-semibold tracking-[0.14em] text-nova-accent-strong uppercase">
+        <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-paper-2 px-4 py-1.5 text-xs font-semibold tracking-[0.14em] text-accent uppercase">
           {dict.legal.alphaBadge}
         </div>
 
-        <h1 className="mt-5 text-4xl font-semibold tracking-[-0.03em] text-nova-ink">{p.h1}</h1>
+        <h1 className="mt-5 text-4xl font-semibold tracking-[-0.03em] text-ink">{p.h1}</h1>
 
-        <p className="mt-3 text-sm text-nova-ink-faint">{p.lastUpdated}</p>
+        <p className="mt-3 text-sm text-ink-3">{p.lastUpdated}</p>
 
-        <div className="mt-10 space-y-8 text-sm leading-7 text-nova-ink-muted">
+        <div className="mt-10 space-y-8 text-sm leading-7 text-ink-2">
           {p.sections.map((section) => (
             <section key={section.title}>
-              <h2 className="text-lg font-semibold text-nova-ink">{section.title}</h2>
+              <h2 className="text-lg font-semibold text-ink">{section.title}</h2>
               <div className="mt-2">
                 <p>{section.body}</p>
               </div>
@@ -47,11 +47,11 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
           ))}
 
           <section>
-            <h2 className="text-lg font-semibold text-nova-ink">{p.rightsTitle}</h2>
+            <h2 className="text-lg font-semibold text-ink">{p.rightsTitle}</h2>
             <div className="mt-2">
               <p>
                 {p.rightsBodyPrefix}{" "}
-                <Link href={`/${locale}/contact`} className="font-medium text-nova-accent-strong hover:text-nova-ink">
+                <Link href={`/${locale}/contact`} className="font-medium text-accent hover:text-ink">
                   {p.rightsBodyLink}
                 </Link>{" "}
                 {p.rightsBodySuffix}
@@ -60,11 +60,11 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-nova-ink">{p.legalEntityTitle}</h2>
+            <h2 className="text-lg font-semibold text-ink">{p.legalEntityTitle}</h2>
             <div className="mt-2">
               <p>
                 {p.legalEntityBodyPrefix}{" "}
-                <Link href={`/${locale}/imprint`} className="font-medium text-nova-accent-strong hover:text-nova-ink">
+                <Link href={`/${locale}/imprint`} className="font-medium text-accent hover:text-ink">
                   {p.legalEntityBodyLink}
                 </Link>{" "}
                 {p.legalEntityBodySuffix}
