@@ -9,6 +9,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { KNOWLEDGE_BASE_VERSION, SCHEMA_VERSION, SCORING_ENGINE_VERSION } from "../engine/engine-version";
 import { applyScenarioToOutput } from "../engine/apply-scenario";
+import { attachBusinessCase } from "../engine/attach-business-case";
 import { buildDecisionOutput } from "../engine";
 import { appendDecisionVersionRequestSchema } from "./append-decision-version-schema";
 import { appendDecisionVersion } from "./decisions-repository";
@@ -53,7 +54,8 @@ export async function handleAppendDecisionVersionRequest(
     const wizardState = request.decisionInput.wizardState as never;
     const baseOutput = buildDecisionOutput(wizardState);
     const overrides = request.decisionInput.scenarioOverrides;
-    deterministicOutput = overrides ? applyScenarioToOutput(wizardState, baseOutput, overrides) : baseOutput;
+    const scenarioApplied = overrides ? applyScenarioToOutput(wizardState, baseOutput, overrides) : baseOutput;
+    deterministicOutput = attachBusinessCase(scenarioApplied, request.decisionInput);
   } catch {
     return { status: 400, body: { error: "The request could not be processed." } };
   }

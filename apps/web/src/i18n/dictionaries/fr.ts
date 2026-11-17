@@ -163,7 +163,7 @@ const fr: Dictionary = {
     tryNow: "Essayer maintenant →",
     getNotified: "Être averti →",
     products: {
-      donnaAi: { tagline: "Architecte de décision", description: "Transforme vos besoins en une recommandation, preuves à l'appui." },
+      donnaAi: { tagline: "Architecte de décision", description: "Transforme vos besoins en une recommandation — preuves réunies, hypothèses challengées, économie modélisée, tout est joint." },
       compare: { tagline: "Comparaison côte à côte", description: "Comparez les logiciels sur les fonctionnalités, l'architecture, le prix et la sécurité." },
       marketplace: { tagline: "Éditeurs et experts", description: "Éditeurs, partenaires d'implémentation et experts, évalués selon le même standard que chaque recommandation." },
       intelligence: { tagline: "Données marché et coûts", description: "Données de marché, benchmarks, avis d'experts. Derrière chaque chiffre que Donna vous présente." },

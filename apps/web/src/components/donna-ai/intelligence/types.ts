@@ -9,6 +9,7 @@
 import type { DecisionOutput, WizardState } from "../types";
 import type { ScoreDimensionKey } from "../scoring/types";
 import type { WeightOverrides } from "../engine/scenario";
+import type { BusinessCaseOptionInput, EconomicScenarioName, TimeHorizonYears } from "../engine/business-case/types";
 
 // ---------------------------------------------------------------------------
 // Input
@@ -36,11 +37,48 @@ export interface DecisionInput {
    * base output itself. The base decision's own saved version is
    * untouched; a scenario is always a new, separate version. */
   scenarioOverrides?: WeightOverrides | null;
+  /** Enterprise Business Case Engine (brief §5-§10) — when present
+   * and non-empty, this version's engineResult.businessCase is
+   * computed deterministically from these line items (never from an
+   * AI call) and attached alongside the deterministic score, which
+   * these inputs never alter. Absent means "no business case entered
+   * for this version," never zero or guessed figures. */
+  businessCaseInputs?: BusinessCaseOptionInput[] | null;
+  economicScenario?: EconomicScenarioName;
+  discountRatePercent?: number;
+  horizonYears?: TimeHorizonYears;
+  /** Enterprise Context Model (brief §26) — a forward-compatible seam
+   * for the dimensions the wizard does not collect yet and that have
+   * no existing home elsewhere in `WizardState`/`ConstraintsInput`
+   * (goals, budget level, risk appetite, preferred cloud/vendor, and
+   * internal skills are already collected there and are NOT
+   * duplicated here). Nothing reads or populates this today; it
+   * exists so a future connector (contract import, license registry,
+   * compliance questionnaire) has a typed destination without a
+   * breaking change, following the same seam pattern as
+   * `organizationContext`/`architectureContext` above. */
+  enterpriseContext?: EnterpriseContext | null;
 }
 
 export interface OrganizationContext {
   organizationId?: string | null;
   organizationName?: string | null;
+}
+
+/** See `DecisionInput.enterpriseContext` above. Every field is a plain
+ * fact the enterprise would supply, never an inference — an absent
+ * field means "not yet known," never "none." */
+export interface EnterpriseContext {
+  /** e.g. "GDPR", "FINMA", "HIPAA" — plain names, not a controlled vocabulary yet. */
+  regulatoryRequirements?: string[];
+  /** Named products/vendors the enterprise already holds a paid license for. */
+  existingLicenses?: string[];
+  /** Vendors the enterprise has a standing strategic relationship with, independent of current licensing. */
+  strategicVendors?: string[];
+  /** ISO date (YYYY-MM-DD) — a hard deadline driving the decision, if one exists. */
+  migrationDeadline?: string | null;
+  /** Regions the enterprise operates in or must keep data within — plain names, e.g. "EU", "Switzerland". */
+  operatingRegions?: string[];
 }
 
 // ---------------------------------------------------------------------------

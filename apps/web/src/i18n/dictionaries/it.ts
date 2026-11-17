@@ -163,7 +163,7 @@ const it: Dictionary = {
     tryNow: "Provalo ora →",
     getNotified: "Ricevi una notifica →",
     products: {
-      donnaAi: { tagline: "Architetta delle decisioni", description: "Trasforma i tuoi requisiti in una raccomandazione, con le evidenze allegate." },
+      donnaAi: { tagline: "Architetta delle decisioni", description: "Trasforma i tuoi requisiti in una raccomandazione — evidenze raccolte, ipotesi messe alla prova, economia modellata, tutto allegato." },
       compare: { tagline: "Confronto diretto", description: "Confronta i software per funzionalità, architettura, prezzo e sicurezza." },
       marketplace: { tagline: "Fornitori ed esperti", description: "Fornitori, partner di implementazione ed esperti, valutati con lo stesso standard di ogni raccomandazione." },
       intelligence: { tagline: "Dati di mercato e costi", description: "Dati di mercato, benchmark, recensioni di esperti. Dietro ogni numero che Donna ti mostra." },

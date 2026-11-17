@@ -179,6 +179,88 @@ export function findUnsupportedVendorMentions(
 
 export const decisionInputNoteSchema = z.string().max(20_000);
 
+// ---------------------------------------------------------------------------
+// Enterprise Business Case Engine (brief §5-§10) — validates the
+// SHAPE a client may submit; the actual TCO/ROI/NPV numbers are
+// always computed server-side from these validated inputs
+// (engine/business-case/calculations.ts), never trusted from the
+// client directly — same discipline as scenarioOverrides above.
+
+const costCategorySchema = z.enum([
+  "implementation",
+  "migration",
+  "subscriptionLicense",
+  "consumption",
+  "infrastructure",
+  "operations",
+  "support",
+  "internalFte",
+  "externalServices",
+  "trainingSkills",
+  "dataEgress",
+  "changeManagement",
+]);
+
+const benefitCategorySchema = z.enum([
+  "runCostReduction",
+  "productivityGain",
+  "timeToMarketImprovement",
+  "infrastructureConsolidation",
+  "licenseConsolidation",
+  "automationBenefit",
+  "riskAvoidance",
+  "revenueEnablement",
+  "costOfDelayAvoided",
+]);
+
+const financialProvenanceSchema = z.enum(["official-source", "customer-input", "observed-data", "calculated", "ai-interpretation", "assumption"]);
+
+const financialEstimateSchema = z.union([
+  z.object({ kind: z.literal("point"), value: z.number() }).strict(),
+  z.object({ kind: z.literal("range"), low: z.number(), base: z.number(), high: z.number() }).strict(),
+]);
+
+const costLineItemSchema = z
+  .object({
+    category: costCategorySchema,
+    label: z.string().max(200),
+    year: z.number().int().min(1).max(5),
+    estimate: financialEstimateSchema,
+    provenance: financialProvenanceSchema,
+    note: z.string().max(1000).nullable(),
+  })
+  .strict();
+
+const benefitLineItemSchema = z
+  .object({
+    category: benefitCategorySchema,
+    label: z.string().max(200),
+    year: z.number().int().min(1).max(5),
+    estimate: financialEstimateSchema,
+    provenance: financialProvenanceSchema,
+    note: z.string().max(1000).nullable(),
+  })
+  .strict();
+
+const costOfDelayInputSchema = z
+  .object({
+    monthlyDelayCost: financialEstimateSchema.nullable(),
+    revenueOpportunityDelay: financialEstimateSchema.nullable(),
+    legacyRunCostExtension: financialEstimateSchema.nullable(),
+    transformationDelayCost: financialEstimateSchema.nullable(),
+    delayMonths: z.number().min(0).max(60),
+  })
+  .strict();
+
+const businessCaseOptionInputSchema = z
+  .object({
+    optionId: z.string().max(200),
+    costs: z.array(costLineItemSchema).max(60),
+    benefits: z.array(benefitLineItemSchema).max(60),
+    costOfDelay: costOfDelayInputSchema.nullable(),
+  })
+  .strict();
+
 export const decisionInputSchema = z.object({
   wizardState: z.object({
     stepIndex: z.number(),
@@ -208,6 +290,21 @@ export const decisionInputSchema = z.object({
       z.enum(["architecture", "business", "technology", "governance", "aiReadiness", "security", "ecosystem", "cost", "timeToValue", "strategic"]),
       z.number().min(0).max(1),
     )
+    .nullish(),
+  businessCaseInputs: z.array(businessCaseOptionInputSchema).max(12).nullish(),
+  economicScenario: z.enum(["base", "upside", "downside", "custom"]).optional(),
+  discountRatePercent: z.number().min(0).max(100).optional(),
+  horizonYears: z.union([z.literal(1), z.literal(3), z.literal(5)]).optional(),
+  /** Enterprise Context Model (brief §26) — see DecisionInput.enterpriseContext. */
+  enterpriseContext: z
+    .object({
+      regulatoryRequirements: z.array(z.string().max(100)).max(20).optional(),
+      existingLicenses: z.array(z.string().max(200)).max(50).optional(),
+      strategicVendors: z.array(z.string().max(200)).max(20).optional(),
+      migrationDeadline: z.string().max(10).nullish(),
+      operatingRegions: z.array(z.string().max(100)).max(20).optional(),
+    })
+    .strict()
     .nullish(),
 });
 
