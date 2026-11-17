@@ -1,7 +1,12 @@
 import type { MetadataRoute } from "next";
-import { LOCALIZED_PATH_PREFIXES, SUPPORTED_LOCALES } from "@/i18n/locales";
+// Relative, not "@/..." — vitest.config.mts has no path-alias
+// resolution (only Next.js's own bundler reads tsconfig `paths`), and
+// this module is directly imported from a plain Vitest test
+// (seo-domain.test.ts) the same way login/metadata.ts already is, for
+// the same reason.
+import { LOCALIZED_PATH_PREFIXES, SUPPORTED_LOCALES } from "../i18n/locales";
 
-const SITE_URL = "https://www.cdonna.com";
+const SITE_URL = "https://www.cdonna.ch";
 
 /**
  * Rebuilt for the locale-prefixed route structure — the old version
@@ -13,9 +18,19 @@ const SITE_URL = "https://www.cdonna.com";
  * emitted in each page's own <head>, built in src/i18n/seo.ts), so
  * search engines see these as language variants of one page, not
  * unrelated duplicate URLs. /early-access is a legacy redirect target,
- * not real content, and is deliberately excluded. /discovery stays a
- * single unprefixed entry — it's outside the localized route tree
- * (see the localization report's "KNOWN LIMITATIONS").
+ * not real content, and is deliberately excluded, as are /login and
+ * /signup (auth entry points, not content pages — brief §4). /discovery
+ * stays a single unprefixed entry — it's outside the localized route
+ * tree (see the localization report's "KNOWN LIMITATIONS").
+ *
+ * Website Perfection & SEO Release Gate: 10 real, fully-built content
+ * pages (trust, decision-skills, architects, data-economy,
+ * scenario-lab, cost-value-lab, ai-use-cases, case-study, examples,
+ * demo — each with its own generateMetadata, each reachable in
+ * production) were missing from this list entirely, meaning every one
+ * of them was invisible to search engines for every locale. Added
+ * below, each with a priority reflecting how central it is to the
+ * product story rather than a uniform default.
  */
 const LOCALIZED_ROUTES: Array<{
   path: (typeof LOCALIZED_PATH_PREFIXES)[number];
@@ -24,9 +39,20 @@ const LOCALIZED_ROUTES: Array<{
 }> = [
   { path: "", changeFrequency: "weekly", priority: 1 },
   { path: "/donna-ai", changeFrequency: "weekly", priority: 0.9 },
-  { path: "/independence", changeFrequency: "monthly", priority: 0.7 },
-  { path: "/for-vendors", changeFrequency: "monthly", priority: 0.6 },
-  { path: "/for-partners", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/company", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/decision-skills", changeFrequency: "weekly", priority: 0.8 },
+  { path: "/trust", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/architects", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/data-economy", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/scenario-lab", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/cost-value-lab", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/ai-use-cases", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/case-study", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/examples", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/demo", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/independence", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/for-vendors", changeFrequency: "monthly", priority: 0.5 },
+  { path: "/for-partners", changeFrequency: "monthly", priority: 0.5 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.8 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.2 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.2 },

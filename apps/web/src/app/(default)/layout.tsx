@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://www.cdonna.com";
+const SITE_URL = "https://www.cdonna.ch";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -29,12 +29,22 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Website Perfection & SEO Release Gate: deliberately only the fields
+ * this company can state as fact today (name, url, logo, description).
+ * No `founder` Person record, no `sameAs` profile links, no
+ * `legalName`/`address`/`foundingDate` — those would either identify an
+ * individual (out of scope for this release — see the founder-privacy
+ * requirement) or assert legal/registration facts not yet confirmed
+ * for public disclosure (see legal.imprint in the dictionaries).
+ */
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "ClouDonna",
   url: SITE_URL,
   logo: `${SITE_URL}/cloudonna-favicon-512.png`,
+  description: "ClouDonna is an Enterprise Decision Intelligence platform that helps enterprises make defensible, evidence-backed technology decisions.",
 };
 
 /**

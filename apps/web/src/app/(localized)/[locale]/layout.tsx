@@ -11,18 +11,22 @@ import "../../globals.css";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
-const SITE_URL = "https://www.cdonna.com";
+const SITE_URL = "https://www.cdonna.ch";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 };
 
+/** See (default)/layout.tsx's identical constant for why only these
+ * fields are present — no founder Person record, no sameAs links, no
+ * unconfirmed legal/registration facts. */
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "ClouDonna",
   url: SITE_URL,
   logo: `${SITE_URL}/cloudonna-favicon-512.png`,
+  description: "ClouDonna is an Enterprise Decision Intelligence platform that helps enterprises make defensible, evidence-backed technology decisions.",
 };
 
 export function generateStaticParams() {

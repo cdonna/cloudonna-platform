@@ -52,9 +52,22 @@ export const ARCHITECTURE_STACK: ArchitectureLayer[] = [
   },
 ];
 
-/** The four facets below the Decision Engine — shown side by side, not
- * stacked, because none of them depends on the others running first. */
+/** The facets below the Decision Engine — shown side by side, not
+ * stacked, because none of them depends on the others running first.
+ *
+ * Website Perfection & SEO Release Gate (claim audit, brief §20):
+ * Research Agent and Business Case Engine shipped to production after
+ * this list was first written and were missing entirely — the public
+ * site was understating what is actually live. Added below, each
+ * checked against its own real repository state, not asserted for
+ * effect. */
 export const ARCHITECTURE_FACETS: ArchitectureLayer[] = [
+  {
+    id: "research-agent",
+    label: "Research Agent",
+    note: "Live evidence retrieval and claim extraction against real sources, with gap and conflict detection — available today from inside a saved decision.",
+    status: "available",
+  },
   {
     id: "evidence-graph",
     label: "Evidence Graph",
@@ -65,6 +78,12 @@ export const ARCHITECTURE_FACETS: ArchitectureLayer[] = [
     id: "scenario-engine",
     label: "Scenario Engine",
     note: "Live in /scenario-lab — the same deterministic model that answers \"what changes if this assumption does.\"",
+    status: "available",
+  },
+  {
+    id: "business-case-engine",
+    label: "Business Case Engine",
+    note: "Deterministic TCO, ROI, NPV and payback over 1, 3 and 5-year horizons — live inside the Decision Command Center.",
     status: "available",
   },
   {

@@ -79,7 +79,7 @@ const de: Dictionary = {
       number: "02",
       label: "Evidenz",
       heading: "Trennen Sie, was belegt ist, von dem, was angenommen wurde.",
-      body: "Jede Aussage hinter dieser Entscheidung trägt einen Typ — eine offizielle Quelle, eine Kundenangabe, etwas Beobachtetes, etwas Berechnetes, eine KI-Erzählung oder eine ausgewiesene Annahme. Nichts hier ist Evidenz, nur weil es überzeugend klingt.",
+      body: "Jede Aussage hinter dieser Entscheidung trägt einen Typ — eine offizielle Quelle, eine Kundenangabe, etwas Beobachtetes, etwas Berechnetes, eine KI-Interpretation oder eine ausgewiesene Annahme. Nichts hier ist Evidenz, nur weil es überzeugend klingt.",
       frame: "Decision Workspace · Evidenz",
     },
     compare: {
@@ -665,7 +665,7 @@ const de: Dictionary = {
     sections: [
       { title: "Wie Empfehlungen entstehen", body: "Jede Empfehlung stammt aus einem deterministischen Scoring-Modell, nicht aus einem Sprachmodell. Dieselbe Eingabe ergibt immer denselben Score." },
       { title: "Wie mit Evidenz umgegangen wird", body: "Jede wesentliche Aussage ist an eine konkrete Eingabe oder eine konkrete Evidenzquelle geknüpft, nie als Meinung getarnt als Fakt." },
-      { title: "Wie KI eingesetzt wird", body: "Wo KI hilft, eine Empfehlung zu erklären, erzählt sie Fakten, die die Scoring-Engine bereits berechnet hat. Sie kann keinen Score ändern oder eine Aussage erfinden." },
+      { title: "Wie KI eingesetzt wird", body: "Wo KI hilft, eine Empfehlung zu erklären, erläutert sie Fakten, die die Scoring-Engine bereits berechnet hat. Sie kann keinen Score ändern oder eine Aussage erfinden." },
       { title: "Wie Annahmen gekennzeichnet werden", body: "Wo die Evidenz begrenzt ist, sagt das Ergebnis das ausdrücklich, als Annahme, nie getarnt als Gewissheit." },
       { title: "Wie Ihre Daten geschützt sind", body: "Die Entscheidungen Ihrer Organisation sind auf Datenbankebene isoliert. Keine andere Organisation kann sie lesen, per Konstruktion, nicht nur per Richtlinie." },
       { title: "Wie Sie eine Empfehlung herausfordern können", body: "Jedes Ergebnis zeigt, was sich ändern müsste, damit die Empfehlung kippt, damit Sie sie selbst auf die Probe stellen können, statt sie nur zu akzeptieren." },
@@ -728,6 +728,39 @@ const de: Dictionary = {
     forVendorsLink: "Für Anbieter",
     communityHeading: "Community & Forschung",
     communityBody: "ClouDonna ist darauf ausgelegt, künftig externe Expertenbewertung in die Plattformbewertung einzubeziehen. Dieses Programm existiert noch nicht. Diese Seite wird der Ort sein, an dem es angekündigt wird, sobald es so weit ist.",
+  },
+
+  companyPage: {
+    metaTitle: "Unternehmen",
+    metaDescription: "Warum es ClouDonna gibt, was Enterprise Decision Intelligence in der Praxis bedeutet, und wo das Produkt heute tatsächlich steht.",
+    badge: "Unternehmen",
+    h1: "Die Entscheidung zählt mehr als die Präsentation",
+    sub: "ClouDonna existiert, um komplexe Enterprise-Technologieinvestitionen in evidenzbasierte, wirtschaftlich belastbare Entscheidungen zu verwandeln — nicht in besser aussehende Folien darüber.",
+    missionEyebrow: "Mission",
+    missionHeading: "Warum es ClouDonna gibt",
+    missionBody: "Enterprise-Technologieentscheidungen — welche Datenplattform, welche Cloud, welcher KI-Stack — tragen fast immer mehr Budget und mehr Risiko als praktisch jede andere Entscheidung eines Unternehmens, werden aber zu oft auf Basis einer Anbieterpräsentation, ein paar Referenzgesprächen und eines Bauchgefühls getroffen. ClouDonna existiert, um diesen Entscheidungen dieselbe Sorgfalt zu geben, die Unternehmen von ihren finanziellen Entscheidungen bereits erwarten: einen strukturierten Business Case, explizite Evidenz, eine belastbare Empfehlung und ein Protokoll, was tatsächlich entschieden wurde und warum.",
+    categoryEyebrow: "Kategorie",
+    categoryHeading: "Was Enterprise Decision Intelligence bedeutet",
+    categoryBody: "In der Praxis ist Enterprise Decision Intelligence vier zusammenwirkende Fähigkeiten, nicht eine. Decision Intelligence verwandelt Anforderungen in eine gerankte, erklärbare Empfehlung. Evidence Intelligence sammelt und klassifiziert die dahinterstehende Evidenz, mit ausgewiesener Quelle. Scenario Intelligence stellt dieselbe Entscheidung gegen veränderte Annahmen, Kosten und Randbedingungen auf die Probe. Decision Memory bewahrt das Ergebnis als dauerhaftes, versioniertes Protokoll statt als Folie, die niemand wiederfindet. Keine der vier funktioniert isoliert — zusammen führen sie von „etwas, das das Unternehmen klären muss“ zu „was wir entschieden haben, und warum wir noch dazu stehen würden“.",
+    philosophyEyebrow: "Philosophie",
+    philosophyHeading: "Unabhängig durch Konstruktion, nicht durch Versprechen",
+    philosophyBody1: "ClouDonna verkauft keine Implementierungsleistungen, nimmt keine Vermittlungsgebühren von Anbietern und lässt die Trainingsdaten eines Modells nicht an die Stelle von Evidenz treten. Wie diese Neutralität strukturell durchgesetzt wird, nicht nur versprochen, steht in",
+    philosophyLinkIndependence: "Unabhängigkeit",
+    philosophyBodyMiddle: "und im",
+    philosophyLinkTrust: "Trust Center",
+    philosophyBody2: ".",
+    teamEyebrow: "Team",
+    teamHeading: "Gebaut von Enterprise-Technologie-Praktikern",
+    teamBody: "ClouDonna ist ein gründergeführtes Enterprise-Decision-Intelligence-Unternehmen, gebaut aus praktischer Erfahrung in Enterprise-Technologie, Daten, KI und Transformationsentscheidungen. Sein Urteil darüber, was als Evidenz zählt, was eine Empfehlung einer Führungskraft schuldet, und wo KI vertraut werden sollte und wo nicht, stammt daher, selbst auf der anderen Seite genau dieser Entscheidungen gesessen zu haben.",
+    statusEyebrow: "Status",
+    statusHeading: "Wo das Produkt heute tatsächlich steht",
+    statusBody1: "ClouDonna befindet sich im Public Alpha. Die Decision Engine, der Research Agent, die Scenario Engine, die Business Case Engine und Decision Memory, oben beschrieben, sind heute live in Produktion, keine Roadmap-Folie. Was noch nicht zutrifft, wird dort klar gesagt, wo es wichtig ist, auch im",
+    statusLinkTrust: "Trust Center",
+    statusBody2: ", statt stillschweigend offenzubleiben.",
+    ctaHeading: "Sehen Sie eine Entscheidung, keine Präsentation",
+    ctaBody: "Der klarste Beweis ist eine echte, vollständig durchgearbeitete Entscheidung, keine Behauptung auf dieser Seite.",
+    ctaPrimary: "Donna AI ausprobieren",
+    ctaSecondary: "Trust Center lesen",
   },
 
   login: {
@@ -797,7 +830,7 @@ const de: Dictionary = {
         "Handelsregistereintrag / Registernummer",
         "Umsatzsteuer-Identifikationsnummer",
       ],
-      missingFooter: "Nichts davon sollte erfunden werden — diese Angaben benötigen die Bestätigung durch Gründung/Rechtsabteilung, bevor diese Seite als vollständig gelten kann.",
+      missingFooter: "Nichts davon sollte erfunden werden — diese Angaben benötigen die Bestätigung durch Gründer oder Rechtsabteilung, bevor diese Seite als vollständig gelten kann.",
       contactHeading: "Kontakt",
       contactBodyPrefix: "Nutzen Sie das",
       contactBodyLink: "Kontaktformular",
@@ -847,7 +880,7 @@ const de: Dictionary = {
     tiers: {
       sprint: { name: "Decision Sprint", tagline: "Eine Entscheidung lösen.", body: "Bringen Sie eine strategische Enterprise-Technologieentscheidung mit und arbeiten Sie sie mit ClouDonna von Anfang bis Ende durch.", cta: "Entscheidung einbringen" },
       team: { name: "Team", tagline: "Decision Intelligence für ein Team.", body: "Für ein Technologie- oder Transformationsteam, das diese Art von Entscheidung wiederholt trifft, nicht nur einmal.", cta: "Decision Sprint anfragen" },
-      enterprise: { name: "Enterprise", tagline: "Eine governte Entscheidungsebene.", body: "Eine gemeinsame Entscheidungsebene für die gesamte Organisation, mit demselben Evidenzstandard überall.", cta: "Executive Demo buchen" },
+      enterprise: { name: "Enterprise", tagline: "Eine governance-gesteuerte Entscheidungsebene.", body: "Eine gemeinsame Entscheidungsebene für die gesamte Organisation, mit demselben Evidenzstandard überall.", cta: "Executive Demo buchen" },
     },
   },
 
@@ -855,7 +888,7 @@ const de: Dictionary = {
     eyebrow: "Evidenz, typisiert",
     heading: "Sechs Arten von Evidenz. Nie verwechselt.",
     body: "Jede Aussage auf dieser Seite trägt eines von sechs Labels, und das Label entscheidet, wie viel Gewicht die Aussage tragen darf — dieselbe Taxonomie, die eine echte ClouDonna-Entscheidung verwendet.",
-    linkLabel: "Den vollständigen Trust Center lesen",
+    linkLabel: "Das vollständige Trust Center lesen",
   },
 
   governanceSection: {
@@ -863,11 +896,11 @@ const de: Dictionary = {
     heading: "Vertrauen ist hier eine strukturelle Regel, keine Behauptung.",
     body: "Drei Dinge, die bei diesem Produkt konstruktionsbedingt wahr sind, nicht nur per Richtlinie.",
     points: [
-      { label: "Isoliert by Design", body: "Die Entscheidungen jeder Organisation sind auf Datenbankebene isoliert. Keine andere Organisation kann sie lesen — by Design, nicht nur per Richtlinie." },
+      { label: "Isoliert per Konstruktion", body: "Die Entscheidungen jeder Organisation sind auf Datenbankebene isoliert. Keine andere Organisation kann sie lesen — per Konstruktion, nicht nur per Richtlinie." },
       { label: "Deterministisches Scoring", body: "Dieselbe Eingabe ergibt immer denselben Score. KI erläutert die Begründung; sie entscheidet nie über das Ergebnis." },
       { label: "Auditierbares Protokoll", body: "Ein vollständiger Audit-Trail und ein Entscheidungsprotokoll, das niemand still verändern kann — Decision Memory, kein Dokument, das umgeschrieben werden kann." },
     ],
-    linkLabel: "Den vollständigen Trust Center lesen",
+    linkLabel: "Das vollständige Trust Center lesen",
   },
 
   seo: {

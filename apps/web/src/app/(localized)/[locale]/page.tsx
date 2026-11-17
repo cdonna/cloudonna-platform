@@ -42,7 +42,7 @@ function softwareApplicationJsonLd(locale: Locale, description: string) {
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description,
-    url: `https://www.cdonna.com/${locale}`,
+    url: `https://www.cdonna.ch/${locale}`,
   };
 }
 

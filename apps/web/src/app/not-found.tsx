@@ -11,7 +11,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 // otherwise Next.js falls back to localhost when resolving any
 // relative OG/Twitter image URL for this specific fallback page.
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.cdonna.com"),
+  metadataBase: new URL("https://www.cdonna.ch"),
   title: "Page not found — ClouDonna",
 };
 
