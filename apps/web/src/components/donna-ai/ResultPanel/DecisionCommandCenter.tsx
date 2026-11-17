@@ -9,9 +9,20 @@ import { HumanDecisionPanel } from "../persistence/HumanDecisionPanel";
 import { ConstraintsView } from "./ConstraintsView";
 import { EvidenceExplorer } from "./EvidenceExplorer";
 import { RiskCockpit } from "./RiskCockpit";
+import { ResearchPanel } from "./ResearchPanel";
 import { ScenarioWorkbench } from "./ScenarioWorkbench";
 import { SCORE_DIMENSION_LABELS } from "../scoring/weights";
 import type { WeightOverrides } from "../engine/scenario";
+import type { ResearchEvidence } from "../research/types";
+
+interface ResearchConflictRow {
+  id: string;
+  claimAEvidenceId: string;
+  claimBEvidenceId: string;
+  severity: "low" | "medium" | "high";
+  explanation: string;
+  status: "open" | "resolved" | "dismissed";
+}
 
 type Mode = "executive" | "analyst";
 
@@ -35,12 +46,18 @@ export function DecisionCommandCenter({
   decisionInput,
   humanOverride,
   editable,
+  initialResearchEvidence = [],
+  initialResearchConflicts = [],
 }: {
   output: DecisionOutput;
   decisionId?: string;
   decisionInput?: DecisionInput;
   humanOverride?: HumanOverride | null;
   editable: boolean;
+  /** Only meaningful (and only ever non-empty) for a saved decision —
+   * research needs a decisionId to persist against. */
+  initialResearchEvidence?: ResearchEvidence[];
+  initialResearchConflicts?: ResearchConflictRow[];
 }) {
   const [mode, setMode] = useState<Mode>("executive");
   const engineResult = output.engineResult;
@@ -112,6 +129,15 @@ export function DecisionCommandCenter({
 
       {mode === "analyst" && (
         <>
+          {decisionId && (
+            <ResearchPanel
+              decisionId={decisionId}
+              ranked={baseRanked}
+              initialEvidence={initialResearchEvidence}
+              initialConflicts={initialResearchConflicts}
+              editable={editable}
+            />
+          )}
           <ScenarioWorkbench baseRanked={baseRanked} onSaveScenario={editable ? handleSaveScenario : undefined} />
           <EvidenceExplorer evidence={engineResult.evidence} diagnostics={engineResult.evidenceDiagnostics} dimensionLabels={SCORE_DIMENSION_LABELS} />
           <RiskCockpit risks={engineResult.risks} />
