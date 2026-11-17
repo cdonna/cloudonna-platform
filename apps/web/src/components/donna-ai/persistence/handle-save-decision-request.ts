@@ -8,6 +8,7 @@ import "server-only";
  * thin, obviously-correct adapter.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { KNOWLEDGE_BASE_VERSION, SCHEMA_VERSION, SCORING_ENGINE_VERSION } from "../engine/engine-version";
 import { buildDecisionOutput } from "../engine";
 import { saveDecisionRequestSchema } from "./save-decision-schema";
 import { saveDecision } from "./decisions-repository";
@@ -16,14 +17,6 @@ export interface SaveDecisionHandlerResult {
   status: number;
   body: { id: string; humanReadableId: string } | { error: string };
 }
-
-/** Bumped by hand whenever its respective layer changes in a
- * scoring-relevant way — see docs/sprint-6/18-persistence-schema.md,
- * "Provenance fields." Not derived automatically from anything; a
- * human judgment call, same as Sprint 5's own schema_version story. */
-const SCHEMA_VERSION = "decision-report/1";
-const SCORING_ENGINE_VERSION = "donna-score-v2";
-const KNOWLEDGE_BASE_VERSION = "vendor-catalog-v1";
 
 export async function handleSaveDecisionRequest(
   rawBody: unknown,

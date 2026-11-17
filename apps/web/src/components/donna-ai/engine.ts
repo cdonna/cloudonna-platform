@@ -26,6 +26,8 @@ import {
   TIMELINE_OPTIONS,
   WORKSHOP_LIBRARY,
 } from "./data";
+import { computeConfidenceScore } from "./engine/confidence";
+import { buildEngineResult } from "./engine/recommendation";
 import { scoreAllPlatformsV2 } from "./scoring/engine";
 import type { DimensionResult, RankedPlatform } from "./scoring/types";
 import {
@@ -137,26 +139,12 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
   }
 }
 
-/** Confidence reflects both input completeness and the quality of scoring signal found — not just "did you fill in the form." */
+/** Confidence reflects both input completeness and the quality of scoring signal found — not just "did you fill in the form."
+ * Re-exported from engine/confidence.ts, which now owns the formula
+ * (plus the qualitative level/reasons layer built on top of it) — kept
+ * as a named export here so no existing call site needs to change. */
 export function computeConfidence(state: WizardState, topResult: RankedPlatform): number {
-  const categoriesFilled = [
-    isCompanyComplete(state.company),
-    isLandscapeComplete(state.landscape),
-    state.goals.goals.length > 0,
-    isConstraintsComplete(state.constraints),
-  ].filter(Boolean).length;
-
-  const notesWritten = [state.company.note, state.landscape.note, state.goals.note, state.constraints.note].filter(
-    (note) => note.trim().length > 0,
-  ).length;
-
-  const architectureDimension = topResult.dimensions.find((d) => d.key === "architecture");
-  const hasWeakSignal = (architectureDimension?.positiveEvidence.length ?? 0) === 0;
-
-  let confidence = 55 + categoriesFilled * 6 + notesWritten * 5;
-  if (hasWeakSignal) confidence -= 10;
-
-  return Math.max(30, Math.min(96, confidence));
+  return computeConfidenceScore(state, topResult);
 }
 
 function pickRisks(state: WizardState): string[] {
@@ -326,7 +314,7 @@ export function buildDecisionOutput(state: WizardState): DecisionOutput {
   const [recommendation, ...alternatives] = ranked;
   const { positive, concerns } = collectEvidence(recommendation);
 
-  return {
+  const output: DecisionOutput = {
     recommendation,
     alternativeRecommendation: alternatives[0] ?? null,
     alternatives,
@@ -344,6 +332,8 @@ export function buildDecisionOutput(state: WizardState): DecisionOutput {
     nextSteps: pickNextSteps(state),
     workshops: pickWorkshops(state),
   };
+
+  return { ...output, engineResult: buildEngineResult(state, output) };
 }
 
 function labelList<T extends string>(options: Array<{ value: T; label: string }>, values: T[]): string {

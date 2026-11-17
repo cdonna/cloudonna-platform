@@ -352,6 +352,7 @@ const it: Dictionary = {
     recommendedBadge: "Consigliata",
     alternativeBadge: "Raccomandazione alternativa",
     whatWouldChangeHeading: "Cosa potrebbe cambiare questa raccomandazione",
+    constraintCheckHeading: "Verifica dei vincoli",
     leverBody: "{platform} diventa competitiva se la sua {dimension} migliora di circa {points} punti.",
     noLeversBody: "Nessuna alternativa è abbastanza vicina su una singola dimensione da ribaltare questa raccomandazione.",
     costOfDelayHeading: "Il costo dell'attesa",

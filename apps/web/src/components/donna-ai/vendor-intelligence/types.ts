@@ -1,5 +1,11 @@
 import type { EmployeeBand, Industry, Trait } from "../types";
 
+/** The three hyperscalers a company's `PreferredCloud` constraint can
+ * name. Deliberately narrower than the full `CloudProvider` type (which
+ * also has "multi-cloud" and "on-premise" — strategy descriptions of a
+ * *customer*, not something a platform is "available on"). */
+export type SupportedCloud = "azure" | "aws" | "gcp";
+
 /**
  * Broad structural category. NOT interchangeable substitutes for one
  * another — exists specifically so the UI can flag when a comparison spans
@@ -56,6 +62,14 @@ export interface VendorPlatformProfile {
   architectureCharacteristics: string[];
   cloudModel: CloudModel;
   deploymentModels: DeploymentModel[];
+
+  /** Which hyperscaler clouds this platform is genuinely available on
+   * today — never a market-share or preference claim, only "does it run
+   * there." Feeds the Constraint Engine's "must support cloud X" hard
+   * constraint (engine/constraints.ts); "multi-cloud" company inputs
+   * never need to match this, since a multi-cloud shop has no specific
+   * cloud requirement to violate. */
+  supportedClouds: SupportedCloud[];
 
   governance: MaturityBand;
   security: MaturityBand;

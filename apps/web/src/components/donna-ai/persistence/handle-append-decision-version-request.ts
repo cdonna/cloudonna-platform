@@ -7,6 +7,7 @@ import "server-only";
  * objects, the route file stays a thin, obviously-correct adapter.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { KNOWLEDGE_BASE_VERSION, SCHEMA_VERSION, SCORING_ENGINE_VERSION } from "../engine/engine-version";
 import { buildDecisionOutput } from "../engine";
 import { appendDecisionVersionRequestSchema } from "./append-decision-version-schema";
 import { appendDecisionVersion } from "./decisions-repository";
@@ -15,18 +16,6 @@ export interface AppendDecisionVersionHandlerResult {
   status: number;
   body: { id: string; versionNumber: number } | { error: string };
 }
-
-/** Duplicated from handle-save-decision-request.ts's own copy of these
- * constants, deliberately — see append-decision-version-schema.ts's
- * file-level comment for why this slice keeps its files self-contained
- * rather than touching the existing save-path files. Both copies must
- * be bumped together whenever the underlying layer changes in a
- * scoring-relevant way; a future consolidation (a single shared
- * provenance-versions module) is a reasonable follow-up, not done here
- * to keep this slice's diff isolated. */
-const SCHEMA_VERSION = "decision-report/1";
-const SCORING_ENGINE_VERSION = "donna-score-v2";
-const KNOWLEDGE_BASE_VERSION = "vendor-catalog-v1";
 
 export async function handleAppendDecisionVersionRequest(
   decisionId: string,

@@ -40,6 +40,13 @@ const fallbackMetadataSchema = z
   })
   .strict();
 
+const humanOverrideSchema = z
+  .object({
+    selectedOptionId: z.string().trim().min(1).max(200),
+    rationale: z.string().trim().min(1).max(2000),
+  })
+  .strict();
+
 export const appendDecisionVersionRequestSchema = z
   .object({
     decisionInput: decisionInputSchema,
@@ -47,6 +54,7 @@ export const appendDecisionVersionRequestSchema = z
     provider: providerMetadataSchema,
     fallback: fallbackMetadataSchema,
     changeReason: z.string().trim().min(1).max(500),
+    humanOverride: humanOverrideSchema.nullable().optional(),
   })
   .strict();
 

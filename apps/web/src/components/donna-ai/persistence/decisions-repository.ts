@@ -57,6 +57,7 @@ export async function saveDecision(
     p_scoring_engine_version: versions.scoringEngineVersion,
     p_knowledge_base_version: versions.knowledgeBaseVersion,
     p_change_reason: request.changeReason ?? null,
+    p_human_override: request.humanOverride ?? null,
   });
 
   if (error) {
@@ -103,6 +104,7 @@ export async function appendDecisionVersion(
     p_scoring_engine_version: versions.scoringEngineVersion,
     p_knowledge_base_version: versions.knowledgeBaseVersion,
     p_change_reason: request.changeReason,
+    p_human_override: request.humanOverride ?? null,
   });
 
   if (error) {
@@ -166,6 +168,11 @@ export async function listDecisionsForCurrentUser(supabase: SupabaseClient): Pro
   return { ok: true, data: items };
 }
 
+export interface HumanOverride {
+  selectedOptionId: string;
+  rationale: string;
+}
+
 export interface DecisionVersionContent {
   versionNumber: number;
   decisionInput: unknown;
@@ -182,6 +189,7 @@ export interface DecisionVersionContent {
   createdByEmail: string | null;
   createdAt: string;
   changeReason: string | null;
+  humanOverride: HumanOverride | null;
 }
 
 export interface DecisionDetail {
@@ -204,7 +212,7 @@ export async function getDecisionDetail(supabase: SupabaseClient, decisionId: st
   const { data, error } = await supabase
     .from("decisions")
     .select(
-      "id, human_readable_id, title, status, created_at, decision_versions:current_version_id(version_number, decision_input_json, deterministic_output_json, validated_enrichment_json, provider_metadata_json, fallback_metadata_json, evidence_references_json, schema_version, scoring_engine_version, knowledge_base_version, generated_at, created_by, created_at, change_reason)",
+      "id, human_readable_id, title, status, created_at, decision_versions:current_version_id(version_number, decision_input_json, deterministic_output_json, validated_enrichment_json, provider_metadata_json, fallback_metadata_json, evidence_references_json, schema_version, scoring_engine_version, knowledge_base_version, generated_at, created_by, created_at, change_reason, human_override_json)",
     )
     .eq("id", decisionId)
     .maybeSingle();
@@ -260,6 +268,7 @@ interface RawVersionRow {
   created_by: string;
   created_at: string;
   change_reason: string | null;
+  human_override_json?: unknown;
 }
 
 function toVersionContent(row: RawVersionRow, createdByEmail: string | null): DecisionVersionContent {
@@ -279,6 +288,7 @@ function toVersionContent(row: RawVersionRow, createdByEmail: string | null): De
     createdByEmail,
     createdAt: row.created_at,
     changeReason: row.change_reason,
+    humanOverride: (row.human_override_json as HumanOverride | null | undefined) ?? null,
   };
 }
 
@@ -358,7 +368,7 @@ export async function getDecisionVersionByNumber(
   const { data, error } = await supabase
     .from("decision_versions")
     .select(
-      "version_number, decision_input_json, deterministic_output_json, validated_enrichment_json, provider_metadata_json, fallback_metadata_json, evidence_references_json, schema_version, scoring_engine_version, knowledge_base_version, generated_at, created_by, created_at, change_reason",
+      "version_number, decision_input_json, deterministic_output_json, validated_enrichment_json, provider_metadata_json, fallback_metadata_json, evidence_references_json, schema_version, scoring_engine_version, knowledge_base_version, generated_at, created_by, created_at, change_reason, human_override_json",
     )
     .eq("decision_id", decisionId)
     .eq("version_number", versionNumber)
