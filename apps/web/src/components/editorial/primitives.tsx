@@ -208,10 +208,14 @@ export function ProductFrame({
     <div
       className={`register-dark overflow-hidden rounded-xl border border-rule bg-paper text-ink shadow-ed-raised ${className}`}
     >
-      <div className="flex items-center gap-3 border-b border-rule bg-paper-2 px-4 py-3 sm:px-5">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-rule bg-paper-2 px-4 py-3 sm:flex-nowrap sm:px-5">
         <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
         <span className="min-w-0 flex-1 truncate font-mono text-label font-medium text-ink-3 uppercase">{label}</span>
-        {meta && <span className="shrink-0 font-mono text-label font-medium text-ink-3 uppercase">{meta}</span>}
+        {meta && (
+          <span className="shrink-0 basis-full pl-[1.125rem] font-mono text-label font-medium text-ink-3 uppercase sm:basis-auto sm:pl-0">
+            {meta}
+          </span>
+        )}
       </div>
       {children}
     </div>

@@ -92,7 +92,7 @@ export default function PlatformArchitecture({ dict }: { dict: Dictionary }) {
                 "architectural direction" today; see
                 architecture-stack.ts's own comment on why that is
                 stated plainly rather than omitted. */}
-            <div className="mx-auto max-w-[40rem] rounded-lg border border-dashed border-rule-2 p-5 text-center">
+            <div className="mx-auto mt-3 max-w-[40rem] rounded-lg border border-dashed border-rule-2 p-5 text-center">
               <div className="font-mono text-label font-medium text-ink-3 uppercase">{p.integrationsLabel}</div>
               <div className="mt-3 flex flex-wrap justify-center gap-2">
                 {INTEGRATION_BADGES.map((badge) => (

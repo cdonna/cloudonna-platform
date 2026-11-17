@@ -311,7 +311,7 @@ function Decide({ dict }: { dict: Dictionary }) {
             canvas below it, matching the brief's own information
             hierarchy ("Decision, Status, Confidence, Executive
             summary... then the rest"). */}
-        <FramePanel tone="accent" className="mt-14 grid gap-8 sm:grid-cols-[1fr_auto] sm:items-center">
+        <div className="register-dark mt-14 grid gap-8 rounded-lg border border-accent/30 bg-paper p-4 shadow-ed-raised sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
           <div>
             <div className="font-mono text-label font-medium text-accent uppercase">{d.executiveSummaryLabel}</div>
             <p className="mt-3 max-w-[56ch] text-[1.0625rem] leading-7 text-ink">{decision.executiveSummary}</p>
@@ -320,7 +320,7 @@ function Decide({ dict }: { dict: Dictionary }) {
             <span className="font-mono text-label font-medium text-ink-3 uppercase">{d.confidenceLabel}</span>
             <span className="font-mono text-4xl font-semibold tracking-tight text-gold tabular-nums">{decision.confidenceScore}%</span>
           </div>
-        </FramePanel>
+        </div>
 
         {/* The real component, not a mock of it: this is the same
             DecisionShowcase /examples renders, on the same decision the
