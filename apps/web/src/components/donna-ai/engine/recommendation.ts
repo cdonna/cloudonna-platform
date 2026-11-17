@@ -13,6 +13,9 @@ import { buildEngineEvidence, computeEvidenceDiagnostics, type EngineEvidence, t
 import { evaluateConfidence, type ConfidenceResult } from "./confidence";
 import { findPivotalDimensions, robustnessAcrossStressScenarios, type PivotalDimension } from "./scenario";
 import { computeRobustness, type RobustnessResult } from "./robustness";
+import type { BusinessCaseOutput } from "./business-case/types";
+import { computeExecutiveRecommendation, type ExecutiveRecommendation } from "./executive-recommendation";
+import type { DecisionChallenge } from "./challenger/types";
 import type { DecisionOutput } from "../types";
 import type { WizardState } from "../types";
 
@@ -50,6 +53,16 @@ export interface EngineResult {
   tradeoffs: string[];
   conditionsToReconsider: string[];
   nextActions: string[];
+  /** Strategic and Architecture lenses need nothing beyond the
+   * ranking already computed above, so this is always populated
+   * (brief §19) — `economic` inside it is null until business case
+   * data exists, never guessed. `businessCase` and `challenges`
+   * remain genuinely optional: absent, not a placeholder, when there
+   * is nothing to compute (brief §7/§12's own "never invent a figure
+   * that wasn't asked for" rule). */
+  executiveRecommendation: ExecutiveRecommendation;
+  businessCase?: BusinessCaseOutput | null;
+  challenges?: DecisionChallenge[];
 }
 
 function buildTradeoffs(output: DecisionOutput): string[] {
@@ -139,5 +152,6 @@ export function buildEngineResult(state: WizardState, output: DecisionOutput): E
     tradeoffs: buildTradeoffs(output),
     conditionsToReconsider: buildConditionsToReconsider(pivotalDimensions, constraintEvaluations),
     nextActions: output.nextSteps.map((s) => s.text),
+    executiveRecommendation: computeExecutiveRecommendation(ranked, null),
   };
 }

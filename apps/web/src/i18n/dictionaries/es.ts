@@ -164,7 +164,7 @@ const es: Dictionary = {
     tryNow: "Probarlo ahora →",
     getNotified: "Recibir aviso →",
     products: {
-      donnaAi: { tagline: "Arquitecta de decisiones", description: "Convierte sus requisitos en una recomendación, con la evidencia adjunta." },
+      donnaAi: { tagline: "Arquitecta de decisiones", description: "Convierte sus requisitos en una recomendación — evidencia reunida, supuestos cuestionados, economía modelada, todo adjunto." },
       compare: { tagline: "Comparación lado a lado", description: "Compare software por capacidad, arquitectura, precio y seguridad." },
       marketplace: { tagline: "Proveedores y expertos", description: "Proveedores, socios de implementación y expertos, evaluados con el mismo estándar que cada recomendación." },
       intelligence: { tagline: "Datos de mercado y costos", description: "Datos de mercado, benchmarks, reseñas de expertos. Detrás de cada cifra que Donna le muestra." },

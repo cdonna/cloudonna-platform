@@ -6,6 +6,24 @@ import type { EmployeeBand, Industry, Trait } from "../types";
  * *customer*, not something a platform is "available on"). */
 export type SupportedCloud = "azure" | "aws" | "gcp";
 
+/** Vendor Intelligence Graph (brief §3) — region availability, kept
+ * deliberately coarse. "global" means available on major public
+ * cloud regions worldwide through the vendor's own hyperscaler
+ * partnerships (a verifiable, well-known fact for a cloud-native
+ * platform); "unknown" is the honest default for anything not
+ * confidently a global offering — never a specific region list
+ * invented without a real source to back it. */
+export type RegionAvailability = "global" | "limited" | "unknown";
+
+/** How the platform is actually bought, not how it's deployed
+ * (CloudModel/DeploymentModel already cover that). Derived from the
+ * vendor's own already-curated pricingModel/costCharacteristics text,
+ * not a new fact. */
+export type ConsumptionModel = "subscription" | "consumption-based" | "hybrid" | "unknown";
+
+/** Who operates the platform day to day. */
+export type OperatingModel = "fully-managed-saas" | "paas-self-operated" | "hybrid-managed" | "unknown";
+
 /**
  * Broad structural category. NOT interchangeable substitutes for one
  * another — exists specifically so the UI can flag when a comparison spans
@@ -109,6 +127,35 @@ export interface VendorPlatformProfile {
   traits: Trait[];
 
   sourceNotes: string;
-  /** ISO date (YYYY-MM-DD). When this curated entry was last reviewed — not a live data timestamp. */
+  /** ISO date (YYYY-MM-DD). When this curated entry was last reviewed
+   * — not a live data timestamp. This IS the "lastVerifiedAt" the
+   * brief asks for (§3/§25); kept under its original name rather
+   * than duplicated under a new one. */
   lastReviewedDate: string;
+
+  /** Vendor Intelligence Graph additions (brief §3) — additive, never
+   * backfilled with an invented fact. `evidenceReferences` starts
+   * empty for every seeded platform and is meant to be filled in by
+   * running the Research Agent against this platform's real
+   * documentation, not by this catalog claiming a source it never
+   * actually checked (brief §3: "never fabricate vendor capability
+   * facts... a capability without evidence is UNKNOWN"). */
+  regionAvailability: RegionAvailability;
+  consumptionModel: ConsumptionModel;
+  operatingModel: OperatingModel;
+  /** Short, conservative list — populated only where the skill is
+   * genuinely well-known and public (e.g. "ABAP" for SAP), empty
+   * where not confidently known. Empty means "not yet assessed," not
+   * "no skills required." */
+  skillsRequired: string[];
+  evidenceReferences: VendorEvidenceReference[];
+}
+
+export interface VendorEvidenceReference {
+  url: string;
+  title: string;
+  /** What this reference is cited for, in plain language — e.g.
+   * "AI capabilities overview." Not a claim about every fact in this
+   * profile, only the specific thing it was added to support. */
+  supports: string;
 }

@@ -11,9 +11,13 @@ import { EvidenceExplorer } from "./EvidenceExplorer";
 import { RiskCockpit } from "./RiskCockpit";
 import { ResearchPanel } from "./ResearchPanel";
 import { ScenarioWorkbench } from "./ScenarioWorkbench";
+import { BusinessCasePanel } from "./BusinessCasePanel";
+import { ChallengerPanel } from "./ChallengerPanel";
+import { ExecutiveRecommendationBlock } from "./ExecutiveRecommendationBlock";
 import { SCORE_DIMENSION_LABELS } from "../scoring/weights";
 import type { WeightOverrides } from "../engine/scenario";
 import type { ResearchEvidence } from "../research/types";
+import type { BusinessCaseOptionInput, EconomicScenarioName, TimeHorizonYears } from "../engine/business-case/types";
 
 interface ResearchConflictRow {
   id: string;
@@ -93,6 +97,25 @@ export function DecisionCommandCenter({
     return appendVersion({ decisionInput: { ...decisionInput, scenarioOverrides: overrides }, changeReason: `Scenario saved: ${changeReason}` });
   }
 
+  async function handleSaveBusinessCase(input: {
+    options: BusinessCaseOptionInput[];
+    horizonYears: TimeHorizonYears;
+    discountRatePercent: number;
+    economicScenario: EconomicScenarioName;
+  }) {
+    if (!decisionInput) return { ok: false, error: "This decision has not been saved yet." };
+    return appendVersion({
+      decisionInput: {
+        ...decisionInput,
+        businessCaseInputs: input.options,
+        horizonYears: input.horizonYears,
+        discountRatePercent: input.discountRatePercent,
+        economicScenario: input.economicScenario,
+      },
+      changeReason: "Business case saved",
+    });
+  }
+
   async function handleRecordOverride(selectedOptionId: string, rationale: string) {
     if (!decisionInput) return { ok: false, error: "This decision has not been saved yet." };
     return appendVersion({
@@ -125,6 +148,8 @@ export function DecisionCommandCenter({
 
       <HumanDecisionPanel engineResult={engineResult} humanOverride={humanOverride ?? null} onRecordOverride={editable ? handleRecordOverride : undefined} />
 
+      <ExecutiveRecommendationBlock recommendation={engineResult.executiveRecommendation} />
+
       <ConstraintsView engineResult={engineResult} />
 
       {mode === "analyst" && (
@@ -139,6 +164,12 @@ export function DecisionCommandCenter({
             />
           )}
           <ScenarioWorkbench baseRanked={baseRanked} onSaveScenario={editable ? handleSaveScenario : undefined} />
+          <BusinessCasePanel
+            baseRanked={baseRanked}
+            businessCase={engineResult.businessCase ?? null}
+            onSaveBusinessCase={editable ? handleSaveBusinessCase : undefined}
+          />
+          {decisionId && <ChallengerPanel decisionId={decisionId} />}
           <EvidenceExplorer evidence={engineResult.evidence} diagnostics={engineResult.evidenceDiagnostics} dimensionLabels={SCORE_DIMENSION_LABELS} />
           <RiskCockpit risks={engineResult.risks} />
         </>

@@ -175,7 +175,7 @@ const en = {
     tryNow: "Try it now →",
     getNotified: "Get notified →",
     products: {
-      donnaAi: { tagline: "Decision architect", description: "Turns your requirements into a recommendation, with the evidence attached." },
+      donnaAi: { tagline: "Decision architect", description: "Turns your requirements into a recommendation — evidence gathered, assumptions challenged, economics modeled, all attached." },
       compare: { tagline: "Side-by-side evaluation", description: "Compare software across capability, architecture, pricing and security." },
       marketplace: { tagline: "Vendors & experts", description: "Vendors, implementation partners and experts, held to the same standard as every recommendation." },
       intelligence: { tagline: "Market & cost data", description: "Market data, benchmarks, expert reviews. Behind every number Donna shows you." },
