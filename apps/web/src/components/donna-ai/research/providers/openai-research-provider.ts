@@ -35,7 +35,7 @@ const MAX_SOURCES_PER_TASK = 6;
  * certainty about what a page actually is. Falls back to "unknown"
  * rather than guessing a specific official category it can't support.
  */
-function classifySourceType(url: string, preferred: SourceType[]): SourceType {
+export function classifySourceType(url: string, preferred: SourceType[]): SourceType {
   const lower = url.toLowerCase();
   if (/\/(pricing|licensing)\b/.test(lower)) return "official-pricing-licensing";
   if (/\/(security|compliance|trust)\b/.test(lower)) return "official-security-compliance";
@@ -48,7 +48,7 @@ function classifySourceType(url: string, preferred: SourceType[]): SourceType {
   return "unknown";
 }
 
-function publisherFromUrl(url: string): string {
+export function publisherFromUrl(url: string): string {
   try {
     return new URL(url).hostname.replace(/^www\./, "");
   } catch {
