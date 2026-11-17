@@ -300,6 +300,15 @@ export interface DecisionVersionSummary {
   changeReason: string | null;
   donnaScore: number;
   recommendedPlatformName: string;
+  /** Decision Engine V1.1 — cheap per-version product-level flags,
+   * derived from columns already fetched by this one list query (no
+   * extra round trip): whether this version carries a human override,
+   * and whether it was produced from a saved Scenario (weight
+   * overrides) rather than the base decision. Used by DecisionTimeline
+   * for small badges, never a full diff — see engine/decision-events.ts
+   * for the richer, diff-based classification VersionDiffPanel uses. */
+  hasHumanOverride: boolean;
+  hasScenarioOverrides: boolean;
 }
 
 /** Powers the Immutable Decision Timeline (Sprint 6.2) — every version
@@ -311,7 +320,7 @@ export interface DecisionVersionSummary {
 export async function listDecisionVersions(supabase: SupabaseClient, decisionId: string): Promise<RepositoryResult<DecisionVersionSummary[]>> {
   const { data, error } = await supabase
     .from("decision_versions")
-    .select("id, version_number, created_at, created_by, change_reason, deterministic_output_json")
+    .select("id, version_number, created_at, created_by, change_reason, deterministic_output_json, human_override_json, decision_input_json")
     .eq("decision_id", decisionId)
     .order("version_number", { ascending: true });
 
@@ -324,11 +333,14 @@ export async function listDecisionVersions(supabase: SupabaseClient, decisionId:
 
   const items: DecisionVersionSummary[] = (data ?? []).map((row) => {
     const output = row.deterministic_output_json as DeterministicDecisionOutput;
+    const decisionInput = row.decision_input_json as { scenarioOverrides?: unknown } | null;
     return {
       id: row.id,
       versionNumber: row.version_number,
       createdAt: row.created_at,
       createdByEmail: emailByCreator.get(row.created_by) ?? null,
+      hasHumanOverride: Boolean(row.human_override_json),
+      hasScenarioOverrides: Boolean(decisionInput?.scenarioOverrides && Object.keys(decisionInput.scenarioOverrides).length > 0),
       changeReason: row.change_reason,
       donnaScore: output.donnaScore,
       recommendedPlatformName: `${output.recommendation.platform.vendor} ${output.recommendation.platform.productName}`,

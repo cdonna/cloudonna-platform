@@ -196,6 +196,19 @@ export const decisionInputSchema = z.object({
   desiredOutcomes: z.array(z.string().max(300)).max(10).optional(),
   architectureContext: z.string().max(2000).nullish(),
   operatingModelContext: z.string().max(2000).nullish(),
+  /** Decision Engine V1.1 — an explicit, bounded weight override set for
+   * a saved Scenario (engine/scenario.ts). Validated the same way as
+   * every override already applied client-side: each key must be a
+   * real scoring dimension, each value clamped to [0,1]. The server
+   * still re-derives the actual persisted output from these numbers
+   * via applyScenarioToOutput — this schema only proves the shape is
+   * plausible, never trusts the resulting score. */
+  scenarioOverrides: z
+    .record(
+      z.enum(["architecture", "business", "technology", "governance", "aiReadiness", "security", "ecosystem", "cost", "timeToValue", "strategic"]),
+      z.number().min(0).max(1),
+    )
+    .nullish(),
 });
 
 export type ValidatedDecisionInput = z.infer<typeof decisionInputSchema>;

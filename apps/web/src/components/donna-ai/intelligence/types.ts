@@ -8,6 +8,7 @@
  */
 import type { DecisionOutput, WizardState } from "../types";
 import type { ScoreDimensionKey } from "../scoring/types";
+import type { WeightOverrides } from "../engine/scenario";
 
 // ---------------------------------------------------------------------------
 // Input
@@ -29,6 +30,12 @@ export interface DecisionInput {
   desiredOutcomes?: string[];
   architectureContext?: string | null;
   operatingModelContext?: string | null;
+  /** Decision Engine V1.1 (brief §9/§28) — when present and non-empty,
+   * this version's deterministic_output_json is the base decision
+   * re-ranked under these weights (applyScenarioToOutput), never the
+   * base output itself. The base decision's own saved version is
+   * untouched; a scenario is always a new, separate version. */
+  scenarioOverrides?: WeightOverrides | null;
 }
 
 export interface OrganizationContext {

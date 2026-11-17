@@ -14,6 +14,7 @@ import { SaveDecisionDialog } from "../persistence/SaveDecisionDialog";
 import type { WizardState } from "../types";
 import { AlternativesTab } from "./AlternativesTab";
 import { ArchitectureTab } from "./ArchitectureTab";
+import { DecisionCommandCenter } from "./DecisionCommandCenter";
 import { ExecutiveBrief } from "./ExecutiveBrief";
 import { IntelligenceTab } from "./IntelligenceTab";
 import { OverviewTab } from "./OverviewTab";
@@ -33,6 +34,7 @@ const PRIMARY_TAB = { value: "overview", label: "Overview" } as const;
 // aren't part of that six-item list, so their relative order is
 // unconstrained by it.
 const SECONDARY_TABS = [
+  { value: "command-center", label: "Command Center" },
   { value: "intelligence", label: "AI Insights" },
   { value: "risks", label: "Trade-offs" },
   { value: "alternatives", label: "Alternatives" },
@@ -160,6 +162,7 @@ export function ResultPanel({
           {activeTab === "overview" && (
             <OverviewTab output={output} decisionSkills={decisionSkills} levers={levers} framing={framing} industry={state.company.industry} />
           )}
+          {activeTab === "command-center" && <DecisionCommandCenter output={output} editable={false} />}
           {activeTab === "intelligence" && <IntelligenceTab report={report} />}
           {activeTab === "alternatives" && <AlternativesTab output={output} />}
           {activeTab === "risks" && <RisksOpportunitiesTab output={output} />}

@@ -49,6 +49,14 @@ describe("Constraint Engine", () => {
     expect(a).toEqual(b);
   });
 
+  it("UI rendering contract: every platform's constraint list has the same ids in the same order (ConstraintsView builds one table column per id, positionally)", () => {
+    const orders = VENDOR_CATALOG.map((platform) => evaluateConstraints(SAMPLE_PROFILE.constraints, platform).map((e) => e.id));
+    const first = orders[0];
+    for (const order of orders) {
+      expect(order).toEqual(first);
+    }
+  });
+
   it("never reports FAIL and PASS simultaneously for the same constraint id", () => {
     for (const platform of VENDOR_CATALOG) {
       const evaluations = evaluateConstraints(SAMPLE_PROFILE.constraints, platform);

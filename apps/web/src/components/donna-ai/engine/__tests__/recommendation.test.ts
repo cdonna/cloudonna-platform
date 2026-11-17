@@ -16,11 +16,24 @@ describe("Recommendation Engine — EngineResult contract", () => {
     expect(result.criteriaBreakdown).toEqual(output.dimensions);
   });
 
-  it("ranking includes an eligibility status for every option", () => {
+  it("ranking includes an eligibility status and constraint detail for every option", () => {
     const output = buildDecisionOutput(SAMPLE_PROFILE);
     for (const entry of output.engineResult!.ranking) {
       expect(["eligible", "conditionally_eligible", "ineligible"]).toContain(entry.eligibility);
+      expect(entry.constraints.length).toBeGreaterThan(0);
+      expect(entry.scoreDelta).toBeGreaterThanOrEqual(0);
     }
+  });
+
+  it("the winner's own scoreDelta is always 0", () => {
+    const output = buildDecisionOutput(SAMPLE_PROFILE);
+    expect(output.engineResult!.ranking[0].scoreDelta).toBe(0);
+  });
+
+  it("includes the raw evidence list and a documented robustness level", () => {
+    const output = buildDecisionOutput(SAMPLE_PROFILE);
+    expect(output.engineResult!.evidence.length).toBeGreaterThan(0);
+    expect(["ROBUST", "MODERATELY_ROBUST", "FRAGILE"]).toContain(output.engineResult!.robustness.level);
   });
 
   it("never fabricates a score: ranking scores match the underlying platform scores exactly", () => {

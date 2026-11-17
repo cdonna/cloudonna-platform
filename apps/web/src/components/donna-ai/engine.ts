@@ -38,6 +38,7 @@ import {
   type EvidenceItem,
   type LandscapeInput,
   type NextStepItem,
+  type RiskItem,
   type StepKey,
   type WizardAction,
   type WizardState,
@@ -147,26 +148,28 @@ export function computeConfidence(state: WizardState, topResult: RankedPlatform)
   return computeConfidenceScore(state, topResult);
 }
 
-function pickRisks(state: WizardState): string[] {
-  const candidates = [
-    state.constraints.budget ? BUDGET_RISK_TEXT[state.constraints.budget] : null,
+function pickRisks(state: WizardState): RiskItem[] {
+  const budgetRiskText = state.constraints.budget ? BUDGET_RISK_TEXT[state.constraints.budget] : null;
+  const candidates: Array<RiskItem | null> = [
+    budgetRiskText ? { text: budgetRiskText, category: "Financial" } : null,
     state.constraints.timeline === "aggressive"
-      ? "An aggressive timeline increases delivery risk. A phased rollout is worth considering."
+      ? { text: "An aggressive timeline increases delivery risk. A phased rollout is worth considering.", category: "Delivery" }
       : null,
     state.constraints.internalSkills === "limited"
-      ? "Implementation will likely require external expertise given limited internal capacity."
+      ? { text: "Implementation will likely require external expertise given limited internal capacity.", category: "Skills" }
       : null,
     state.constraints.preferredVendor === "sap"
-      ? "Concentrating on a single vendor increases commercial dependency over time."
+      ? { text: "Concentrating on a single vendor increases commercial dependency over time.", category: "Vendor" }
       : null,
-  ].filter((text): text is string => text !== null);
+  ];
+  const filtered: RiskItem[] = candidates.filter((risk): risk is RiskItem => risk !== null);
 
   let index = 0;
-  while (candidates.length < 2 && index < FALLBACK_RISKS.length) {
-    candidates.push(FALLBACK_RISKS[index]);
+  while (filtered.length < 2 && index < FALLBACK_RISKS.length) {
+    filtered.push({ text: FALLBACK_RISKS[index], category: "General" });
     index += 1;
   }
-  return candidates.slice(0, 3);
+  return filtered.slice(0, 3);
 }
 
 function pickOpportunities(state: WizardState): string[] {
@@ -326,7 +329,7 @@ export function buildDecisionOutput(state: WizardState): DecisionOutput {
     executiveSummary: buildExecutiveSummary(state, recommendation, alternatives.length),
     positiveEvidence: positive,
     concerns,
-    risks: pickRisks(state).map((text) => ({ text })),
+    risks: pickRisks(state),
     opportunities: pickOpportunities(state).map((text) => ({ text })),
     assumptions: pickAssumptions(state).map((text) => ({ text })),
     nextSteps: pickNextSteps(state),

@@ -53,6 +53,16 @@ export function DecisionTimeline({
                       Current
                     </span>
                   )}
+                  {version.hasScenarioOverrides && (
+                    <span className="ml-2 inline-flex rounded-full border border-nova-accent/30 bg-nova-accent/10 px-2 py-0.5 text-[10px] font-medium tracking-wide text-nova-accent-strong uppercase">
+                      Scenario
+                    </span>
+                  )}
+                  {version.hasHumanOverride && (
+                    <span className="ml-2 inline-flex rounded-full border border-nova-gold/30 bg-nova-gold/10 px-2 py-0.5 text-[10px] font-medium tracking-wide text-nova-gold uppercase">
+                      Human decision
+                    </span>
+                  )}
                   <p className="mt-0.5 text-xs text-nova-ink-muted">
                     {new Date(version.createdAt).toLocaleString()} · {version.createdByEmail ?? "Unknown"}
                   </p>
