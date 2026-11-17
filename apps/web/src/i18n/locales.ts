@@ -39,6 +39,22 @@ export const LOCALIZED_PATH_PREFIXES = [
   "/privacy",
   "/imprint",
   "/terms",
+  // Real public content pages that were reachable only in their
+  // locale-prefixed form (/en/trust, ...) — a bare request for any of
+  // these (e.g. an external backlink to /trust) 404'd instead of
+  // redirecting into a resolved locale. Found in the Website
+  // Perfection & SEO Release Gate audit.
+  "/trust",
+  "/decision-skills",
+  "/architects",
+  "/data-economy",
+  "/scenario-lab",
+  "/cost-value-lab",
+  "/ai-use-cases",
+  "/case-study",
+  "/examples",
+  "/demo",
+  "/company",
 ] as const;
 
 export function isLocalizedPath(pathname: string): boolean {

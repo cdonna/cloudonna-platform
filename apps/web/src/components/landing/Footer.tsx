@@ -21,6 +21,10 @@ const LOCALIZED_HREFS = new Set([
   "/demo",
   "/examples",
   "/case-study",
+  "/scenario-lab",
+  "/cost-value-lab",
+  "/ai-use-cases",
+  "/company",
   "/for-vendors",
   "/for-partners",
   "/early-access",
@@ -51,6 +55,9 @@ function localeHref(locale: Locale, href: string): string {
 export default function Footer({ dict = en, locale = DEFAULT_LOCALE }: { dict?: Dictionary; locale?: Locale }) {
   const exploreLinks = [
     { label: dict.nav.links.donnaAi, href: "/donna-ai" },
+    { label: dict.scenarioLabPage.badge, href: "/scenario-lab" },
+    { label: dict.costValueLabPage.badge, href: "/cost-value-lab" },
+    { label: dict.aiPortfolioPage.badge, href: "/ai-use-cases" },
     { label: dict.examplesPage.badge, href: "/examples" },
     { label: dict.caseStudyPage.badge, href: "/case-study" },
     { label: dict.nav.links.demo, href: "/demo" },
@@ -63,6 +70,7 @@ export default function Footer({ dict = en, locale = DEFAULT_LOCALE }: { dict?: 
     { label: dict.nav.links.contact, href: "/contact" },
   ];
   const trustLinks = [
+    { label: dict.companyPage.badge, href: "/company" },
     { label: dict.nav.links.trust, href: "/trust" },
     { label: dict.nav.links.independence, href: "/independence" },
     { label: dict.legal.privacy.h1, href: "/privacy" },
