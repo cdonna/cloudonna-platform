@@ -20,6 +20,7 @@ import { VersionDiffPanel } from "@/components/donna-ai/persistence/VersionDiffP
 import { OverviewTab } from "@/components/donna-ai/ResultPanel/OverviewTab";
 import { IntelligenceTab } from "@/components/donna-ai/ResultPanel/IntelligenceTab";
 import { DecisionCommandCenter } from "@/components/donna-ai/ResultPanel/DecisionCommandCenter";
+import { listConflictsForDecision, listResearchEvidenceForDecision } from "@/components/donna-ai/research/persistence/research-repository";
 import { SectionLabel } from "@/components/donna-ai/shared";
 import { PageLoadError } from "@/components/ui/page-load-error";
 
@@ -72,6 +73,11 @@ async function renderDecisionDetail(id: string, sp: { version?: string | string[
   const currentVersionNumber = result.data.version.versionNumber;
   const versionsResult = await listDecisionVersions(supabase, id);
   const versions = versionsResult.ok ? versionsResult.data : [];
+
+  const researchEvidenceResult = await listResearchEvidenceForDecision(supabase, id);
+  const researchEvidence = researchEvidenceResult.ok ? researchEvidenceResult.data : [];
+  const researchConflictsResult = await listConflictsForDecision(supabase, id);
+  const researchConflicts = researchConflictsResult.ok ? researchConflictsResult.data : [];
 
   // All decision-making about what to fetch and display lives in the
   // pure resolver (decision-view-resolver.ts) — this page only follows
@@ -223,6 +229,8 @@ async function renderDecisionDetail(id: string, sp: { version?: string | string[
           decisionInput={toVersionSnapshot(displayedContent).decisionInput}
           humanOverride={displayedContent.humanOverride}
           editable={!isHistorical}
+          initialResearchEvidence={researchEvidence}
+          initialResearchConflicts={researchConflicts}
         />
       </div>
     </div>
