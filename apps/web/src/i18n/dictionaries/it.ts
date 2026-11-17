@@ -11,13 +11,14 @@ const it: Dictionary = {
   nav: {
     links: {
       discovery: "Discovery",
-      product: "Prodotto",
+      product: "Piattaforma",
       donnaAi: "Donna AI",
-      decisionSkills: "Decision Skills",
+      decisionSkills: "Decision Intelligence",
       demo: "Demo",
-      architects: "Architetti",
-      dataEconomy: "Data Economy",
-      trust: "Fiducia",
+      architects: "Tecnologia",
+      dataEconomy: "Soluzioni",
+      trust: "Sicurezza",
+      decisionMemory: "Decision Memory",
       independence: "Indipendenza",
       forVendors: "Per i fornitori",
       forPartners: "Per i partner",
@@ -48,15 +49,15 @@ const it: Dictionary = {
     eyebrow: "Enterprise Decision Intelligence",
     h1: "Decision Intelligence",
     h1Second: "per la tecnologia aziendale",
-    sub: "Un unico livello decisionale per chi sceglie la tecnologia e per chi risponde del suo impatto sul business.",
+    sub: "ClouDonna trasforma scelte tecnologiche complesse in decisioni aziendali strutturate, spiegabili e riutilizzabili.",
     ctaPrimary: "Porta una decisione",
-    ctaSecondary: "Guarda il prodotto",
+    ctaSecondary: "Esplora la piattaforma",
     tagline: "Neutrale verso i fornitori · Basato su evidenze · Spiegabile",
   },
 
   journey: {
     eyebrow: "Il ciclo decisionale",
-    heading: "Una decisione ha bisogno di cinque cose. ClouDonna le tiene tutte e cinque.",
+    heading: "Una decisione ha bisogno di sette cose. ClouDonna le tiene tutte e sette.",
     sub: "Ogni vista qui sotto è una schermata reale di ClouDonna, mostrata con una decisione aziendale illustrativa.",
     understand: {
       number: "01",
@@ -70,8 +71,15 @@ const it: Dictionary = {
       prioritiesLabel: "Priorità",
       stakeholdersLabel: "Stakeholder",
     },
-    compare: {
+    evidence: {
       number: "02",
+      label: "Evidenza",
+      heading: "Separa ciò che è verificato da ciò che è assunto.",
+      body: "Ogni affermazione dietro questa decisione porta un tipo — una fonte ufficiale, un dato del cliente, qualcosa di osservato, qualcosa di calcolato, un racconto dell’IA o un’assunzione dichiarata. Nulla qui è evidenza solo perché suona convincente.",
+      frame: "Decision Workspace · Evidenza",
+    },
+    compare: {
+      number: "03",
       label: "Confrontare",
       heading: "Alternative, evidenze e compromessi in un unico spazio decisionale.",
       body: "Non una matrice di funzionalità. Ogni alternativa porta con sé ciò che implica per l’architettura, a cosa impegna sul piano commerciale, da cosa dipende e quali evidenze sostengono l’affermazione.",
@@ -83,15 +91,24 @@ const it: Dictionary = {
       riskLabel: "Rischio",
       dependencyLabel: "Dipendenza",
     },
+    simulate: {
+      number: "04",
+      label: "Simulare",
+      heading: "Cambia un’assunzione e osserva la raccomandazione reagire.",
+      body: "Lo stesso modello di scenario dietro questa decisione, in diretta: cambia una condizione reale e guarda quale alternativa guadagna terreno, e perché.",
+      frame: "Scenario Lab · Simulare",
+    },
     decide: {
-      number: "03",
+      number: "05",
       label: "Decidere",
       heading: "Una raccomandazione che non mostra il proprio ragionamento è solo un’opinione.",
       body: "Ogni raccomandazione arriva con il perché, i compromessi che accetta, i rischi che porta, le assunzioni su cui si regge e le condizioni che la farebbero cambiare.",
       frame: "Decision Workspace · Decidere",
+      confidenceLabel: "Fiducia",
+      executiveSummaryLabel: "Sintesi esecutiva",
     },
     align: {
-      number: "04",
+      number: "06",
       label: "Allineare",
       heading: "Una decisione, quattro letture.",
       body: "CEO, CFO, CIO e enterprise architect non fanno domande diverse su decisioni diverse. Fanno domande diverse sulla stessa decisione.",
@@ -101,7 +118,7 @@ const it: Dictionary = {
       roles: { ceo: "CEO", cfo: "CFO", cio: "CIO", architect: "Enterprise Architect" },
     },
     remember: {
-      number: "05",
+      number: "07",
       label: "Ricordare",
       heading: "Una decisione non è un documento. È un asset vivo.",
       body: "ClouDonna conserva ciò che è stato deciso, ciò che si sapeva allora e ciò che è cambiato da allora — così «la decideremmo ancora così oggi?» ha una risposta invece di una riunione.",
@@ -504,6 +521,7 @@ const it: Dictionary = {
     exploreMoreLabel: "Scopri altre decisioni di esempio",
     evidenceCustomerInput: "Dato del cliente",
     evidenceOfficialSource: "Fonte ufficiale",
+    evidenceObservedData: "Dato osservato",
     evidenceCalculated: "Calcolato",
     evidenceAiInterpretation: "Interpretazione dell'IA",
     evidenceAssumption: "Ipotesi",
@@ -795,6 +813,56 @@ const it: Dictionary = {
       contactBodyLink: "modulo di contatto",
       contactBodySuffix: "finché non sarà pubblicato qui un canale di contatto legale dedicato.",
     },
+  },
+
+  architectureSection: {
+    eyebrow: "Architettura della piattaforma",
+    heading: "Costruita a strati, non come una scatola nera.",
+    body: "Ogni strato qui sotto è stato verificato rispetto a ciò che funziona realmente in questo prodotto oggi — disponibile, in corso, o una direzione progettuale definita senza nulla ancora costruito. Nulla qui rivendica un'integrazione che non esiste.",
+    frame: "Architettura della piattaforma",
+    statusAvailable: "Disponibile",
+    statusPlanned: "Pianificato",
+    statusDirection: "Direzione architetturale",
+    integrationsLabel: "Dati e sistemi aziendali",
+    integrationsNote: "Ogni connettore qui sotto è oggi direzione architetturale — una direzione progettuale definita, non un'integrazione attiva. Nessuno di essi deve essere letto come disponibile.",
+  },
+
+  sampleDecisionsSection: {
+    eyebrow: "Decisioni di esempio",
+    heading: "Nove decisioni lavorate, non una demo e una promessa.",
+    body: "Ognuna è illustrativa, lavorata dall'inizio alla fine nello stesso modo in cui Donna lavora una decisione reale: contesto, compromessi, raccomandazione e cosa la cambierebbe.",
+    flagshipLabel: "Decisione di punta",
+    sampleLabel: "Decisione di esempio",
+  },
+
+  commercialSection: {
+    eyebrow: "Lavorare con ClouDonna",
+    heading: "Tre modi per portare una decisione reale a ClouDonna.",
+    body: "Nessun prezzo pubblico, perché nessuna di queste opzioni è self-service — ognuna raggiunge direttamente un fondatore, che definisce come appare davvero lavorare insieme.",
+    tiers: {
+      sprint: { name: "Decision Sprint", tagline: "Risolvere una decisione.", body: "Porta una decisione tecnologica aziendale strategica e lavorala dall'inizio alla fine con ClouDonna.", cta: "Porta una decisione" },
+      team: { name: "Team", tagline: "Decision Intelligence per un team.", body: "Per un team tecnologico o di trasformazione che prende questo tipo di decisione ripetutamente, non una sola volta.", cta: "Richiedi un Decision Sprint" },
+      enterprise: { name: "Enterprise", tagline: "Un livello decisionale governato.", body: "Un livello decisionale condiviso in tutta l'organizzazione, con lo stesso standard di evidenza ovunque.", cta: "Prenota una demo esecutiva" },
+    },
+  },
+
+  evidenceTaxonomySection: {
+    eyebrow: "Evidenza, tipizzata",
+    heading: "Sei tipi di evidenza. Mai confusi.",
+    body: "Ogni affermazione su questo sito porta una di sei etichette, e l'etichetta decide quanto peso l'affermazione può sostenere — la stessa taxonomy che usa una vera decisione ClouDonna.",
+    linkLabel: "Leggi il Trust Center completo",
+  },
+
+  governanceSection: {
+    eyebrow: "Sicurezza e governance aziendale",
+    heading: "Qui la fiducia è una regola strutturale, non un'affermazione.",
+    body: "Tre cose che questo prodotto è costruito per garantire per costruzione, non solo per policy.",
+    points: [
+      { label: "Isolato by design", body: "Le decisioni di ogni organizzazione sono isolate a livello di database. Nessun'altra organizzazione può leggerle, per costruzione, non solo per policy." },
+      { label: "Punteggio deterministico", body: "Lo stesso input produce sempre lo stesso punteggio. L'IA narra il ragionamento; non decide mai il risultato." },
+      { label: "Registro verificabile", body: "Una traccia di audit completa e un registro decisionale che nessuno può modificare silenziosamente — memoria della decisione, non un documento riscrivibile." },
+    ],
+    linkLabel: "Leggi il Trust Center completo",
   },
 
   seo: {

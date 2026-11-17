@@ -1,5 +1,5 @@
 /**
- * The illustrative decision that runs through the homepage's 01–05
+ * The illustrative decision that runs through the homepage's 01–07
  * journey. English only, the same precedent as every other content
  * catalog in this repo (example-decisions.ts, case-study.ts,
  * architecture-patterns.ts): a structured content catalog, not UI
@@ -8,14 +8,19 @@
  *
  * Deliberately the *same* decision as EXAMPLE_DECISIONS[0], CASE_STUDY
  * and ARCHITECTURE_TRANSFORMATIONS[0] — the SAP BW modernization
- * composite. One decision followed from "understand" through to
- * "remember" is the whole argument of the homepage; five unrelated
- * screenshots would not be.
+ * composite, also the one the homepage's flagship "Enterprise Data &
+ * AI Platform Strategy" framing presents. One decision followed from
+ * "understand" through to "remember" is the whole argument of the
+ * homepage; seven unrelated screenshots would not be.
  *
  * Nothing here is a real customer engagement, and nothing here invents
  * a precise figure: cost and value language stays qualitative, which is
- * the same rule the real decision engine follows.
+ * the same rule the real decision engine follows. `confidenceScore` is
+ * the one number on this page presented as a score rather than prose —
+ * the same 0–100 illustrative scale ScenarioLab and the real Donna
+ * Score already use, never a fabricated financial figure.
  */
+import type { EvidenceType } from "@/components/showcase/EvidenceTag";
 
 export interface LandscapeEntry {
   label: string;
@@ -33,13 +38,18 @@ export interface CompareRow {
   recommended?: boolean;
 }
 
+export interface EvidenceItem {
+  type: EvidenceType;
+  claim: string;
+}
+
 export interface AlignReading {
   role: "ceo" | "cfo" | "cio" | "architect";
   question: string;
   reading: string;
 }
 
-export type MemoryEventKind = "created" | "evidence" | "assumption" | "vendor" | "review";
+export type MemoryEventKind = "created" | "evidence" | "assumption" | "scenario" | "vendor" | "executive_review" | "approved" | "revisited";
 
 export interface MemoryEvent {
   kind: MemoryEventKind;
@@ -50,6 +60,7 @@ export interface MemoryEvent {
 
 export const JOURNEY_DECISION = {
   title: "SAP BW modernization",
+  flagshipTitle: "Enterprise Data & AI Platform Strategy",
   question: "Modernize SAP BW into SAP Business Data Cloud, Databricks, Microsoft Fabric, or a hybrid architecture?",
 
   context:
@@ -77,6 +88,18 @@ export const JOURNEY_DECISION = {
   ],
 
   stakeholders: ["CIO (decision owner)", "CFO", "Chief Data Officer", "Enterprise Architecture", "Regional finance leads"],
+
+  /** 02 Evidence. One entry per EvidenceTag type this decision actually
+   * rests on — the point of this step is that a reader can see which
+   * claim is which kind, not just that evidence "exists" somewhere. */
+  evidence: [
+    { type: "official-source", claim: "SAP Business Data Cloud ships governed data products for core SAP objects without custom modelling, per current vendor documentation." },
+    { type: "customer-input", claim: "The manufacturer's own landscape: SAP S/4HANA, SAP BW on HANA, Azure-primary, ~3,000 Power BI users." },
+    { type: "observed-data", claim: "Three active point-to-point extract paths currently feed duplicate copies of the same reporting data." },
+    { type: "calculated", claim: "SAP Business Data Cloud scores highest on governance continuity and lowest on new integration effort among the four options." },
+    { type: "ai-interpretation", claim: "A narrative summary of why the governed-core option resolves the stated priorities — never the source of the score itself." },
+    { type: "assumption", claim: "AI initiatives are assumed to ramp at a moderate pace — later shown to be the one assumption that actually changed (see 07 Remember)." },
+  ] as EvidenceItem[],
 
   compare: [
     {
@@ -137,6 +160,14 @@ export const JOURNEY_DECISION = {
     },
   ] as AlignReading[],
 
+  /** 05 Decide / Executive Recommendation. Confidence is the one
+   * number on this page presented as a score — the same illustrative
+   * 0–100 scale the real Donna Score uses, never a fabricated
+   * financial figure. */
+  confidenceScore: 82,
+  executiveSummary:
+    "SAP Business Data Cloud, paired with Databricks for advanced AI workloads, resolves the duplication problem with the least new integration work while keeping the AI roadmap open. The case holds on governance and continuity; it is weakest on open-ecosystem flexibility, which the hybrid pairing exists specifically to offset.",
+
   memory: [
     {
       kind: "created",
@@ -147,7 +178,7 @@ export const JOURNEY_DECISION = {
     {
       kind: "evidence",
       when: "Month 3",
-      title: "Evidence updated",
+      title: "Evidence added",
       body: "Vendor documentation on non-SAP data product support superseded. The newer source strengthens the governed-core case rather than weakening it.",
     },
     {
@@ -157,15 +188,33 @@ export const JOURNEY_DECISION = {
       body: "\"AI initiatives ramp quickly\" no longer holds — adoption is slower than assumed at decision time. The companion platform matters less than expected, not more.",
     },
     {
+      kind: "scenario",
+      when: "Month 9",
+      title: "Scenario recalculated",
+      body: "Regulatory requirements tightened. Rerunning the scenario model reinforced SAP Business Data Cloud's lead rather than narrowing it — stronger built-in governance became worth more, not less.",
+    },
+    {
       kind: "vendor",
       when: "Month 11",
       title: "Vendor condition changed",
       body: "A shortlisted alternative moved further toward consumption pricing, increasing its cost exposure under this workload profile.",
     },
     {
-      kind: "review",
+      kind: "executive_review",
+      when: "Month 15",
+      title: "Executive review",
+      body: "Finance and architecture leadership reviewed the decision ahead of the next budget cycle. No material objection; the reasoning held up under direct challenge.",
+    },
+    {
+      kind: "approved",
+      when: "Month 16",
+      title: "Decision approved",
+      body: "Reconfirmed for continued execution, with the same recommendation and a stronger evidence base than at creation.",
+    },
+    {
+      kind: "revisited",
       when: "Month 18",
-      title: "Review triggered",
+      title: "Decision revisited",
       body: "Two of the three duplicate extract paths are decommissioned and the governed core shipped on the SAP-native timeline.",
     },
   ] as MemoryEvent[],

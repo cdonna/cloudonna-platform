@@ -1,4 +1,4 @@
-import { CircleDot, FileClock, GitCompare, RefreshCcw, Scale } from "lucide-react";
+import { CheckCircle2, CircleDot, FileClock, GitCompare, RefreshCcw, Scale, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import {
   Display,
   Eyebrow,
@@ -13,29 +13,33 @@ import {
   Tag,
 } from "@/components/editorial/primitives";
 import { DecisionShowcase } from "@/components/showcase/DecisionShowcase";
+import { EvidenceTag } from "@/components/showcase/EvidenceTag";
 import { EXAMPLE_DECISIONS } from "@/components/showcase/example-decisions";
+import { ScenarioLab } from "@/components/scenario-lab/ScenarioLab";
 import { JOURNEY_DECISION, type MemoryEventKind } from "@/components/landing/journey-content";
 import type { Dictionary } from "@/i18n/dictionary";
 
 /**
- * 01 UNDERSTAND → 05 REMEMBER. The homepage's central storytelling
+ * 01 UNDERSTAND → 07 REMEMBER. The homepage's central storytelling
  * device, and the thing that replaced the old sequence of
  * marketing-card sections (Problem's three symptom cards,
  * EnterpriseIntelligence's three pillar cards, Ecosystem's five product
  * cards).
  *
- * Two rules hold across all five steps:
+ * Two rules hold across all seven steps:
  *
  * 1. One decision, followed end to end. Every canvas renders the same
- *    SAP BW modernization composite (journey-content.ts), and step 03
- *    renders the *actual* DecisionShowcase component the /examples page
- *    uses — not a picture of it. Nothing here claims functionality the
- *    product doesn't have: every field shown corresponds to a field the
- *    real decision record carries.
+ *    SAP BW modernization composite (journey-content.ts) — presented
+ *    here under its flagship framing, "Enterprise Data & AI Platform
+ *    Strategy" — and 05 Decide renders the *actual* DecisionShowcase
+ *    component the /examples page uses, 04 Simulate the *actual*
+ *    ScenarioLab /scenario-lab uses. Nothing here claims functionality
+ *    the product doesn't have: every field shown corresponds to a
+ *    field the real decision record carries.
  * 2. The product canvas outweighs the prose. Each step's editorial
  *    column is capped at ~40rem; the canvas gets the full shell width.
  *
- * `register="dark"` on step 05 is the brief's "dark sections used
+ * `register="dark"` on 07 Remember is the brief's "dark sections used
  * intentionally": Decision Memory is the one claim on this page about
  * something that persists, and it is the only full-width dark beat
  * before the closing CTA.
@@ -53,7 +57,7 @@ function StepHeader({
   label: string;
   heading: string;
   body: string;
-  /** 05 Remember is set one step larger than the other four: it carries
+  /** 07 Remember is set one step larger than the other six: it carries
    * the one line on the homepage that has to be remembered, and giving
    * it the largest type in the journey is cheaper than repeating it. */
   size?: 2 | 3;
@@ -145,6 +149,40 @@ function Understand({ dict }: { dict: Dictionary }) {
 
 /* -------------------------------------------------------------------- */
 
+/**
+ * 02 Evidence — new in this pass. The brief's Trust System taxonomy
+ * (official source / customer input / observed data / calculated / AI
+ * interpretation / assumption) applied directly to this decision's own
+ * claims, using the same EvidenceTag the Trust Center and every example
+ * decision render — so "separate verified evidence from assumption and
+ * AI interpretation" is demonstrated on THIS decision, not asserted in
+ * the abstract.
+ */
+function Evidence({ dict }: { dict: Dictionary }) {
+  const e = dict.journey.evidence;
+
+  return (
+    <Section size="lg" tone="sunken">
+      <Shell>
+        <StepHeader number={e.number} label={e.label} heading={e.heading} body={e.body} />
+
+        <ProductFrame className="mt-14" label={e.frame} meta={dict.showcase.illustrativeLabel}>
+          <ul className="divide-y divide-rule">
+            {JOURNEY_DECISION.evidence.map((item, index) => (
+              <li key={index} className="grid gap-3 p-6 sm:grid-cols-[10rem_1fr] sm:items-baseline sm:gap-6 sm:px-8">
+                <EvidenceTag type={item.type} />
+                <p className="text-sm leading-7 text-ink-2">{item.claim}</p>
+              </li>
+            ))}
+          </ul>
+        </ProductFrame>
+      </Shell>
+    </Section>
+  );
+}
+
+/* -------------------------------------------------------------------- */
+
 function Compare({ dict }: { dict: Dictionary }) {
   const c = dict.journey.compare;
   const rows = JOURNEY_DECISION.compare;
@@ -156,7 +194,7 @@ function Compare({ dict }: { dict: Dictionary }) {
   ];
 
   return (
-    <Section size="lg" tone="sunken">
+    <Section size="lg">
       <Shell>
         <StepHeader number={c.number} label={c.label} heading={c.heading} body={c.body} />
 
@@ -226,18 +264,68 @@ function Compare({ dict }: { dict: Dictionary }) {
 
 /* -------------------------------------------------------------------- */
 
+/**
+ * 04 Simulate — new in this pass, and the one step that embeds a
+ * genuinely interactive surface rather than a static canvas: the real
+ * <ScenarioLab /> component /scenario-lab renders, on the same data
+ * platform scenario this whole journey follows. "Change one assumption
+ * and watch the recommendation respond" is demonstrated, not described.
+ */
+function Simulate({ dict }: { dict: Dictionary }) {
+  const s = dict.journey.simulate;
+
+  return (
+    <Section size="lg" tone="sunken">
+      <Shell>
+        <StepHeader number={s.number} label={s.label} heading={s.heading} body={s.body} />
+        <div className="mt-14">
+          <ScenarioLab />
+        </div>
+      </Shell>
+    </Section>
+  );
+}
+
+/* -------------------------------------------------------------------- */
+
 function Decide({ dict }: { dict: Dictionary }) {
   const d = dict.journey.decide;
+  const s = dict.sampleDecisionsSection;
+  const decision = JOURNEY_DECISION;
 
   return (
     <Section size="lg">
       <Shell>
-        <StepHeader number={d.number} label={d.label} heading={d.heading} body={d.body} />
+        {/* The brief's named flagship demo, by name — this whole journey
+            follows "SAP BW modernization" under this framing, the same
+            decision SampleDecisions tags "Flagship decision" below. */}
+        <span className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold-wash px-3 py-1 font-mono text-[0.625rem] font-medium tracking-[0.1em] text-gold uppercase">
+          {s.flagshipLabel} · {decision.flagshipTitle}
+        </span>
+        <StepHeader number={d.number} label={d.label} heading={d.heading} body={d.body} className="mt-6" />
+
+        {/* The executive recommendation: confidence as the one scored
+            number on the homepage (gold, per the brief's "decision
+            confidence" rule), plus the synthesis a CEO/CFO/CIO reads
+            before anything else — ahead of the full DecisionShowcase
+            canvas below it, matching the brief's own information
+            hierarchy ("Decision, Status, Confidence, Executive
+            summary... then the rest"). */}
+        <div className="register-dark mt-14 grid gap-8 rounded-lg border border-accent/30 bg-paper p-4 shadow-ed-raised sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
+          <div>
+            <div className="font-mono text-label font-medium text-accent uppercase">{d.executiveSummaryLabel}</div>
+            <p className="mt-3 max-w-[56ch] text-[1.0625rem] leading-7 text-ink">{decision.executiveSummary}</p>
+          </div>
+          <div className="flex shrink-0 items-center gap-3 sm:flex-col sm:items-end">
+            <span className="font-mono text-label font-medium text-ink-3 uppercase">{d.confidenceLabel}</span>
+            <span className="font-mono text-4xl font-semibold tracking-tight text-gold tabular-nums">{decision.confidenceScore}%</span>
+          </div>
+        </div>
 
         {/* The real component, not a mock of it: this is the same
             DecisionShowcase /examples renders, on the same decision the
-            two steps above worked through. */}
-        <div className="mt-14">
+            steps above worked through. */}
+        <div className="mt-8">
           <DecisionShowcase decision={EXAMPLE_DECISIONS[0]} />
         </div>
       </Shell>
@@ -284,8 +372,11 @@ const MEMORY_ICONS: Record<MemoryEventKind, typeof CircleDot> = {
   created: CircleDot,
   evidence: FileClock,
   assumption: Scale,
+  scenario: SlidersHorizontal,
   vendor: GitCompare,
-  review: RefreshCcw,
+  executive_review: ShieldCheck,
+  approved: CheckCircle2,
+  revisited: RefreshCcw,
 };
 
 function Remember({ dict }: { dict: Dictionary }) {
@@ -293,7 +384,9 @@ function Remember({ dict }: { dict: Dictionary }) {
   const holds = JOURNEY_DECISION.verdict === "holds";
 
   return (
-    <Section size="xl" register="dark">
+    // id="remember" is what GlobalNav's "Decision Memory" nav item
+    // anchors into — see that file's own comment.
+    <Section id="remember" size="xl" register="dark">
       <Shell>
         <StepHeader number={r.number} label={r.label} heading={r.heading} body={r.body} size={2} />
 
@@ -301,16 +394,19 @@ function Remember({ dict }: { dict: Dictionary }) {
           <div>
             <div className="font-mono text-label font-medium text-ink-3 uppercase">{r.eventsLabel}</div>
 
-            {/* A single continuous rule down the left, so the five events
-                read as one history rather than five cards. */}
+            {/* A single continuous rule down the left, so the eight
+                events read as one history rather than eight cards. */}
             <ol className="mt-7 border-l border-rule">
               {JOURNEY_DECISION.memory.map((event) => {
                 const Icon = MEMORY_ICONS[event.kind];
+                const isTerminal = event.kind === "approved" || event.kind === "revisited";
                 return (
                   <li key={event.title} className="relative pb-10 pl-8 last:pb-0">
                     <span
                       aria-hidden="true"
-                      className="absolute -left-[0.5625rem] top-0.5 flex h-[1.125rem] w-[1.125rem] items-center justify-center rounded-full bg-paper text-accent"
+                      className={`absolute -left-[0.5625rem] top-0.5 flex h-[1.125rem] w-[1.125rem] items-center justify-center rounded-full bg-paper ${
+                        isTerminal ? "text-gold" : "text-accent"
+                      }`}
                     >
                       <Icon size={13} />
                     </span>
@@ -325,9 +421,9 @@ function Remember({ dict }: { dict: Dictionary }) {
 
           <div className="lg:pt-14">
             <div
-              className={`border-l-2 pl-7 ${holds ? "border-sig-positive" : "border-sig-caution"}`}
+              className={`border-l-2 pl-7 ${holds ? "border-gold" : "border-sig-caution"}`}
             >
-              <div className={`font-mono text-label font-medium uppercase ${holds ? "text-sig-positive" : "text-sig-caution"}`}>
+              <div className={`font-mono text-label font-medium uppercase ${holds ? "text-gold" : "text-sig-caution"}`}>
                 {holds ? r.verdictHolds : r.verdictReview}
               </div>
               <p className="mt-4 text-[1.0625rem] leading-7 text-ink">{JOURNEY_DECISION.verdictReason}</p>
@@ -360,7 +456,9 @@ export default function DecisionJourney({ dict }: { dict: Dictionary }) {
         </Shell>
       </Section>
       <Understand dict={dict} />
+      <Evidence dict={dict} />
       <Compare dict={dict} />
+      <Simulate dict={dict} />
       <Decide dict={dict} />
       <Align dict={dict} />
       <Remember dict={dict} />

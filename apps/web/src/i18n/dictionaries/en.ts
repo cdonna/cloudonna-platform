@@ -23,13 +23,14 @@ const en = {
   nav: {
     links: {
       discovery: "Discovery",
-      product: "Product",
+      product: "Platform",
       donnaAi: "Donna AI",
-      decisionSkills: "Decision Skills",
+      decisionSkills: "Decision Intelligence",
       demo: "Demo",
-      architects: "Architects",
-      dataEconomy: "Data Economy",
-      trust: "Trust",
+      architects: "Technology",
+      dataEconomy: "Solutions",
+      trust: "Security",
+      decisionMemory: "Decision Memory",
       independence: "Independence",
       forVendors: "For Vendors",
       forPartners: "For Partners",
@@ -60,15 +61,15 @@ const en = {
     eyebrow: "Enterprise Decision Intelligence",
     h1: "Decision Intelligence",
     h1Second: "for Enterprise Technology",
-    sub: "One decision layer for the people who choose technology and the people responsible for its business impact.",
+    sub: "ClouDonna turns complex technology choices into structured, explainable and reusable enterprise decisions.",
     ctaPrimary: "Bring a Decision",
-    ctaSecondary: "See the Product",
+    ctaSecondary: "Explore the Platform",
     tagline: "Vendor-neutral · Evidence-based · Explainable",
   },
 
   journey: {
     eyebrow: "The decision loop",
-    heading: "A decision needs five things. ClouDonna holds all five.",
+    heading: "A decision needs seven things. ClouDonna holds all seven.",
     sub: "Every view below is a ClouDonna surface, shown with one illustrative enterprise decision running through it.",
     understand: {
       number: "01",
@@ -82,8 +83,15 @@ const en = {
       prioritiesLabel: "Priorities",
       stakeholdersLabel: "Stakeholders",
     },
-    compare: {
+    evidence: {
       number: "02",
+      label: "Evidence",
+      heading: "Separate what was verified from what was assumed.",
+      body: "Every claim behind this decision carries a type — an official source, what the customer told us, something observed, something calculated, an AI narrative, or a stated assumption. Nothing here is evidence just because it sounds confident.",
+      frame: "Decision workspace · Evidence",
+    },
+    compare: {
+      number: "03",
       label: "Compare",
       heading: "See alternatives, evidence and trade-offs in one decision space.",
       body: "Not a feature matrix. Each alternative carries what it implies for the architecture, what it commits you to commercially, what it depends on, and what evidence stands behind the claim.",
@@ -95,15 +103,24 @@ const en = {
       riskLabel: "Risk",
       dependencyLabel: "Dependency",
     },
+    simulate: {
+      number: "04",
+      label: "Simulate",
+      heading: "Change one assumption and watch the recommendation respond.",
+      body: "The same scenario model behind this decision, live: toggle a real-world condition and see which alternative gains ground, and why.",
+      frame: "Scenario Lab · Simulate",
+    },
     decide: {
-      number: "03",
+      number: "05",
       label: "Decide",
       heading: "A recommendation that cannot show its reasoning is just an opinion.",
       body: "Every recommendation arrives with the why, the trade-offs it accepts, the risks it carries, the assumptions it rests on, and the conditions that would change it.",
       frame: "Decision workspace · Decide",
+      confidenceLabel: "Confidence",
+      executiveSummaryLabel: "Executive summary",
     },
     align: {
-      number: "04",
+      number: "06",
       label: "Align",
       heading: "One decision, read four different ways.",
       body: "The CEO, the CFO, the CIO and the enterprise architect are not asking different questions about different decisions. They are asking different questions about the same one.",
@@ -113,7 +130,7 @@ const en = {
       roles: { ceo: "CEO", cfo: "CFO", cio: "CIO", architect: "Enterprise Architect" },
     },
     remember: {
-      number: "05",
+      number: "07",
       label: "Remember",
       heading: "A decision is not a document. It is a living asset.",
       body: "ClouDonna keeps what was decided, what was known at the time, and what has changed since — so \u201cwould we still decide this today?\u201d has an answer instead of a meeting.",
@@ -516,6 +533,7 @@ const en = {
     exploreMoreLabel: "Explore more example decisions",
     evidenceCustomerInput: "Customer input",
     evidenceOfficialSource: "Official source",
+    evidenceObservedData: "Observed data",
     evidenceCalculated: "Calculated",
     evidenceAiInterpretation: "AI interpretation",
     evidenceAssumption: "Assumption",
@@ -807,6 +825,56 @@ const en = {
       contactBodyLink: "contact form",
       contactBodySuffix: "until a dedicated legal contact channel is published here.",
     },
+  },
+
+  architectureSection: {
+    eyebrow: "Platform Architecture",
+    heading: "Built in layers, not as one black box.",
+    body: "Every layer below is checked against what is actually running in this product today — available, in progress, or a committed design with nothing built yet. Nothing here claims an integration that doesn't exist.",
+    frame: "Platform architecture",
+    statusAvailable: "Available",
+    statusPlanned: "Planned",
+    statusDirection: "Architectural direction",
+    integrationsLabel: "Enterprise data & systems",
+    integrationsNote: "Every connector below is architectural direction today — a committed design, not a live integration. None of them should be read as available.",
+  },
+
+  sampleDecisionsSection: {
+    eyebrow: "Sample decisions",
+    heading: "Nine worked decisions, not one demo and a promise.",
+    body: "Every one of these is illustrative, worked through end to end the way Donna works through a real decision: context, trade-offs, recommendation, and what would change it.",
+    flagshipLabel: "Flagship decision",
+    sampleLabel: "Sample decision",
+  },
+
+  commercialSection: {
+    eyebrow: "Work with ClouDonna",
+    heading: "Three ways to bring a real decision to ClouDonna.",
+    body: "No public pricing, because none of these is a self-service checkout — each one reaches a founder directly, who scopes what working together actually looks like.",
+    tiers: {
+      sprint: { name: "Decision Sprint", tagline: "Solve one decision.", body: "Bring one strategic enterprise technology decision and work it through with ClouDonna end to end.", cta: "Bring a Decision" },
+      team: { name: "Team", tagline: "Decision Intelligence for one team.", body: "For a technology or transformation team that makes this kind of decision repeatedly, not once.", cta: "Request a Decision Sprint" },
+      enterprise: { name: "Enterprise", tagline: "A governed decision layer.", body: "A shared decision layer across the organization, with the same evidence standard applied everywhere.", cta: "Book an Executive Demo" },
+    },
+  },
+
+  evidenceTaxonomySection: {
+    eyebrow: "Evidence, typed",
+    heading: "Six kinds of evidence. Never conflated.",
+    body: "Every claim on this site carries one of six labels, and the label decides how much weight the claim is allowed to carry — the same taxonomy a real ClouDonna decision uses.",
+    linkLabel: "Read the full Trust Center",
+  },
+
+  governanceSection: {
+    eyebrow: "Enterprise security & governance",
+    heading: "Trust is a structural rule here, not a claim.",
+    body: "Three things this product is built to be true about, by construction, not by policy alone.",
+    points: [
+      { label: "Isolated by design", body: "Every organization's decisions are isolated at the database level. No other organization can read them, by design, not by policy alone." },
+      { label: "Deterministic scoring", body: "The same input always produces the same score. AI narrates the reasoning; it never decides the outcome." },
+      { label: "Auditable record", body: "A full audit trail and a decision record nobody can quietly edit — Decision Memory, not a document that can be rewritten." },
+    ],
+    linkLabel: "Read the full Trust Center",
   },
 
   seo: {

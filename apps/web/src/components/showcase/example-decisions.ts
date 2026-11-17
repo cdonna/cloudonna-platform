@@ -290,4 +290,99 @@ export const EXAMPLE_DECISIONS: ExampleDecision[] = [
       { persona: "business-leader", takeaway: "Departments with use cases deferred get a clear reason and a real path back onto the roadmap." },
     ],
   },
+  {
+    id: "sap-s4hana-transformation",
+    decisionSkills: ["technology-strategy", "transformation"],
+    title: "SAP S/4HANA transformation architecture",
+    context:
+      "An industrial group still runs SAP ECC across four regional instances, each customized differently over fifteen years. ECC mainstream maintenance has a fixed end date, and the group has not yet committed to how it moves.",
+    question: "Transform to SAP S/4HANA via greenfield, brownfield (technical conversion), or a selective, capability-by-capability approach?",
+    priorities: [
+      "Hit the ECC maintenance deadline with room to spare",
+      "Reduce fifteen years of accumulated customization, not carry it forward unchanged",
+      "Keep regional operations running without a disruptive cutover",
+      "Avoid re-building what already works well",
+    ],
+    shortlist: [
+      { name: "Greenfield (rebuild on Clean Core)", fitSummary: "Cleanest long-term architecture, the longest timeline and the highest change burden on the business" },
+      { name: "Brownfield (technical conversion)", fitSummary: "Fastest path to the deadline, carries existing customization forward largely unchanged" },
+      { name: "Selective transformation", fitSummary: "Converts region by region and process by process against the deadline, reducing customization only where it is actually weak" },
+    ],
+    recommendedOptionName: "Selective transformation",
+    recommendation: "Selective transformation: convert the two most-customized regions first on a Clean Core model, technically convert the other two as-is, sequenced to clear the maintenance deadline with margin.",
+    recommendationRationale:
+      "A full greenfield rebuild across four regions could not realistically finish before the deadline; a pure technical conversion would carry fifteen years of customization forward unexamined. Treating the decision per region, not as one company-wide choice, lets the two weakest regions actually improve while the other two simply keep running.",
+    tradeOffs: [
+      "Running two transformation approaches at once is more complex to govern than one uniform method",
+      "The two regions converted as-is still carry their existing customization debt forward, unresolved",
+    ],
+    risks: [
+      "Regional teams interpreting \"selective\" inconsistently without a single, clearly owned transformation standard",
+      "The Clean Core regions set an expectation the as-is regions cannot meet on the same timeline",
+    ],
+    assumptions: [
+      "The two regions selected for Clean Core are, in fact, the ones with the weakest current architecture, not simply the two most vocal",
+      "SAP's maintenance deadline does not move materially before the program completes",
+    ],
+    whatWouldChange: [
+      { option: "Greenfield (rebuild on Clean Core)", condition: "The maintenance deadline is extended by several years, removing the time pressure that ruled this out" },
+      { option: "Brownfield (technical conversion)", condition: "Budget or delivery capacity cannot sustain two transformation methods running in parallel" },
+    ],
+    personaTakeaways: [
+      { persona: "ceo", takeaway: "Four regions reach a supported platform on one deadline, without betting the whole program on the slowest, most ambitious path." },
+      { persona: "cfo", takeaway: "Spend concentrates where fifteen years of customization is actually costing the most, not spread evenly across regions that don't need it." },
+      { persona: "cio", takeaway: "Two transformation methods running at once is real governance overhead — the recommendation names it rather than hiding it." },
+      { persona: "cdo", takeaway: "Clean Core in the two converted regions gives the next data and AI initiative a real foundation, instead of inheriting more custom code." },
+      { persona: "architect", takeaway: "This is the one case where treating a single company-wide decision as four regional ones is the more disciplined answer, not a compromise." },
+      { persona: "business-leader", takeaway: "Two regions see real process change; two keep working as they do today — teams know in advance which kind of year they're getting." },
+    ],
+  },
+  {
+    id: "analytics-cloud-vs-power-bi-vs-tableau",
+    decisionSkills: ["technology-strategy", "vendor"],
+    title: "SAP Analytics Cloud versus Power BI versus Tableau",
+    context:
+      "A life sciences company reports financial and operational numbers through SAP Analytics Cloud, while most commercial and clinical-operations teams have independently adopted Power BI or Tableau. Three BI tools now coexist with three different definitions of some of the same metrics.",
+    question: "Standardize enterprise-wide BI on SAP Analytics Cloud, Power BI, or Tableau, or formally support more than one?",
+    priorities: [
+      "One shared definition for metrics that are reported in more than one tool today",
+      "Preserve the SAP-native planning and reporting SAC already does well",
+      "Minimize retraining for teams already fluent in their current tool",
+      "Reduce the licensing and support cost of running three BI tools at once",
+    ],
+    shortlist: [
+      { name: "SAP Analytics Cloud, enterprise-wide", fitSummary: "Strongest fit for SAP-native planning and financial reporting, weakest adoption outside finance today" },
+      { name: "Power BI, enterprise-wide", fitSummary: "Broadest existing adoption outside finance, requires rebuilding SAC's native planning workflows elsewhere" },
+      { name: "Tableau, enterprise-wide", fitSummary: "Strong for exploratory commercial analytics, the smallest existing footprint of the three" },
+      { name: "SAC for planning/finance, Power BI for everything else", fitSummary: "Keeps each tool where it already fits best, requires one governed semantic layer across both" },
+    ],
+    recommendedOptionName: "SAC for planning/finance, Power BI for everything else",
+    recommendation: "Keep SAP Analytics Cloud for financial planning and SAP-native reporting; standardize Power BI as the single tool for every other business area, governed by one shared semantic layer so a metric means the same thing in both.",
+    recommendationRationale:
+      "Forcing financial planning off SAC would mean rebuilding native SAP integration that already works; forcing the rest of the business onto SAC would mean retraining far more people than it would save. The actual problem — three definitions of the same metric — is solved by one governed semantic layer shared across both tools, not by picking a single tool to the exclusion of the other two.",
+    tradeOffs: [
+      "Running two BI tools, even governed by one semantic layer, costs more to license and support than standardizing on one",
+      "Tableau is retired from enterprise standard use, which some commercial-analytics power users will experience as a real loss of capability",
+    ],
+    risks: [
+      "A shared semantic layer that isn't actually enforced leaves the original problem — inconsistent metric definitions — effectively unsolved",
+      "Teams quietly keep using Tableau informally after its retirement, leaving a fourth, ungoverned tool in practice",
+    ],
+    assumptions: [
+      "A shared semantic layer can be built and enforced across SAC and Power BI without a disruptive, multi-year program",
+      "Tableau's current user base is small enough that migration is realistic within one planning cycle",
+    ],
+    whatWouldChange: [
+      { option: "Power BI, enterprise-wide", condition: "SAC's native planning capability turns out to be easier to replace than assumed, or Microsoft 365 becomes the company-wide standard outright" },
+      { option: "Tableau, enterprise-wide", condition: "Commercial analytics' exploratory, visual-analysis needs turn out to be the dominant BI use case company-wide, not a secondary one" },
+    ],
+    personaTakeaways: [
+      { persona: "ceo", takeaway: "One number means one thing, company-wide, without forcing finance and commercial teams to abandon the tools they already run well." },
+      { persona: "cfo", takeaway: "Running two licensed BI tools instead of one is a real, named cost — not hidden inside a single \"standardize\" decision that looks cheaper than it is." },
+      { persona: "cio", takeaway: "The semantic layer, not the tool choice, is the actual governance problem — and the one piece of this that has to be enforced, not just declared." },
+      { persona: "cdo", takeaway: "A shared semantic layer here is the same pattern as a governed data product: one definition, reused everywhere, instead of three parallel ones." },
+      { persona: "architect", takeaway: "Keeping each tool where it already fits is lower integration risk than consolidating onto one tool that fits neither use case perfectly." },
+      { persona: "business-leader", takeaway: "Teams keep the BI tool they already know; what changes is that the numbers finally agree." },
+    ],
+  },
 ];
