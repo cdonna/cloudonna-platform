@@ -155,8 +155,17 @@ export type WizardAction =
    * reducer never has to guess how to merge a partial one. */
   | { type: "RESTORE"; state: WizardState };
 
+/** "General" means the risk came from the fixed fallback pool
+ * (data.ts's FALLBACK_RISKS), not from a specific triggering input —
+ * labeled honestly rather than assigned a specific category it
+ * doesn't actually have evidence for. Every other category is derived
+ * directly from the real input condition that produced the risk (see
+ * engine.ts's pickRisks) — never a keyword-guessed classification. */
+export type RiskCategory = "Financial" | "Delivery" | "Skills" | "Vendor" | "General";
+
 export interface RiskItem {
   text: string;
+  category: RiskCategory;
 }
 
 export interface OpportunityItem {

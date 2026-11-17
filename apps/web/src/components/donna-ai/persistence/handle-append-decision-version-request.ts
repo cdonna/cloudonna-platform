@@ -8,6 +8,7 @@ import "server-only";
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { KNOWLEDGE_BASE_VERSION, SCHEMA_VERSION, SCORING_ENGINE_VERSION } from "../engine/engine-version";
+import { applyScenarioToOutput } from "../engine/apply-scenario";
 import { buildDecisionOutput } from "../engine";
 import { appendDecisionVersionRequestSchema } from "./append-decision-version-schema";
 import { appendDecisionVersion } from "./decisions-repository";
@@ -40,9 +41,19 @@ export async function handleAppendDecisionVersionRequest(
   // an existing decision and appending the result as a new version
   // carries the identical tampering risk the original save boundary was
   // built to close, and gets the identical fix.
+  //
+  // Decision Engine V1.1 (brief §9/§28): scenarioOverrides is a bounded
+  // set of weight numbers (validated by the schema, clamped again
+  // inside the scenario engine itself) — never a client-supplied
+  // output. The actual persisted output is still 100% derived here,
+  // from the real wizard state, through the real scoring engine, then
+  // re-weighted by applyScenarioToOutput using only those numbers.
   let deterministicOutput;
   try {
-    deterministicOutput = buildDecisionOutput(request.decisionInput.wizardState as never);
+    const wizardState = request.decisionInput.wizardState as never;
+    const baseOutput = buildDecisionOutput(wizardState);
+    const overrides = request.decisionInput.scenarioOverrides;
+    deterministicOutput = overrides ? applyScenarioToOutput(wizardState, baseOutput, overrides) : baseOutput;
   } catch {
     return { status: 400, body: { error: "The request could not be processed." } };
   }

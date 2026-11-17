@@ -12,11 +12,14 @@ import {
   type VersionComparison,
 } from "@/components/donna-ai/persistence/decision-view-resolver";
 import { AppendVersionAction } from "@/components/donna-ai/persistence/AppendVersionAction";
+import { classifyVersionEvent } from "@/components/donna-ai/engine/decision-events";
+import type { DecisionInput } from "@/components/donna-ai/intelligence/types";
 import { DecisionTimeline } from "@/components/donna-ai/persistence/DecisionTimeline";
 import { VersionControls } from "@/components/donna-ai/persistence/VersionControls";
 import { VersionDiffPanel } from "@/components/donna-ai/persistence/VersionDiffPanel";
 import { OverviewTab } from "@/components/donna-ai/ResultPanel/OverviewTab";
 import { IntelligenceTab } from "@/components/donna-ai/ResultPanel/IntelligenceTab";
+import { DecisionCommandCenter } from "@/components/donna-ai/ResultPanel/DecisionCommandCenter";
 import { SectionLabel } from "@/components/donna-ai/shared";
 import { PageLoadError } from "@/components/ui/page-load-error";
 
@@ -91,10 +94,18 @@ async function renderDecisionDetail(id: string, sp: { version?: string | string[
   const isHistorical = isHistoricalVersionView(displayedContent.versionNumber, currentVersionNumber);
 
   let diffSection: VersionComparison | null = null;
+  let diffEvents: ReturnType<typeof classifyVersionEvent> = [];
   if (plan.compareVersionNumber !== null) {
     const compareResult = await getDecisionVersionByNumber(supabase, id, plan.compareVersionNumber);
     if (compareResult.ok) {
       diffSection = buildOrderedComparison(toVersionSnapshot(displayedContent), toVersionSnapshot(compareResult.data));
+      // classifyVersionEvent describes the NEWER (toVersion) side of the
+      // diff — whichever of the two fetched versions that actually is,
+      // since buildOrderedComparison itself re-orders older/newer
+      // regardless of which side the caller passed first.
+      const newerContent = displayedContent.versionNumber === diffSection.diff.toVersion ? displayedContent : compareResult.data;
+      const newerScenarioOverrides = (newerContent.decisionInput as DecisionInput)?.scenarioOverrides;
+      diffEvents = classifyVersionEvent(diffSection.diff, newerContent.humanOverride, Boolean(newerScenarioOverrides && Object.keys(newerScenarioOverrides).length > 0));
     }
   }
 
@@ -154,7 +165,7 @@ async function renderDecisionDetail(id: string, sp: { version?: string | string[
 
       {diffSection && (
         <div className="mt-6">
-          <VersionDiffPanel diff={diffSection.diff} explanation={diffSection.explanation} />
+          <VersionDiffPanel diff={diffSection.diff} explanation={diffSection.explanation} events={diffEvents} />
         </div>
       )}
 
@@ -203,6 +214,16 @@ async function renderDecisionDetail(id: string, sp: { version?: string | string[
         <div className="rounded-2xl border border-titanium bg-carbon p-6">
           <IntelligenceTab report={report} />
         </div>
+      </div>
+
+      <div className="mt-6">
+        <DecisionCommandCenter
+          output={report.output}
+          decisionId={id}
+          decisionInput={toVersionSnapshot(displayedContent).decisionInput}
+          humanOverride={displayedContent.humanOverride}
+          editable={!isHistorical}
+        />
       </div>
     </div>
   );

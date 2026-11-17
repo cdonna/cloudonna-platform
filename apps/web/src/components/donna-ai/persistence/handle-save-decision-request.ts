@@ -9,6 +9,7 @@ import "server-only";
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { KNOWLEDGE_BASE_VERSION, SCHEMA_VERSION, SCORING_ENGINE_VERSION } from "../engine/engine-version";
+import { applyScenarioToOutput } from "../engine/apply-scenario";
 import { buildDecisionOutput } from "../engine";
 import { saveDecisionRequestSchema } from "./save-decision-schema";
 import { saveDecision } from "./decisions-repository";
@@ -49,7 +50,10 @@ export async function handleSaveDecisionRequest(
   // docs/sprint-6/21-security-review.md.
   let deterministicOutput;
   try {
-    deterministicOutput = buildDecisionOutput(request.decisionInput.wizardState as never);
+    const wizardState = request.decisionInput.wizardState as never;
+    const baseOutput = buildDecisionOutput(wizardState);
+    const overrides = request.decisionInput.scenarioOverrides;
+    deterministicOutput = overrides ? applyScenarioToOutput(wizardState, baseOutput, overrides) : baseOutput;
   } catch {
     return { status: 400, body: { error: "The request could not be processed." } };
   }

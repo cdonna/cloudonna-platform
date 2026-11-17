@@ -252,6 +252,15 @@
   --color-nova-accent: #0e7a5a;
   --color-nova-accent-strong: #4fb894;
 
+  /* Decision Engine V1.1 — the same dark-register gold already used on
+     the public site (--ed-gold, #d4af67), given its nova-* absolute
+     name for the authenticated product's own token system. Reserved
+     for the same short list the public site already commits to:
+     a winner, a confidence figure, a decision moment — never a
+     default badge or icon-tile fill. */
+  --color-nova-gold: #d4af67;
+  --color-nova-gold-wash: rgba(212, 175, 103, 0.12);
+
   /* Evidence reliability (maps onto evidence_reliability_tier) */
   --color-evidence-primary: #4fb894;
   --color-evidence-vendor: #9aa39d;

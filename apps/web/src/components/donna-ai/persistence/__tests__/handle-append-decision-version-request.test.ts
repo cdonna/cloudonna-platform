@@ -113,6 +113,78 @@ describe("handleAppendDecisionVersionRequest", () => {
     expect(JSON.stringify(result.body)).not.toContain("row-level security policy for table");
   });
 
+  it("Decision Engine V1.1: a humanOverride payload is passed through to the RPC verbatim, never merged into the deterministic output", async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: [{ out_version_id: "id", out_version_number: 2 }], error: null });
+    const supabase = { rpc } as unknown as SupabaseClient;
+
+    const body = validBody({ humanOverride: { selectedOptionId: "databricks", rationale: "CFO preferred the consumption pricing model." } });
+    await handleAppendDecisionVersionRequest("decision-1", body, supabase, "user-1");
+
+    const callArgs = rpc.mock.calls[0][1] as { p_human_override: unknown; p_deterministic_output: { recommendation: unknown } };
+    expect(callArgs.p_human_override).toEqual({ selectedOptionId: "databricks", rationale: "CFO preferred the consumption pricing model." });
+    // The deterministic output's own recommendation is untouched by the
+    // override — it is recorded alongside it, never rewritten into it.
+    expect(callArgs.p_deterministic_output.recommendation).toBeDefined();
+  });
+
+  it("defaults p_human_override to null when the request omits it", async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: [{ out_version_id: "id", out_version_number: 2 }], error: null });
+    const supabase = { rpc } as unknown as SupabaseClient;
+
+    await handleAppendDecisionVersionRequest("decision-1", validBody(), supabase, "user-1");
+
+    const callArgs = rpc.mock.calls[0][1] as { p_human_override: unknown };
+    expect(callArgs.p_human_override).toBeNull();
+  });
+
+  it("rejects a humanOverride payload missing a rationale", async () => {
+    const supabase = fakeSupabase({ data: null, error: null });
+    const body = validBody({ humanOverride: { selectedOptionId: "databricks", rationale: "" } });
+
+    const result = await handleAppendDecisionVersionRequest("decision-1", body, supabase, "user-1");
+    expect(result.status).toBe(400);
+  });
+
+  it("Decision Engine V1.1: a scenarioOverrides payload persists the re-weighted output, not the base one", async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: [{ out_version_id: "id", out_version_number: 2 }], error: null });
+    const supabase = { rpc } as unknown as SupabaseClient;
+
+    const baseBody = validBody();
+    const scenarioBody = validBody({
+      decisionInput: { wizardState: SAMPLE_PROFILE, scenarioOverrides: { cost: 0.9 } },
+    });
+
+    await handleAppendDecisionVersionRequest("decision-1", baseBody, supabase, "user-1");
+    const baseOutput = (rpc.mock.calls[0][1] as { p_deterministic_output: { recommendation: { platform: { id: string } } } }).p_deterministic_output;
+
+    await handleAppendDecisionVersionRequest("decision-1", scenarioBody, supabase, "user-1");
+    const scenarioOutput = (rpc.mock.calls[1][1] as { p_deterministic_output: { recommendation: { platform: { id: string } }; dimensions: Array<{ key: string; weight: number }> } })
+      .p_deterministic_output;
+
+    const costWeight = scenarioOutput.dimensions.find((d) => d.key === "cost")?.weight;
+    expect(costWeight).toBeCloseTo(0.9, 9);
+    // Not asserting the winner necessarily changed (depends on real
+    // catalog data) — asserting the two calls' weight structure
+    // genuinely differs is the real, non-flaky invariant here.
+    expect(baseOutput).not.toEqual(scenarioOutput);
+  });
+
+  it("rejects a scenarioOverrides payload naming an unknown dimension key", async () => {
+    const supabase = fakeSupabase({ data: null, error: null });
+    const body = validBody({ decisionInput: { wizardState: SAMPLE_PROFILE, scenarioOverrides: { notARealDimension: 0.5 } } });
+
+    const result = await handleAppendDecisionVersionRequest("decision-1", body, supabase, "user-1");
+    expect(result.status).toBe(400);
+  });
+
+  it("rejects a scenarioOverrides weight outside [0, 1]", async () => {
+    const supabase = fakeSupabase({ data: null, error: null });
+    const body = validBody({ decisionInput: { wizardState: SAMPLE_PROFILE, scenarioOverrides: { cost: 1.5 } } });
+
+    const result = await handleAppendDecisionVersionRequest("decision-1", body, supabase, "user-1");
+    expect(result.status).toBe(400);
+  });
+
   it("never includes the raw request body or wizard state notes in any thrown/returned error", async () => {
     const supabase = fakeSupabase({ data: null, error: { message: "unexpected failure detail" } });
     const body = validBody({

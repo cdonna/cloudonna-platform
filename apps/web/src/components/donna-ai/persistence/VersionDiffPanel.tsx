@@ -1,6 +1,7 @@
 import { GOAL_LABELS, type VersionDiff } from "./version-diff";
 import type { ScoreChangeExplanation } from "./score-explanation";
 import { SectionLabel } from "../shared";
+import type { DecisionEvent } from "../engine/decision-events";
 
 /**
  * Sprint 6.2 — a deliberately plain rendering of the Version Diff
@@ -11,12 +12,34 @@ import { SectionLabel } from "../shared";
  * VersionControls/DecisionTimeline has somewhere real to navigate to,
  * not as the polished diff experience a future pass would build.
  */
-export function VersionDiffPanel({ diff, explanation }: { diff: VersionDiff; explanation: ScoreChangeExplanation }) {
+export function VersionDiffPanel({
+  diff,
+  explanation,
+  events,
+}: {
+  diff: VersionDiff;
+  explanation: ScoreChangeExplanation;
+  /** Decision Engine V1.1 (brief §19/§20) — named product events for
+   * this diff, from engine/decision-events.ts. Optional so this
+   * component keeps working for any caller that hasn't been updated to
+   * pass them. */
+  events?: DecisionEvent[];
+}) {
   return (
     <div className="rounded-2xl border border-titanium bg-carbon p-5">
       <SectionLabel>
         Diff — version {diff.fromVersion} → version {diff.toVersion}
       </SectionLabel>
+
+      {events && events.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {events.map((event) => (
+            <span key={event.type} className="inline-flex rounded-full border border-nova-accent/30 bg-nova-accent/10 px-2.5 py-1 text-xs font-medium text-nova-accent-strong">
+              {event.label}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="mt-4 flex flex-wrap items-baseline gap-3">
         <span className="text-xs font-medium text-nova-ink-muted">Donna Score</span>
