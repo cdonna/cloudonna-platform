@@ -364,6 +364,7 @@ const en = {
     recommendedBadge: "Recommended",
     alternativeBadge: "Alternative recommendation",
     whatWouldChangeHeading: "What could change this recommendation",
+    constraintCheckHeading: "Constraint check",
     leverBody: "{platform} becomes competitive if its {dimension} improves by about {points} points.",
     noLeversBody: "No alternative is close enough on any single dimension to flip this recommendation.",
     costOfDelayHeading: "Cost of waiting",

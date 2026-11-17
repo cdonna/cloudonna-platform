@@ -173,7 +173,13 @@ export function OverviewTab({
 
       {/* "What would change this recommendation" — pure arithmetic on
           the weighted dimension scores already computed above, never a
-          new evidence source. See decision-insights.ts. */}
+          new evidence source. See decision-insights.ts. Decision Engine
+          V1 (engine/scenario.ts, engine/constraints.ts) adds a second,
+          complementary source for the same question underneath: which
+          unresolved hard-constraint inputs or weight shifts would flip
+          the recommendation — engine-generated prose, rendered exactly
+          as output.currentSituation/output.executiveSummary already are
+          elsewhere on this page: directly, never through the dictionary. */}
       <div className="mt-6 rounded-2xl border border-titanium p-5">
         <h4 className="font-semibold text-nova-ink">{r.whatWouldChangeHeading}</h4>
         <div className="mt-4 space-y-3">
@@ -191,7 +197,43 @@ export function OverviewTab({
             <p className="text-sm leading-6 text-nova-ink-faint">{r.noLeversBody}</p>
           )}
         </div>
+
+        {output.engineResult && output.engineResult.conditionsToReconsider.length > 0 && (
+          <div className="mt-4 space-y-2 border-t border-titanium pt-4">
+            {output.engineResult.conditionsToReconsider.map((condition) => (
+              <p key={condition} className="text-sm leading-6 text-nova-ink-muted">
+                {condition}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Hard-constraint eligibility (engine/constraints.ts) — silent
+          when every stated constraint passes, so this never adds noise
+          to the common case; shown only when there is something to
+          actually flag. */}
+      {output.engineResult && output.engineResult.constraints.some((c) => c.status !== "PASS") && (
+        <div className="mt-6 rounded-2xl border border-nova-warning/30 bg-nova-warning/10 p-5">
+          <h4 className="font-semibold text-nova-ink">{r.constraintCheckHeading}</h4>
+          <div className="mt-3 space-y-2">
+            {output.engineResult.constraints
+              .filter((c) => c.status !== "PASS")
+              .map((c) => (
+                <div key={c.id} className="flex items-start gap-3 text-sm leading-6 text-nova-ink-muted">
+                  <span
+                    className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 font-mono text-[0.625rem] font-semibold uppercase ${
+                      c.status === "FAIL" ? "bg-nova-warning/15 text-nova-warning" : "bg-carbon-2 text-nova-ink-faint"
+                    }`}
+                  >
+                    {c.status}
+                  </span>
+                  {c.explanation}
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
 
       {framing && (
         <div className="mt-6 grid gap-5 lg:grid-cols-2">

@@ -1,5 +1,6 @@
 export type { DimensionResult, EvidenceItem, RankedPlatform, ScoreDimensionKey } from "./scoring/types";
 import type { DimensionResult, EvidenceItem, RankedPlatform } from "./scoring/types";
+import type { EngineResult } from "./engine/recommendation";
 
 export type Industry =
   | "manufacturing"
@@ -193,4 +194,10 @@ export interface DecisionOutput {
   assumptions: AssumptionItem[];
   nextSteps: NextStepItem[];
   workshops: WorkshopItem[];
+  /** Decision Engine V1 (brief §24) — constraints, typed evidence,
+   * qualitative confidence, scenario sensitivity and a structured
+   * recommendation contract, composed on top of the fields above.
+   * Optional so every value already persisted or constructed before
+   * this field existed remains a valid DecisionOutput. */
+  engineResult?: EngineResult;
 }

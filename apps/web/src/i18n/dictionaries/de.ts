@@ -356,6 +356,7 @@ const de: Dictionary = {
     recommendedBadge: "Empfohlen",
     alternativeBadge: "Alternative Empfehlung",
     whatWouldChangeHeading: "Was diese Empfehlung ändern könnte",
+    constraintCheckHeading: "Anforderungsprüfung",
     leverBody: "{platform} wird konkurrenzfähig, wenn sich {dimension} um etwa {points} Punkte verbessert.",
     noLeversBody: "Keine Alternative liegt bei einer einzelnen Dimension nah genug dran, um diese Empfehlung zu kippen.",
     costOfDelayHeading: "Kosten des Wartens",

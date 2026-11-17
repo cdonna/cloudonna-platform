@@ -60,6 +60,7 @@ export const VENDOR_CATALOG: VendorPlatformProfile[] = [
       "Semantic business layer over transactional systems",
     ],
     cloudModel: "hybrid",
+    supportedClouds: ["azure", "aws", "gcp"],
     deploymentModels: ["saas"],
 
     governance: "leading",
@@ -145,6 +146,7 @@ export const VENDOR_CATALOG: VendorPlatformProfile[] = [
       "SQL-first analytics engine",
     ],
     cloudModel: "multi-cloud",
+    supportedClouds: ["azure", "aws", "gcp"],
     deploymentModels: ["saas"],
 
     governance: "established",
@@ -226,6 +228,7 @@ export const VENDOR_CATALOG: VendorPlatformProfile[] = [
 
     architectureCharacteristics: ["Lakehouse (open Delta format)", "Unified batch/streaming/ML", "Spark-based compute engine"],
     cloudModel: "multi-cloud",
+    supportedClouds: ["azure", "aws", "gcp"],
     deploymentModels: ["paas"],
 
     governance: "developing",
@@ -307,6 +310,7 @@ export const VENDOR_CATALOG: VendorPlatformProfile[] = [
 
     architectureCharacteristics: ["OneLake unified storage", "Merges Power BI, Synapse, and Data Factory", "SaaS-managed analytics"],
     cloudModel: "single-cloud",
+    supportedClouds: ["azure"],
     deploymentModels: ["saas"],
 
     governance: "established",
@@ -388,6 +392,7 @@ export const VENDOR_CATALOG: VendorPlatformProfile[] = [
 
     architectureCharacteristics: ["Relational database core", "Autonomous (self-tuning) database options", "Enterprise applications (ERP/HCM) suite"],
     cloudModel: "hybrid",
+    supportedClouds: ["azure"],
     deploymentModels: ["iaas", "managed-service"],
 
     governance: "established",
@@ -469,6 +474,7 @@ export const VENDOR_CATALOG: VendorPlatformProfile[] = [
 
     architectureCharacteristics: ["Hyperscale IaaS/PaaS infrastructure", "Modular managed services (Redshift, EMR, SageMaker)", "Global multi-region footprint"],
     cloudModel: "single-cloud",
+    supportedClouds: ["aws"],
     deploymentModels: ["iaas", "paas"],
 
     governance: "established",
@@ -550,6 +556,7 @@ export const VENDOR_CATALOG: VendorPlatformProfile[] = [
 
     architectureCharacteristics: ["Serverless analytics engine (BigQuery)", "Hyperscale IaaS/PaaS infrastructure", "Native AI/ML platform (Vertex AI)"],
     cloudModel: "single-cloud",
+    supportedClouds: ["gcp"],
     deploymentModels: ["paas", "iaas"],
 
     governance: "developing",
@@ -630,6 +637,7 @@ export const VENDOR_CATALOG: VendorPlatformProfile[] = [
 
     architectureCharacteristics: ["Ontology-based data model", "Deep legacy system integration", "Operational decision workflows"],
     cloudModel: "hybrid",
+    supportedClouds: ["azure", "aws", "gcp"],
     deploymentModels: ["managed-service"],
 
     governance: "established",
@@ -710,6 +718,7 @@ export const VENDOR_CATALOG: VendorPlatformProfile[] = [
 
     architectureCharacteristics: ["Mainframe and legacy system integration", "Db2 relational database", "watsonx AI/data portfolio (emerging, fragmented)"],
     cloudModel: "hybrid",
+    supportedClouds: ["azure", "aws", "gcp"],
     deploymentModels: ["managed-service", "self-hosted"],
 
     governance: "established",
@@ -790,6 +799,7 @@ export const VENDOR_CATALOG: VendorPlatformProfile[] = [
 
     architectureCharacteristics: ["Document-oriented NoSQL database", "Horizontally scalable (sharding)", "Managed cloud service (Atlas) or self-hosted"],
     cloudModel: "multi-cloud",
+    supportedClouds: ["azure", "aws", "gcp"],
     deploymentModels: ["saas", "self-hosted"],
 
     governance: "developing",

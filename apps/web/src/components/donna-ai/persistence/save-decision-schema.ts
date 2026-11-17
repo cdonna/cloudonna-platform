@@ -39,6 +39,18 @@ const fallbackMetadataSchema = z
   })
   .strict();
 
+/** Decision Engine V1 (brief §28) — a human disagreeing with (or
+ * explicitly confirming) the engine's recommendedOption. Validated the
+ * same way as every other field here: strict shape, bounded length,
+ * never trusted beyond that — the engine's own output is never
+ * rewritten by this, it is stored alongside it. */
+const humanOverrideSchema = z
+  .object({
+    selectedOptionId: z.string().trim().min(1).max(200),
+    rationale: z.string().trim().min(1).max(2000),
+  })
+  .strict();
+
 /** The full POST /api/decisions request body. `output` is deliberately
  * absent from this schema — see the file-level comment. */
 export const saveDecisionRequestSchema = z
@@ -52,6 +64,7 @@ export const saveDecisionRequestSchema = z
     provider: providerMetadataSchema,
     fallback: fallbackMetadataSchema,
     changeReason: z.string().max(500).optional(),
+    humanOverride: humanOverrideSchema.nullable().optional(),
   })
   .strict();
 
