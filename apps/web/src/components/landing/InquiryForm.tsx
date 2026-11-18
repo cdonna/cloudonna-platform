@@ -21,7 +21,15 @@ const SUBMITTED_EVENT_BY_TYPE: Partial<Record<InquiryType, string>> = {
   founding_tester: "founding_tester_submitted",
   partner: "partner_inquiry_submitted",
   vendor: "vendor_inquiry_submitted",
+  decision_sprint: "commercial_form_submitted",
+  team: "commercial_form_submitted",
+  enterprise: "commercial_form_submitted",
 };
+
+/** The three commercial entry points (brief §19) that show the extra
+ * qualification fields below — a general/partner/vendor inquiry has
+ * no reason to ask about decision timeframe or investment at stake. */
+const COMMERCIAL_INQUIRY_TYPES: InquiryType[] = ["decision_sprint", "team", "enterprise"];
 
 export function InquiryForm({
   inquiryType,
@@ -41,9 +49,11 @@ export function InquiryForm({
   const formId = useId();
   const copy = dict.inquiryForm.copyByType[inquiryType];
   const roles = dict.inquiryForm.roles;
+  const isCommercial = COMMERCIAL_INQUIRY_TYPES.includes(inquiryType);
 
   useEffect(() => {
     getAnalyticsProvider().trackEvent({ name: "inquiry_started", properties: { inquiryType } });
+    if (isCommercial) getAnalyticsProvider().trackEvent({ name: "commercial_form_started", properties: { inquiryType } });
     // Only on mount for this specific inquiryType — not on every
     // re-render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,6 +96,10 @@ export function InquiryForm({
           utmCampaign: currentUrl.searchParams.get("utm_campaign") ?? undefined,
           referrer: document.referrer || undefined,
           website: trim("website"), // honeypot — always empty for a real visitor
+          decisionType: isCommercial ? trim("decisionType") : undefined,
+          decisionTimeframe: isCommercial ? trim("decisionTimeframe") : undefined,
+          investmentAtStakeChf: isCommercial && trim("investmentAtStakeChf") ? Number(trim("investmentAtStakeChf")) : undefined,
+          currentPlatforms: isCommercial ? trim("currentPlatforms") : undefined,
         }),
       });
 
@@ -176,6 +190,54 @@ export function InquiryForm({
                   </div>
 
                   <Field id={`${formId}-phone`} name="phone" label={dict.inquiryForm.fields.phone} type="tel" optional optionalLabel={dict.inquiryForm.fields.optional} autoComplete="tel" />
+
+                  {isCommercial && (
+                    <>
+                      <Field
+                        id={`${formId}-decisionType`}
+                        name="decisionType"
+                        label={dict.inquiryForm.fields.decisionType}
+                        optional
+                        optionalLabel={dict.inquiryForm.fields.optional}
+                      />
+
+                      <div className="flex flex-col gap-1.5">
+                        <label htmlFor={`${formId}-decisionTimeframe`} className="text-sm font-medium text-ink">
+                          {dict.inquiryForm.fields.decisionTimeframe} <span className="font-normal text-ink-3">{dict.inquiryForm.fields.optional}</span>
+                        </label>
+                        <select
+                          id={`${formId}-decisionTimeframe`}
+                          name="decisionTimeframe"
+                          defaultValue=""
+                          className="h-11 rounded-md border border-rule-2 bg-paper px-3 text-sm text-ink outline-none transition-colors duration-control focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-accent/25"
+                        >
+                          <option value="">{dict.inquiryForm.fields.selectDecisionTimeframe}</option>
+                          {dict.inquiryForm.fields.decisionTimeframeOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <Field
+                        id={`${formId}-investmentAtStakeChf`}
+                        name="investmentAtStakeChf"
+                        label={dict.inquiryForm.fields.investmentAtStake}
+                        type="number"
+                        optional
+                        optionalLabel={dict.inquiryForm.fields.optional}
+                      />
+
+                      <Field
+                        id={`${formId}-currentPlatforms`}
+                        name="currentPlatforms"
+                        label={dict.inquiryForm.fields.currentPlatforms}
+                        optional
+                        optionalLabel={dict.inquiryForm.fields.optional}
+                      />
+                    </>
+                  )}
 
                   <div className="flex flex-col gap-1.5 sm:col-span-2">
                     <label htmlFor={`${formId}-message`} className="text-sm font-medium text-ink">

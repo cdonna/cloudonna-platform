@@ -94,6 +94,7 @@ describe("Sitemap completeness", () => {
     "/examples",
     "/demo",
     "/company",
+    "/commercial",
     "/independence",
     "/for-vendors",
     "/for-partners",

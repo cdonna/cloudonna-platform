@@ -17,7 +17,7 @@ import type { Locale } from "@/i18n/locales";
 // Someone clicking "Get notified" on a different, not-yet-built
 // product would land on copy that doesn't match what they clicked,
 // which reads as sloppy rather than considered. General Enquiry's
-// copy ("reaches a founder directly") is honestly accurate instead.
+// copy ("reaches the ClouDonna team directly") is honestly accurate instead.
 const PRODUCT_META = [
   { id: "donnaAi" as const, name: "Donna AI", icon: Bot, anchorId: undefined, href: (locale: Locale) => `/${locale}/donna-ai`, featured: true, status: "live" as const },
   { id: "compare" as const, name: "Donna Compare", icon: GitCompareArrows, anchorId: "compare", href: (locale: Locale) => `/${locale}/contact?type=general`, featured: false, status: "planned" as const },
