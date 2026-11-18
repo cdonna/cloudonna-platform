@@ -51,6 +51,7 @@ export const LOCALIZED_PATH_PREFIXES = [
   "/scenario-lab",
   "/cost-value-lab",
   "/ai-use-cases",
+  "/commercial",
   "/case-study",
   "/examples",
   "/demo",

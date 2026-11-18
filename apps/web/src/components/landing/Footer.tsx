@@ -25,6 +25,7 @@ const LOCALIZED_HREFS = new Set([
   "/cost-value-lab",
   "/ai-use-cases",
   "/company",
+  "/commercial",
   "/for-vendors",
   "/for-partners",
   "/early-access",
@@ -64,6 +65,7 @@ export default function Footer({ dict = en, locale = DEFAULT_LOCALE }: { dict?: 
     { label: dict.nav.links.discovery, href: "/discovery" },
   ];
   const audienceLinks = [
+    { label: dict.commercialPage.badge, href: "/commercial" },
     { label: dict.nav.links.forVendors, href: "/for-vendors" },
     { label: dict.nav.links.forPartners, href: "/for-partners" },
     { label: dict.footer.linkFoundingTester, href: "/early-access" },

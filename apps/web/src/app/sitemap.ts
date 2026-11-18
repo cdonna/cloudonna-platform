@@ -40,6 +40,7 @@ const LOCALIZED_ROUTES: Array<{
   { path: "", changeFrequency: "weekly", priority: 1 },
   { path: "/donna-ai", changeFrequency: "weekly", priority: 0.9 },
   { path: "/company", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/commercial", changeFrequency: "monthly", priority: 0.8 },
   { path: "/decision-skills", changeFrequency: "weekly", priority: 0.8 },
   { path: "/trust", changeFrequency: "monthly", priority: 0.8 },
   { path: "/architects", changeFrequency: "monthly", priority: 0.7 },
