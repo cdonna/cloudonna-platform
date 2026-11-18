@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createSupabaseServerClient, getCurrentUser } from "@/lib/supabase/server";
 import { listInquiriesForStaff, type InquirySummary } from "@/lib/inquiries/repository";
 import { StatusSelect } from "./StatusSelect";
+import { PromoteButton } from "./PromoteButton";
 
 export const metadata: Metadata = {
   title: "Inquiries — ClouDonna",
@@ -79,6 +80,7 @@ export default async function InquiriesPage() {
                   <th className="px-5 py-3">Message</th>
                   <th className="px-5 py-3">Status</th>
                   <th className="px-5 py-3">Received</th>
+                  <th className="px-5 py-3">Commercial</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-titanium">
@@ -98,6 +100,9 @@ export default async function InquiriesPage() {
                       <StatusSelect inquiryId={inquiry.id} initialStatus={inquiry.status} />
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap text-nova-ink-muted">{new Date(inquiry.createdAt).toLocaleDateString()}</td>
+                    <td className="px-5 py-4">
+                      <PromoteButton inquiryId={inquiry.id} />
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -23,6 +23,7 @@ import { SAMPLE_PROFILE } from "../../data";
 
 const DONNA_AI_ROOT = path.join(__dirname, "..", "..");
 const COMMERCIAL_ROOT = path.join(__dirname, "..", "..", "..", "..", "lib", "commercial");
+const DECISION_OUTCOMES_ROOT = path.join(__dirname, "..", "..", "..", "..", "lib", "decision-outcomes");
 
 function listTsFiles(dir: string): string[] {
   const files: string[] = [];
@@ -94,6 +95,52 @@ describe("Commercial / Decision neutrality firewall", () => {
     for (const file of listTsFiles(COMMERCIAL_ROOT)) {
       const content = fs.readFileSync(file, "utf-8");
       if (/overallScore|vendorRanking|recommendedOption/.test(content)) offenders.push(file);
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  // ---------------------------------------------------------------------
+  // Revenue Operations & First Customer Engine V1 additions (brief §31).
+
+  it("no file under donna-ai/ imports buyer-persona.ts — GTM reporting only, never a product-recommendation input", () => {
+    const offenders: string[] = [];
+    for (const file of listTsFiles(DONNA_AI_ROOT)) {
+      const content = fs.readFileSync(file, "utf-8");
+      if (/from\s+["'].*lib\/commercial\/buyer-persona/.test(content)) offenders.push(file);
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it("no file under donna-ai/ imports anything from lib/decision-outcomes/ — tenant outcome data never becomes a scoring input", () => {
+    const offenders: string[] = [];
+    for (const file of listTsFiles(DONNA_AI_ROOT)) {
+      const content = fs.readFileSync(file, "utf-8");
+      if (/from\s+["'].*lib\/decision-outcomes/.test(content)) offenders.push(file);
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it("lib/commercial/ and lib/decision-outcomes/ never import from each other — staff-only sales data and tenant-private decision outcomes stay structurally separate (brief §36)", () => {
+    const commercialOffenders: string[] = [];
+    for (const file of listTsFiles(COMMERCIAL_ROOT)) {
+      const content = fs.readFileSync(file, "utf-8");
+      if (/from\s+["'].*lib\/decision-outcomes/.test(content)) commercialOffenders.push(file);
+    }
+    expect(commercialOffenders).toEqual([]);
+
+    const decisionOutcomesOffenders: string[] = [];
+    for (const file of listTsFiles(DECISION_OUTCOMES_ROOT)) {
+      const content = fs.readFileSync(file, "utf-8");
+      if (/from\s+["'].*lib\/commercial/.test(content)) decisionOutcomesOffenders.push(file);
+    }
+    expect(decisionOutcomesOffenders).toEqual([]);
+  });
+
+  it("no file under lib/decision-outcomes/ imports anything from the scoring engine or vendor-intelligence catalog", () => {
+    const offenders: string[] = [];
+    for (const file of listTsFiles(DECISION_OUTCOMES_ROOT)) {
+      const content = fs.readFileSync(file, "utf-8");
+      if (/from\s+["'].*donna-ai\/(scoring|engine|vendor-intelligence)/.test(content)) offenders.push(file);
     }
     expect(offenders).toEqual([]);
   });
