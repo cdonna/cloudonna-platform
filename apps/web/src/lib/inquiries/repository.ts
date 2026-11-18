@@ -69,6 +69,10 @@ export async function createInquiry(
     utm_medium: request.utmMedium ?? null,
     utm_campaign: request.utmCampaign ?? null,
     referrer: request.referrer ?? null,
+    decision_type: request.decisionType ?? null,
+    decision_timeframe: request.decisionTimeframe ?? null,
+    investment_at_stake_chf: request.investmentAtStakeChf ?? null,
+    current_platforms: request.currentPlatforms ?? null,
   });
 
   if (error) {

@@ -4,12 +4,15 @@ import { z } from "zod";
 // from a plain Vitest test (same reasoning as login/metadata.ts).
 import { SUPPORTED_LOCALES } from "../../i18n/locales";
 
-/** Matches the `inquiry_type` Postgres enum after
- * supabase/migrations/20260809120000_inquiries_taxonomy_refinement.sql
- * — the original 6-value taxonomy (founding_tester/enterprise_pilot/
- * customer/partner/vendor/general) collapsed enterprise_pilot and
- * customer into a single `enterprise`. */
-export const inquiryTypeSchema = z.enum(["founding_tester", "enterprise", "partner", "vendor", "general"]);
+/** Matches the `inquiry_type` Postgres enum. The original 6-value
+ * taxonomy (founding_tester/enterprise_pilot/customer/partner/vendor/
+ * general) collapsed enterprise_pilot and customer into a single
+ * `enterprise` (20260809120000_inquiries_taxonomy_refinement.sql);
+ * `decision_sprint` and `team` were added by the Commercial Engine V1
+ * migration (20261118000000) — the two public commercial packages
+ * that now have their own qualification fields and funnel event,
+ * distinct from the generic `enterprise` conversation. */
+export const inquiryTypeSchema = z.enum(["founding_tester", "decision_sprint", "team", "enterprise", "partner", "vendor", "general"]);
 
 export type InquiryType = z.infer<typeof inquiryTypeSchema>;
 
@@ -67,6 +70,17 @@ export const createInquiryRequestSchema = z
     utmCampaign: z.string().trim().max(200).optional(),
     referrer: z.string().trim().max(500).optional(),
     website: z.string().max(200).optional(),
+    // Commercial lead qualification (brief §19) — shown only for
+    // decision_sprint/team/enterprise in the UI (InquiryForm's own
+    // progressive logic), but accepted from any inquiry type here
+    // rather than enforced per-type, consistent with every other
+    // optional field on this schema. Every value is the lead's own
+    // self-report — never inferred from company size, industry, or
+    // any other signal.
+    decisionType: z.string().trim().max(200).optional(),
+    decisionTimeframe: z.string().trim().max(50).optional(),
+    investmentAtStakeChf: z.number().min(0).max(1_000_000_000).optional(),
+    currentPlatforms: z.string().trim().max(500).optional(),
   })
   .strict();
 
