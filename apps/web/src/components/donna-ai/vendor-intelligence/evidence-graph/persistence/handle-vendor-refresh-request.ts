@@ -83,7 +83,7 @@ export async function handleVendorRefreshRequest(rawBody: unknown, supabase: Sup
     if (claimError || !claimRow) continue;
 
     const { data: sourceRow } = await supabase
-      .from("evidence_sources")
+      .from("vendor_evidence_sources")
       .insert({
         canonical_url: source.url,
         retrieved_url: source.url,

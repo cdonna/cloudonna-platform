@@ -45,7 +45,7 @@ describe("handleProductKnowledgeRequest", () => {
       organization_members: { data: null, error: null },
       vendor_capability_claims: { data: [claimRow()], error: null },
       vendor_capability_evidence: {
-        data: [{ claim_id: "22222222-2222-2222-2222-222222222222", polarity: "supports", evidence_sources: { source_category: "official_product_documentation", published_at: "2026-10-01" } }],
+        data: [{ claim_id: "22222222-2222-2222-2222-222222222222", polarity: "supports", vendor_evidence_sources: { source_category: "official_product_documentation", published_at: "2026-10-01" } }],
         error: null,
       },
     }) as unknown as SupabaseClient;

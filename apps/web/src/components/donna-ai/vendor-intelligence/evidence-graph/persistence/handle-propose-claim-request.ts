@@ -116,12 +116,12 @@ export async function handleProposeClaimRequest(rawBody: unknown, supabase: Supa
 
   const canonicalUrl = canonicalizeSourceUrl(input.source.url);
   let sourceId: string | null = null;
-  const { data: existingSource } = await supabase.from("evidence_sources").select("id").eq("canonical_url", canonicalUrl).maybeSingle();
+  const { data: existingSource } = await supabase.from("vendor_evidence_sources").select("id").eq("canonical_url", canonicalUrl).maybeSingle();
   if (existingSource) {
     sourceId = existingSource.id;
   } else {
     const { data: newSource, error: sourceError } = await supabase
-      .from("evidence_sources")
+      .from("vendor_evidence_sources")
       .insert({
         canonical_url: canonicalUrl,
         retrieved_url: input.source.url,

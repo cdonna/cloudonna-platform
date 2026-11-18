@@ -62,14 +62,14 @@ export async function handleProductKnowledgeRequest(
   if (claimIds.length > 0) {
     const { data } = await supabase
       .from("vendor_capability_evidence")
-      .select("claim_id, polarity, evidence_sources(source_category, published_at)")
+      .select("claim_id, polarity, vendor_evidence_sources(source_category, published_at)")
       .in("claim_id", claimIds)
       .eq("polarity", "supports");
 
-    const rows = (data as Array<{ claim_id: string; evidence_sources: { source_category: EvidenceSourceCategory; published_at: string | null } | Array<{ source_category: EvidenceSourceCategory; published_at: string | null }> | null }> | null) ?? [];
+    const rows = (data as Array<{ claim_id: string; vendor_evidence_sources: { source_category: EvidenceSourceCategory; published_at: string | null } | Array<{ source_category: EvidenceSourceCategory; published_at: string | null }> | null }> | null) ?? [];
     const map = new Map<string, { sourceCategory: EvidenceSourceCategory; publishedAt: string | null }[]>();
     for (const row of rows) {
-      const source = Array.isArray(row.evidence_sources) ? row.evidence_sources[0] : row.evidence_sources;
+      const source = Array.isArray(row.vendor_evidence_sources) ? row.vendor_evidence_sources[0] : row.vendor_evidence_sources;
       if (!source) continue;
       const list = map.get(row.claim_id) ?? [];
       list.push({ sourceCategory: source.source_category, publishedAt: source.published_at });

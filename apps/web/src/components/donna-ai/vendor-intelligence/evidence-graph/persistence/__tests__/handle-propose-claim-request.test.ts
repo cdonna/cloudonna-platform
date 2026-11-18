@@ -83,7 +83,7 @@ describe("handleProposeClaimRequest", () => {
       ],
       // First call: lookup by canonical_url (no existing source).
       // Second call: the insert, returning the new source's id.
-      evidence_sources: [
+      vendor_evidence_sources: [
         { data: null, error: null },
         { data: { id: "new-source" }, error: null },
       ],

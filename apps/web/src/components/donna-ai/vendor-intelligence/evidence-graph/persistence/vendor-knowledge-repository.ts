@@ -3,7 +3,7 @@ import "server-only";
 /**
  * The only module that issues a Supabase query against
  * vendor_capability_claims / vendor_capability_evidence /
- * evidence_sources / vendor_knowledge_changes / decision_impacts /
+ * vendor_evidence_sources / vendor_knowledge_changes / decision_impacts /
  * decision_vendor_claim_refs — same pattern as research-repository.ts
  * and decisions-repository.ts: takes an already-constructed
  * per-request server client, never a service-role key, so RLS is the
@@ -119,7 +119,7 @@ interface EvidenceRow {
   confidence: CapabilityEvidence["confidence"];
   research_session_id: string | null;
   created_at: string;
-  evidence_sources: SourceRow | SourceRow[] | null;
+  vendor_evidence_sources: SourceRow | SourceRow[] | null;
 }
 
 interface SourceRow {
@@ -179,7 +179,7 @@ export async function getClaimTrace(supabase: SupabaseClient, claimId: string): 
   const { data, error } = await supabase
     .from("vendor_capability_evidence")
     .select(
-      "id, claim_id, source_id, polarity, excerpt, confidence, research_session_id, created_at, evidence_sources(id, canonical_url, retrieved_url, title, publisher, source_category, published_at, retrieved_at, last_verified_at, language, content_hash, metadata)",
+      "id, claim_id, source_id, polarity, excerpt, confidence, research_session_id, created_at, vendor_evidence_sources(id, canonical_url, retrieved_url, title, publisher, source_category, published_at, retrieved_at, last_verified_at, language, content_hash, metadata)",
     )
     .eq("claim_id", claimId);
 
@@ -188,7 +188,7 @@ export async function getClaimTrace(supabase: SupabaseClient, claimId: string): 
   const rows = (data as EvidenceRow[] | null) ?? [];
   const evidence = rows
     .map((row) => {
-      const sourceRow = Array.isArray(row.evidence_sources) ? row.evidence_sources[0] : row.evidence_sources;
+      const sourceRow = Array.isArray(row.vendor_evidence_sources) ? row.vendor_evidence_sources[0] : row.vendor_evidence_sources;
       if (!sourceRow) return null;
       return { evidence: mapEvidence(row), source: mapSource(sourceRow) };
     })

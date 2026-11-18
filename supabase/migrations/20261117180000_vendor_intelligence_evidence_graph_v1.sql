@@ -104,7 +104,7 @@ create type evidence_source_category as enum (
   'unknown'
 );
 
-create table evidence_sources (
+create table vendor_evidence_sources (
   id uuid primary key default gen_random_uuid(),
   canonical_url text not null,
   retrieved_url text not null,
@@ -120,20 +120,20 @@ create table evidence_sources (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   created_by uuid references profiles (id) on delete set null,
-  constraint evidence_sources_canonical_url_not_blank check (btrim(canonical_url) <> '')
+  constraint vendor_evidence_sources_canonical_url_not_blank check (btrim(canonical_url) <> '')
 );
 
-comment on table evidence_sources is
+comment on table vendor_evidence_sources is
   'The canonical document registry (brief §6). canonical_url is the deduplication key (fragment/trailing-slash/tracking-param normalized by the application layer before insert — see vendor-intelligence/source-normalization.ts); retrieved_url preserves the exact URL actually fetched, which can legitimately differ (redirect target, retrieved with a query string) without being a different source. Global knowledge: readable by any authenticated user, writable only by platform staff — see RLS below.';
 
-create unique index evidence_sources_canonical_url_key on evidence_sources (canonical_url);
-create index evidence_sources_category_idx on evidence_sources (source_category);
-create index evidence_sources_created_by_idx on evidence_sources (created_by);
-create trigger evidence_sources_set_updated_at before update on evidence_sources for each row execute function set_updated_at();
+create unique index vendor_evidence_sources_canonical_url_key on vendor_evidence_sources (canonical_url);
+create index vendor_evidence_sources_category_idx on vendor_evidence_sources (source_category);
+create index vendor_evidence_sources_created_by_idx on vendor_evidence_sources (created_by);
+create trigger vendor_evidence_sources_set_updated_at before update on vendor_evidence_sources for each row execute function set_updated_at();
 
-alter table evidence_sources enable row level security;
-create policy evidence_sources_select on evidence_sources for select using (auth.uid() is not null);
-create policy evidence_sources_write on evidence_sources for all using (is_platform_staff()) with check (is_platform_staff());
+alter table vendor_evidence_sources enable row level security;
+create policy vendor_evidence_sources_select on vendor_evidence_sources for select using (auth.uid() is not null);
+create policy vendor_evidence_sources_write on vendor_evidence_sources for all using (is_platform_staff()) with check (is_platform_staff());
 
 -- ---------------------------------------------------------------------------
 -- 3. Capability claims — the canonical CapabilityClaim (brief §5/§12).
@@ -243,7 +243,7 @@ create type evidence_polarity as enum ('supports', 'contradicts');
 create table vendor_capability_evidence (
   id uuid primary key default gen_random_uuid(),
   claim_id uuid not null references vendor_capability_claims (id) on delete cascade,
-  source_id uuid not null references evidence_sources (id) on delete cascade,
+  source_id uuid not null references vendor_evidence_sources (id) on delete cascade,
   polarity evidence_polarity not null default 'supports',
   excerpt text,
   confidence text not null default 'medium' check (confidence in ('high', 'medium', 'low')),
@@ -331,7 +331,7 @@ create table vendor_knowledge_changes (
   change_type vendor_knowledge_change_type not null,
   summary text not null,
   detected_at timestamptz not null default now(),
-  detected_by_source_id uuid references evidence_sources (id) on delete set null,
+  detected_by_source_id uuid references vendor_evidence_sources (id) on delete set null,
   created_at timestamptz not null default now(),
   constraint vendor_knowledge_changes_summary_not_blank check (btrim(summary) <> '')
 );
