@@ -135,6 +135,54 @@ export async function listInquiriesForStaff(supabase: SupabaseClient): Promise<R
   return { ok: true, data: items };
 }
 
+export interface InquiryDetail extends InquirySummary {
+  phone: string | null;
+  decisionType: string | null;
+  decisionTimeframe: string | null;
+  investmentAtStakeChf: number | null;
+  currentPlatforms: string | null;
+}
+
+/** Powers the lead -> opportunity promotion flow (brief §50) — the
+ * one place a single inquiry's full self-reported qualification
+ * fields are read back out, by staff, for a human-approved promotion
+ * into commercial_accounts/commercial_contacts/commercial_opportunities.
+ * Same RLS posture as listInquiriesForStaff: a non-staff caller gets
+ * null, not an error. */
+export async function getInquiryById(supabase: SupabaseClient, inquiryId: string): Promise<RepositoryResult<InquiryDetail>> {
+  const { data, error } = await supabase
+    .from("inquiries")
+    .select(
+      "id, inquiry_type, name, business_email, company, country, phone, status, message, source_page, created_at, decision_type, decision_timeframe, investment_at_stake_chf, current_platforms",
+    )
+    .eq("id", inquiryId)
+    .maybeSingle();
+
+  if (error) return { ok: false, reason: classifySupabaseError(error.message) };
+  if (!data) return { ok: false, reason: "This inquiry could not be found." };
+
+  return {
+    ok: true,
+    data: {
+      id: data.id,
+      inquiryType: data.inquiry_type,
+      name: data.name,
+      businessEmail: data.business_email,
+      company: data.company,
+      country: data.country,
+      phone: data.phone,
+      status: data.status,
+      message: data.message,
+      sourcePage: data.source_page,
+      createdAt: data.created_at,
+      decisionType: data.decision_type,
+      decisionTimeframe: data.decision_timeframe,
+      investmentAtStakeChf: data.investment_at_stake_chf,
+      currentPlatforms: data.current_platforms,
+    },
+  };
+}
+
 export const VALID_STATUSES = ["new", "reviewing", "contacted", "qualified", "closed"] as const;
 export type InquiryStatus = (typeof VALID_STATUSES)[number];
 
