@@ -24,6 +24,14 @@ import { SAMPLE_PROFILE } from "../../data";
 const DONNA_AI_ROOT = path.join(__dirname, "..", "..");
 const COMMERCIAL_ROOT = path.join(__dirname, "..", "..", "..", "..", "lib", "commercial");
 const DECISION_OUTCOMES_ROOT = path.join(__dirname, "..", "..", "..", "..", "lib", "decision-outcomes");
+// The actual neutrality-sensitive surface: the deterministic scoring/
+// recommendation path. components/donna-ai/workspace/ legitimately
+// displays decision_outcomes/business_case_actuals/assumption_validations
+// (Decision Workspace Remember stage, brief §40/§44) — that is the whole
+// point of those tables existing — so the broader DONNA_AI_ROOT is too
+// wide a net for THAT specific check; scoring/engine must never see this
+// data, but the rest of the product legitimately can.
+const SCORING_ENGINE_ROOTS = [path.join(DONNA_AI_ROOT, "scoring"), path.join(DONNA_AI_ROOT, "engine")];
 
 function listTsFiles(dir: string): string[] {
   const files: string[] = [];
@@ -111,11 +119,13 @@ describe("Commercial / Decision neutrality firewall", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("no file under donna-ai/ imports anything from lib/decision-outcomes/ — tenant outcome data never becomes a scoring input", () => {
+  it("no file under donna-ai/scoring/ or donna-ai/engine/ imports anything from lib/decision-outcomes/ — tenant outcome data never becomes a scoring input", () => {
     const offenders: string[] = [];
-    for (const file of listTsFiles(DONNA_AI_ROOT)) {
-      const content = fs.readFileSync(file, "utf-8");
-      if (/from\s+["'].*lib\/decision-outcomes/.test(content)) offenders.push(file);
+    for (const root of SCORING_ENGINE_ROOTS) {
+      for (const file of listTsFiles(root)) {
+        const content = fs.readFileSync(file, "utf-8");
+        if (/from\s+["'].*lib\/decision-outcomes/.test(content)) offenders.push(file);
+      }
     }
     expect(offenders).toEqual([]);
   });
