@@ -13,6 +13,7 @@ import { ResearchPanel } from "./ResearchPanel";
 import { ScenarioWorkbench } from "./ScenarioWorkbench";
 import { BusinessCasePanel } from "./BusinessCasePanel";
 import { ChallengerPanel } from "./ChallengerPanel";
+import { VendorKnowledgePanel } from "./VendorKnowledgePanel";
 import { ExecutiveRecommendationBlock } from "./ExecutiveRecommendationBlock";
 import { SCORE_DIMENSION_LABELS } from "../scoring/weights";
 import type { WeightOverrides } from "../engine/scenario";
@@ -170,6 +171,7 @@ export function DecisionCommandCenter({
             onSaveBusinessCase={editable ? handleSaveBusinessCase : undefined}
           />
           {decisionId && <ChallengerPanel decisionId={decisionId} />}
+          {decisionId && <VendorKnowledgePanel decisionId={decisionId} baseRanked={baseRanked} />}
           <EvidenceExplorer evidence={engineResult.evidence} diagnostics={engineResult.evidenceDiagnostics} dimensionLabels={SCORE_DIMENSION_LABELS} />
           <RiskCockpit risks={engineResult.risks} />
         </>
